@@ -238,7 +238,6 @@ body {
     right: 20px;
     z-index: 1100;
     width: 600px;
-    height: 400px;
     max-width: calc(100% - 40px);
     background-color: white;
     border-radius: 1.5rem;
