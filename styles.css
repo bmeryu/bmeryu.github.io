@@ -287,6 +287,8 @@ body {
 
 #chatbot-body {
     height: 450px;
+    min-height: 450px;
+    max-height: 450px;
     opacity: 1;
     visibility: visible;
     transition: all 0.4s ease-in-out;
