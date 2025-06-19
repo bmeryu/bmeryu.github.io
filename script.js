@@ -343,7 +343,7 @@ if (chatbotCloseBtn) {
 
             // 2. Definir la URL de tu NUEVO webhook (el de actualización).
             // !!! REEMPLAZA ESTA URL POR LA TUYA !!!
-            const webhookURL = 'https://muna.auto.hostybee.com/webhook-test/actualizar-perfil'; 
+            const webhookURL = 'https://muna.auto.hostybee.com/webhook/actualizar-perfil'; 
 
             // 3. Preparar los datos para enviar. ¡Incluimos el email del usuario logueado!
             const formData = {
