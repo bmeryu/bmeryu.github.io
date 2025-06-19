@@ -46,7 +46,22 @@ document.addEventListener('DOMContentLoaded', () => {
             document.body.style.overflow = '';
         }
     };
-    
+
+    /**
+ * Muestra un mensaje de confirmación efímero en la pantalla.
+ * @param {string} message - El mensaje a mostrar.
+ */
+const showConfirmationMessage = (message) => {
+    const emotionConfirmationMessage = document.getElementById('emotion-confirmation-message');
+    if (emotionConfirmationMessage) {
+        emotionConfirmationMessage.textContent = message;
+        emotionConfirmationMessage.classList.add('show');
+        // Ocultar el mensaje después de 3 segundos.
+        setTimeout(() => {
+            emotionConfirmationMessage.classList.remove('show');
+        }, 3000); 
+    }
+};
     // Add event listeners for opening modals.
     openModalButtons.forEach(button => {
         button.addEventListener('click', (e) => {
