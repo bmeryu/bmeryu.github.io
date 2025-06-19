@@ -244,6 +244,7 @@ body {
 #chatbot-floater.is-minimized {
     width: 65px;
     height: 65px;
+    
 }
 #chatbot-bubble {
     width: 100%;
@@ -268,7 +269,7 @@ body {
 
 /* Estilo de la Ventana (cuando está abierta) */
 #chatbot-floater:not(.is-minimized) {
-    width: 400px; /* Ancho del chat abierto */
+    width: 500px; /* Ancho del chat abierto */
     max-width: calc(100% - 40px);
     height: 600px; /* Alto del chat abierto */
     max-height: calc(100% - 40px);
