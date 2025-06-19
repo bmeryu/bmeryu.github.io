@@ -570,7 +570,7 @@ if (contactForm) {
     contactForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const webhookURL = 'https://muna.auto.hostybee.com/webhook-test/solicitud-contacto';
+        const webhookURL = 'https://muna.auto.hostybee.com/webhook-test/solicitud-b2c';
 
         const formData = {
             name: contactForm.querySelector('#name').value,
