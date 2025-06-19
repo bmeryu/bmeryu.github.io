@@ -107,33 +107,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const logoutButton = document.getElementById('logout-button');
     
     let loggedInUserEmail = ''; // Store the logged-in user's email.
-    
-    // --- Chatbot Floater Logic ---
-    const chatbotFloater = document.getElementById('chatbot-floater');
-    const chatbotHeader = document.getElementById('chatbot-header');
-    const chatbotIframe = chatbotFloater ? chatbotFloater.querySelector('iframe') : null;
-    const genericChatbotUrl = 'https://muna.auto.hostybee.com/webhook/9bedfe60-a6f1-4592-8d6f-51e7e309affc/chat';
+  // --- Chatbot Floater Logic ---
+const chatbotFloater = document.getElementById('chatbot-floater');
+const chatbotBubble = document.getElementById('chatbot-bubble');
+const chatbotCloseBtn = document.getElementById('chatbot-close-btn');
 
-    if (chatbotHeader) {
-        chatbotHeader.addEventListener('click', () => {
-            chatbotFloater.classList.toggle('is-minimized');
-        });
-    }
+if (chatbotBubble) {
+    chatbotBubble.addEventListener('click', () => {
+        chatbotFloater.classList.remove('is-minimized');
+    });
+}
 
-    /**
-     * Shows a temporary confirmation message on the screen.
-     * @param {string} message - The message to display.
-     */
-    const showConfirmationMessage = (message) => {
-        if (emotionConfirmationMessage) {
-            emotionConfirmationMessage.textContent = message;
-            emotionConfirmationMessage.classList.add('show');
-            // Hide the message after 3 seconds.
-            setTimeout(() => {
-                emotionConfirmationMessage.classList.remove('show');
-            }, 3000); 
-        }
-    };
+if (chatbotCloseBtn) {
+    chatbotCloseBtn.addEventListener('click', () => {
+        chatbotFloater.classList.add('is-minimized');
+    });
+}
 
     /**
      * Shows the user dashboard view and hides the main site.
