@@ -286,7 +286,7 @@ body {
 }
 
 #chatbot-body {
-    height: auto; /* ¡Cambio clave! Le decimos que se adapte al contenido. */
+    height: 450px; /* ¡Cambio clave! Le decimos que se adapte al contenido. */
     opacity: 1;
     visibility: visible;
     transition: all 0.4s ease-in-out;
