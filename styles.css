@@ -269,7 +269,7 @@ body {
 
 /* Estilo de la Ventana (cuando está abierta) */
 #chatbot-floater:not(.is-minimized) {
-    width: 500px; /* Ancho del chat abierto */
+    width: 600px; /* Ancho del chat abierto */
     max-width: calc(100% - 40px);
     height: 600px; /* Alto del chat abierto */
     max-height: calc(100% - 40px);
