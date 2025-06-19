@@ -344,3 +344,6 @@ body {
     background: linear-gradient(135deg, #8A7ADF, #6AB09B);
     /* --- COMENTARIO TEST --- */
 }
+#onboarding-form {
+  margin-bottom: 70px !important;
+}
