@@ -564,3 +564,35 @@ if (chatbotCloseBtn) {
         });
     }
 });
+const contactForm = document.getElementById('contact-form');
+
+if (contactForm) {
+    contactForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const webhookURL = 'PEGA_AQUÍ_LA_NUEVA_URL_DE_PRODUCCIÓN_DE_HOSTYBEE';
+
+        const formData = {
+            name: contactForm.querySelector('#name').value,
+            email: contactForm.querySelector('#email').value,
+            message: contactForm.querySelector('#message').value
+        };
+
+        try {
+            const response = await fetch(webhookURL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData),
+            });
+
+            if (response.ok) {
+                showConfirmationMessage('¡Gracias! Tu mensaje ha sido enviado.');
+                contactForm.reset();
+            } else {
+                alert('Hubo un problema al enviar tu mensaje.');
+            }
+        } catch (error) {
+            alert('No se pudo enviar el mensaje por un error de red.');
+        }
+    });
+}
