@@ -234,7 +234,7 @@ body {
 /* --- Floating Chatbot --- */
 #chatbot-floater {
     position: fixed;
-    bottom: 20px;
+    bottom: 10px;
     right: 20px;
     z-index: 1100;
     width: 600px;
