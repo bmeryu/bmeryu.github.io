@@ -570,7 +570,7 @@ if (contactForm) {
     contactForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const webhookURL = 'PEGA_AQUÍ_LA_NUEVA_URL_DE_PRODUCCIÓN_DE_HOSTYBEE';
+        const webhookURL = 'https://muna.auto.hostybee.com/webhook-test/solicitud-contacto';
 
         const formData = {
             name: contactForm.querySelector('#name').value,
@@ -579,7 +579,7 @@ if (contactForm) {
         };
 
         try {
-            const response = await fetch(https://muna.auto.hostybee.com/webhook-test/solicitud-contacto, {
+            const response = await fetch(webhookURL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),
