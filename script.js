@@ -584,15 +584,21 @@ if (contactForm) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),
             });
-            
-            if (response.ok) {
+
+            const result = await response.json(); // Added this line
+
+            if (response.ok && result.success) { // Changed this condition
                 showConfirmationMessage('¡Gracias! Tu mensaje ha sido enviado.');
                 contactForm.reset();
             } else {
-                alert('Hubo un problema al enviar tu mensaje.');
+                // Changed error handling
+                if (result.error) {
+                    alert('Error: ' + result.error);
+                } else {
+                    alert('Hubo un problema al enviar tu mensaje.');
+                }
             }
         } catch (error) {
-            
             alert('No se pudo enviar el mensaje por un error de red.');
         }
     });
