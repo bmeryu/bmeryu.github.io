@@ -584,7 +584,7 @@ if (contactForm) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),
             });
-            console.log(response);
+            console.log("no ando ni para atras" + response);
             if (response.ok) {
                 showConfirmationMessage('¡Gracias! Tu mensaje ha sido enviado.');
                 contactForm.reset();
