@@ -593,7 +593,7 @@ if (contactForm) {
             }
         } catch (error) {
             alert("response 2" + response)
-            alert('No se pudo enviar el mensaje por un error de red.');
+            alert('No se pudo enviar el mensaje por un error de red..................');
         }
     });
 }
