@@ -584,7 +584,7 @@ if (contactForm) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),
             });
-            console.log("no ando ni para atras" + response);
+            alert("response 1"+response)
             if (response.ok) {
                 showConfirmationMessage('¡Gracias! Tu mensaje ha sido enviado.');
                 contactForm.reset();
@@ -592,6 +592,7 @@ if (contactForm) {
                 alert('Hubo un problema al enviar tu mensaje.');
             }
         } catch (error) {
+            alert("response 2" + response)
             alert('No se pudo enviar el mensaje por un error de red.');
         }
     });
