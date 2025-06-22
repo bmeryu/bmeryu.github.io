@@ -237,90 +237,67 @@ body {
     bottom: 20px;
     right: 20px;
     z-index: 1100;
-    transition: all 0.4s ease-in-out;
-}
-
-/* Estilo del Globito (cuando está minimizado) */
-#chatbot-floater.is-minimized {
-    width: 65px;
-    height: 65px;
-    
-}
-#chatbot-bubble {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    background-color: #8A7ADF; /* Color primario */
-    border: none;
-    cursor: pointer;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    transition: transform 0.2s;
-}
-#chatbot-bubble:hover {
-    transform: scale(1.1);
-}
-
-/* Ocultar la ventana del chat cuando está minimizado */
-#chatbot-floater.is-minimized #chatbot-window {
-    opacity: 0;
-    visibility: hidden;
-    transform: scale(0.5);
-}
-
-/* Estilo de la Ventana (cuando está abierta) */
-#chatbot-floater:not(.is-minimized) {
-    width: 600px; /* Ancho del chat abierto */
+    width: 600px;
     max-width: calc(100% - 40px);
-    height: 600px; /* Alto del chat abierto */
-    max-height: calc(100% - 40px);
-}
-#chatbot-window {
-    width: 100%;
-    height: 100%;
     background-color: white;
     border-radius: 1.5rem;
     box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     overflow: hidden;
-    display: flex;
-    flex-direction: column;
     transition: all 0.4s ease-in-out;
 }
-/* Ocultar el globito cuando la ventana está abierta */
-#chatbot-floater:not(.is-minimized) #chatbot-bubble {
-    display: none;
+
+#chatbot-floater.is-minimized #chatbot-body {
+    height: 0;
+    opacity: 0;
+    visibility: hidden;
+    margin-top: 0;
 }
 
-/* Estilos del header y body (se mantienen similares) */
+#chatbot-floater.is-minimized #chatbot-toggle-icon {
+     transform: rotate(180deg);
+}
+
 #chatbot-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0.75rem 1.25rem;
-    background-color: #8A7ADF;
+    background-color: #8A7ADF; /* muna-primary */
     color: white;
-    flex-shrink: 0; /* Evita que el header se encoja */
+    cursor: pointer;
 }
+
 #chatbot-header h3 {
     font-weight: 600;
     font-size: 1.1rem;
+    margin: 0;
 }
-#chatbot-close-btn {
+
+#chatbot-toggle-btn {
     background: none;
     border: none;
     color: white;
     font-size: 1.5rem;
     cursor: pointer;
-    padding: 5px;
 }
+
+#chatbot-toggle-icon {
+    transition: transform 0.3s;
+}
+
 #chatbot-body {
-    flex-grow: 1; /* Hace que el cuerpo ocupe el espacio restante */
-    height: 100%;
+    height: 400px;
+    opacity: 1;
+    visibility: visible;
+    transition: all 0.4s ease-in-out;
 }
+
 #chatbot-body iframe {
     width: 100%;
     height: 100%;
     border: none;
 }
+
 /* Blog Search and Filter styles */
 .blog-filter-btn {
     @apply px-4 py-2 rounded-full text-sm font-semibold transition-colors duration-200;
@@ -365,8 +342,4 @@ body {
 
 .launch-card {
     background: linear-gradient(135deg, #8A7ADF, #6AB09B);
-    /* --- COMENTARIO TEST --- */
-}
-#onboarding-form {
-  margin-bottom: 70px !important;
 }
