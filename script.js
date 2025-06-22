@@ -570,7 +570,7 @@ if (contactForm) {
     contactForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const webhookURL = 'https://muna.auto.hostybee.com/webhook-test/solicitud-contacto';
+        const webhookURL = 'https://muna.auto.hostybee.com/webhook-test/solicitud-b2c';
 
         const formData = {
             name: contactForm.querySelector('#name').value,
@@ -584,7 +584,7 @@ if (contactForm) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),
             });
-            console.log(response);
+
             if (response.ok) {
                 showConfirmationMessage('¡Gracias! Tu mensaje ha sido enviado.');
                 contactForm.reset();
