@@ -178,27 +178,25 @@ body {
     color: white; /* Ensures text below emoji is white when selected */
 }
 
-/* Estilo mejorado para el mensaje de notificación efímero */
+/* Ephemeral message style */
 .ephemeral-message {
     position: fixed;
     top: 20px;
     left: 50%;
     transform: translateX(-50%);
-    background-color: #6AB09B; /* Color por defecto (éxito) */
+    background-color: #6AB09B; /* Secondary color for success message */
     color: white;
-    padding: 12px 25px;
-    border-radius: 9999px; /* Totalmente redondeado */
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    padding: 10px 20px;
+    border-radius: 9999px; /* Full rounded */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     opacity: 0;
     visibility: hidden;
-    transition: all 0.5s ease; /* Transición más suave */
-    z-index: 9999; /* Asegura que esté por encima de todo */
-    font-weight: 500;
+    transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+    z-index: 2000;
 }
 .ephemeral-message.show {
     opacity: 1;
     visibility: visible;
-    top: 40px; /* Se desliza un poco hacia abajo al aparecer */
 }
 
 /* --- ESTILOS CORREGIDOS Y MEJORADOS PARA FAQ --- */
