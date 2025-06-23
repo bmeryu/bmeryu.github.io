@@ -4,6 +4,12 @@
  * Muestra un mensaje de confirmación efímero en la pantalla.
  * @param {string} message - El mensaje a mostrar.
  */
+const showConfirmationMessage = (message) => {// --- FUNCIONES AUXILIARES ---
+
+/**
+ * Muestra un mensaje de confirmación efímero en la pantalla.
+ * @param {string} message - El mensaje a mostrar.
+ */
 const showConfirmationMessage = (message) => {
     // Busca el elemento en el HTML para mostrar el mensaje bonito.
     const messageEl = document.getElementById('emotion-confirmation-message');
