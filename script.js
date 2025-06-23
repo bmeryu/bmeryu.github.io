@@ -4,22 +4,37 @@
  * Muestra un mensaje de confirmación efímero en la pantalla.
  * @param {string} message - El mensaje a mostrar.
  */
-const showConfirmationMessage = (message) => {
-    // Busca el elemento en el HTML para mostrar el mensaje bonito.
-    const messageEl = document.getElementById('emotion-confirmation-message');
-    
-    if (messageEl) {
-        messageEl.textContent = message;
-        messageEl.classList.add('show');
-        // Ocultar el mensaje después de 3 segundos.
-        setTimeout(() => {
-            messageEl.classList.remove('show');
-        }, 3000);
-    } else {
-        // Si por alguna razón no encuentra el elemento, usa un alert como respaldo.
+```javascript
+/**
+ * Muestra un mensaje de confirmación efímero en la pantalla.
+ * @param {string} message - El mensaje a mostrar.
+ * @param {string} type - El tipo de mensaje ('success' o 'error'). Por defecto es 'success'.
+ */
+const showConfirmationMessage = (message, type = 'success') => {
+    // Buscamos el nuevo contenedor de notificaciones
+    const container = document.getElementById('notification-container');
+    if (!container) {
+        // Si no lo encuentra, usamos un alert como respaldo para no fallar nunca.
         alert(message);
+        return;
     }
-};// This script runs after the DOM has been fully loaded.
+
+    // Asignamos un color según el tipo de mensaje
+    if (type === 'success') {
+        container.style.backgroundColor = '#6AB09B'; // Tu color muna-secondary (verde)
+    } else {
+        container.style.backgroundColor = '#e74266'; // Un color de error
+    }
+
+    container.textContent = message;
+    container.classList.add('show');
+
+    // Ocultamos el mensaje después de 3.5 segundos
+    setTimeout(() => {
+        container.classList.remove('show');
+    }, 3500);
+};
+// This script runs after the DOM has been fully loaded.
 document.addEventListener('DOMContentLoaded', () => {
     // --- Element Selections ---
     const mobileMenuButton = document.getElementById('mobile-menu-button');
