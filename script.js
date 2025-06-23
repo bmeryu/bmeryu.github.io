@@ -1,4 +1,25 @@
-// This script runs after the DOM has been fully loaded.
+// --- FUNCIONES AUXILIARES ---
+
+/**
+ * Muestra un mensaje de confirmación efímero en la pantalla.
+ * @param {string} message - El mensaje a mostrar.
+ */
+const showConfirmationMessage = (message) => {
+    // Busca el elemento en el HTML para mostrar el mensaje bonito.
+    const messageEl = document.getElementById('emotion-confirmation-message');
+    
+    if (messageEl) {
+        messageEl.textContent = message;
+        messageEl.classList.add('show');
+        // Ocultar el mensaje después de 3 segundos.
+        setTimeout(() => {
+            messageEl.classList.remove('show');
+        }, 3000);
+    } else {
+        // Si por alguna razón no encuentra el elemento, usa un alert como respaldo.
+        alert(message);
+    }
+};// This script runs after the DOM has been fully loaded.
 document.addEventListener('DOMContentLoaded', () => {
     // --- Element Selections ---
     const mobileMenuButton = document.getElementById('mobile-menu-button');
