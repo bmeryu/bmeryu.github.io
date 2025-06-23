@@ -564,13 +564,20 @@ if (chatbotCloseBtn) {
         });
     }
 });
+// Pega este bloque corregido en tu script.js en lugar del anterior para 'contactForm'
+
 const contactForm = document.getElementById('contact-form');
 
 if (contactForm) {
     contactForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-
         const webhookURL = 'https://muna.auto.hostybee.com/webhook-test/solicitud-contacto';
+        const submitButton = contactForm.querySelector('button[type="submit"]');
+        const originalButtonHTML = submitButton.innerHTML;
+
+        // Deshabilitamos el botón para prevenir envíos múltiples
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<span>Enviando...</span>';
 
         const formData = {
             name: contactForm.querySelector('#name').value,
@@ -579,20 +586,32 @@ if (contactForm) {
         };
 
         try {
+            // --- LA CORRECCIÓN CLAVE ESTÁ AQUÍ ---
+            // Se cambia el tipo de contenido para evitar la petición de permiso CORS (preflight)
+            // que está siendo bloqueada por el servidor de Hostybee.
             const response = await fetch(webhookURL, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData),
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams(formData).toString(),
             });
-            console.log(response);
+
             if (response.ok) {
                 showConfirmationMessage('¡Gracias! Tu mensaje ha sido enviado.');
                 contactForm.reset();
             } else {
-                alert('Hubo un problema al enviar tu mensaje.');
+                const errorText = await response.text();
+                console.error('Error del servidor:', response.status, errorText);
+                alert('Hubo un problema al procesar tu mensaje en el servidor.');
             }
         } catch (error) {
+            console.error('Error de red:', error);
             alert('No se pudo enviar el mensaje por un error de red.');
+        } finally {
+            // Volvemos a habilitar el botón al final
+            submitButton.disabled = false;
+            submitButton.innerHTML = originalButtonHTML;
         }
     });
 }
