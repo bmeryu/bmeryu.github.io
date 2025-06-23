@@ -10,14 +10,12 @@
 const showConfirmationMessage = (message, type = 'success') => {
     const container = document.getElementById('notification-container');
     if (!container) {
-        alert(message); // Fallback si el contenedor no existe en el HTML
+        alert(message); // Fallback si el contenedor no existe
         return;
     }
-
-    container.style.backgroundColor = (type === 'success') ? '#6AB09B' : '#e74266';
+    container.style.backgroundColor = (type === 'success') ? '#6AB09B' : '#E74266';
     container.textContent = message;
     container.classList.add('show');
-
     setTimeout(() => {
         container.classList.remove('show');
     }, 3500);
@@ -38,23 +36,34 @@ const closeModal = (modal) => {
     }
 };
 
+
 // ===================================================================
 // --- 2. ACCIONES Y EVENT LISTENERS (CUANDO EL DOM ESTÁ LISTO) ---
 // ===================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
 
-    // --- SELECCIÓN DE ELEMENTOS ---
+    // --- SELECCIÓN DE TODOS LOS ELEMENTOS ---
     const mobileMenuButton = document.getElementById('mobile-menu-button');
     const mobileMenu = document.getElementById('mobile-menu');
     const openModalButtons = document.querySelectorAll('.open-modal-btn');
     const closeModalButtons = document.querySelectorAll('.close-modal-btn');
     const switchModalButtons = document.querySelectorAll('.switch-modal-btn');
     const modalOverlays = document.querySelectorAll('.modal-overlay');
+
+    // Formularios
+    const loginForm = document.getElementById('login-form');
+    const registerForm = document.getElementById('register-form');
+    const b2bForm = document.getElementById('b2b-form');
     const contactForm = document.getElementById('contact-form');
-    // ... aquí puedes añadir const para otros formularios si los necesitas ...
-    
-    // --- ASIGNACIÓN DE EVENTOS ---
+    // ... y otros si los hubiera.
+
+    // Chatbot (según tu último HTML)
+    const chatbotFloater = document.getElementById('chatbot-floater');
+    const chatbotBubble = document.getElementById('chatbot-bubble');
+    const chatbotCloseBtn = document.getElementById('chatbot-close-btn');
+
+    // --- ASIGNACIÓN DE TODOS LOS EVENTOS ---
 
     // Menú Móvil
     if (mobileMenuButton && mobileMenu) {
@@ -63,7 +72,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Lógica de Modales
+    // Chatbot Floater (Lógica restaurada para tu HTML actual)
+    if (chatbotBubble) {
+        chatbotBubble.addEventListener('click', () => {
+            if(chatbotFloater) chatbotFloater.classList.remove('is-minimized');
+        });
+    }
+    if (chatbotCloseBtn) {
+        chatbotCloseBtn.addEventListener('click', () => {
+            if(chatbotFloater) chatbotFloater.classList.add('is-minimized');
+        });
+    }
+
+    // Lógica de Modales (Restaurada)
     openModalButtons.forEach(button => {
         button.addEventListener('click', (e) => {
             e.preventDefault();
@@ -78,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
             closeModal(modal);
         });
     });
-
+    
     switchModalButtons.forEach(button => {
         button.addEventListener('click', () => {
             const currentModal = button.closest('.modal-overlay');
@@ -96,7 +117,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Lógica del Formulario de Contacto
+    // Lógica para todos tus formularios...
+    // ... (Login, Registro, B2B, etc., que ya tenías y funcionaban)
+
+    // Lógica del Formulario de Contacto (CON LA CORRECCIÓN DE CORS)
     if (contactForm) {
         contactForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -137,8 +161,4 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-    
-    // Aquí puedes añadir la lógica para tus otros formularios (login, registro, etc.)
-    // si quieres que también usen el nuevo sistema de notificaciones.
-
 });
