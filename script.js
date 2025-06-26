@@ -1,664 +1,646 @@
-// Obtención de elementos del DOM
-const splashScreen = document.getElementById('splash-screen');
-const continueButton = document.getElementById('continue-button');
-const gameWrapper = document.getElementById('game-wrapper');
-const gameHeader = document.getElementById('game-header');
+// --- FUNCIONES AUXILIARES ---
 
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d'); // Contexto 2D para dibujar en el canvas
+/**
+ * Muestra un mensaje de confirmación efímero en la pantalla.
+ * @param {string} message - El mensaje a mostrar.
+ */
+const showConfirmationMessage = (message) => {// --- FUNCIONES AUXILIARES ---
 
-const player1HealthBar = document.getElementById('player1HealthBar');
-const player2HealthBar = document.getElementById('player2HealthBar');
-const player1PowerBar = document.getElementById('player1PowerBar');
-const player2PowerBar = document.getElementById('player2PowerBar');
-const player1NameDisplay = document.getElementById('player1NameDisplay');
-const player2NameDisplay = document.getElementById('player2NameDisplay');
-
-const startButton = document.getElementById('startButton');
-const restartButton = document.getElementById('restartButton');
-const gameOverModal = document.getElementById('gameOverModal');
-const winnerMessage = document.getElementById('winnerMessage');
-const gameOverMessage = document.getElementById('gameOverMessage');
-const controlsPanel = document.getElementById('controls-panel');
-
-const characterGrid = document.getElementById('character-grid');
-const p1SelectedCharImg = document.getElementById('p1-selected-char-img');
-const p1SelectedCharName = document.getElementById('p1-selected-char-name');
-const p2SelectedCharImg = document.getElementById('p2-selected-char-img');
-const p2SelectedCharName = document.getElementById('p2-selected-char-name');
-const selectionPrompt = document.getElementById('selection-prompt');
-
-// Constantes del juego
-const CANVAS_WIDTH = 800;
-const CANVAS_HEIGHT = 400;
-canvas.width = CANVAS_WIDTH;
-canvas.height = CANVAS_HEIGHT;
-
-const GRAVITY = 0.7;
-const BASE_PLAYER_SPEED = 4;
-const BASE_JUMP_STRENGTH = 15;
-const MAX_HEALTH = 150;
-const PUNCH_DAMAGE = 10;
-const KICK_DAMAGE = 13;
-const PUNCH_RANGE = 50;
-const KICK_RANGE = 60;
-const ATTACK_ANIMATION_DURATION = 150;
-const ATTACK_LOGIC_DURATION = 200;
-const ATTACK_COOLDOWN = 550;
-const BASE_KNOCKBACK_STRENGTH = 12;
-const HIT_EFFECT_LIFETIME = 30;
-const POWER_GAIN_PER_CLICK = 0.5;
-
-// Constantes de la IA
-const AI_ACTION_INTERVAL = 250;
-const AI_MOVE_CHANCE = 0.7;
-const AI_JUMP_CHANCE = 0.15;
-const AI_ATTACK_CHANCE_IN_RANGE = 0.75;
-const AI_KICK_CHANCE = 0.4;
-
-// Constantes de poder y ataques especiales
-const MAX_POWER = 150;
-const POWER_GAIN_PER_HIT = 25;
-const SUPER_PUNCH_DAMAGE = 30;
-const SUPER_KICK_DAMAGE = 35;
-
-// Constantes de Piraña
-const PIRANHA_PROJECTILE_SPEED = 8;
-const PIRANHA_PROJECTILE_LIFESPAN = 60;
-const PIRANHA_PROJECTILE_WIDTH = 30;
-const PIRANHA_PROJECTILE_HEIGHT = 20;
-const PIRANHA_PROJECTILE_DAMAGE = 15;
-const PIRANHA_PROJECTILE_COUNT = 3;
-
-// Constantes de La Ex
-const MONEY_RAIN_COUNT = 5;
-const MONEY_RAIN_WAD_WIDTH = 30;
-const MONEY_RAIN_WAD_HEIGHT = 20;
-const MONEY_RAIN_DAMAGE = 10;
-const MONEY_RAIN_INITIAL_Y = -MONEY_RAIN_WAD_HEIGHT;
-const COIN_RAIN_DAMAGE = 5;
-
-// Constantes de Burric
-const CALCULATOR_PROJECTILE_LIFESPAN = 120;
-const CALCULATOR_PROJECTILE_WIDTH = 40;
-const CALCULATOR_PROJECTILE_HEIGHT = 50;
-const CALCULATOR_PROJECTILE_DAMAGE = 18;
-const CALCULATOR_PROJECTILE_COUNT = 5;
-const CALCULATOR_INITIAL_Y = -CALCULATOR_PROJECTILE_HEIGHT;
-
-// Constantes de Matthei Bolt
-const BOLT_DASH_SPEED = 22.5;
-const BOLT_DASH_COUNT = 5;
-const BOLT_DASH_DAMAGE = 8;
-
-// Constantes de El Zanjas
-const ZANJAS_CRACK_DAMAGE = 40;
-const ZANJAS_SWALLOWED_DURATION = 90;
-const ZANJAS_CRACK_WIDTH = 150;
-const ZANJAS_CRACK_MAX_HEIGHT = 80;
-const ZANJAS_CRACK_LIFESPAN = 180;
-
-// Constantes de Carolina Papelucho
-const PAPELUCHO_STUN_DURATION = 180;
-const PAPELUCHO_PAPER_COUNT = 20;
-const PAPELUCHO_PAPER_WIDTH = 25;
-const PAPELUCHO_PAPER_HEIGHT = 35;
-const PAPELUCHO_PAPER_DAMAGE = 1;
-
-// Constantes de Orsini Love
-const ORSINI_KISS_SPEED = 7;
-const ORSINI_KISS_LIFESPAN = 90;
-const ORSINI_KISS_WIDTH = 30;
-const ORSINI_KISS_HEIGHT = 25;
-const ORSINI_KISS_DAMAGE = 18;
-const ORSINI_KISS_COUNT = 2;
-
-// Constantes de Escape Room Jackson
-const JACKSON_INVISIBILITY_DURATION = 120;
-const JACKSON_CONFUSION_DURATION = 120;
-const SMOKE_PARTICLE_COUNT = 30;
-
-// --- MODIFICACIÓN TÍA COTE INICIO ---
-// Constantes para el superpoder de Tía Cote
-const TIA_COTE_BEAM_DURATION = 120; 
-const TIA_COTE_BEAM_WIDTH = 90;
-const TIA_COTE_BEAM_DAMAGE_PER_FRAME = 0.5;
-const TIA_COTE_HEART_COUNT = 15;
-const TIA_COTE_HEART_SPEED = 6;
-// --- MODIFICACIÓN TÍA COTE FIN ---
-
-// Variables para el efecto de temblor de pantalla
-let screenShakeMagnitude = 0;
-let screenShakeTimeLeft = 0;
-
-let gameActive = false;
-let players = [];
-let activeHitEffects = [];
-const hitWords = ["¡POW!", "¡BAM!", "¡CRASH!", "¡KAPOW!", "¡WHAM!", "¡SLAP!", "¡BOOM!", "¡BANG!", "¡PUFF!", "¡THWACK!"];
-const hitWordColors = ["#FFD700", "#FF4500", "#ADFF2F", "#00FFFF", "#FF69B4", "#FFFF00", "#FF1493"];
-
-let backgroundMusic;
-
-const characterBackgrounds = {
-    "El Zanjas": ["img/lazanja.png"],
-    "Tía Cote": ["img/glitter.png"],
-    "Escape Room Jackson": ["img/happyhour.png"],
-    "Piraña": ["img/lamoneda.png"],
-    "La Ex": ["img/lamoneda.png"],
-    "Matthei Bolt": ["img/pasillomoneda.png"],
-    "Burric": ["img/pasillomoneda.png"],
-    "Orsini Love": ["img/pasillomoneda.png"],
-    "Carolina Papelucho": ["img/pasillomoneda.png"]
-};
-
-const characterAssets = [
-    { name: "Piraña", baseColor: '#e0e0e0', previewImage: "img/personaje1-cabeza.png", textures: { head: "img/personaje1-cabeza.png", torso: "img/personaje1-torso.png", upperArm: "img/personaje1-brazos.png", foreArm: "img/personaje1-antebrazos.png", thigh: "img/personaje1-muslos.png", lowerLeg: "img/personaje1-piernasbajas.png", glove_r: "img/personaje1-guantes-d.png", glove_l: "img/personaje1-guantes-i.png", shoe: "img/personaje1-zapatos.png", superEffectTexture: "img/personaje1-super-effect.png" } },
-    { name: "La Ex", baseColor: '#c0392b', previewImage: "img/personaje2-cabeza.png", textures: { head: "img/personaje2-cabeza.png", torso: "img/personaje2-torso.png", upperArm: "img/personaje2-brazos.png", foreArm: "img/personaje2-antebrazos.png", thigh: "img/personaje2-muslos.png", lowerLeg: "img/personaje2-piernasbajas.png", glove_r: "img/personaje2-guantes-d.png", glove_l: "img/personaje2-guantes-i.png", shoe: "img/personaje2-zapatos.png", superEffectTexture: "img/personaje2-super-effect.png" } },
-    { name: "Burric", baseColor: '#27ae60', previewImage: "img/personaje3-cabeza.png", textures: { head: "img/personaje3-cabeza.png", torso: "img/personaje3-torso.png", upperArm: "img/personaje3-brazos.png", foreArm: "img/personaje3-antebrazos.png", thigh: "img/personaje3-muslos.png", lowerLeg: "img/personaje3-piernasbajas.png", glove_r: "img/personaje3-guantes-d.png", glove_l: "img/personaje3-guantes-i.png", shoe: "img/personaje3-zapatos.png", superEffectTexture: "img/personaje3-super-effect.png" } },
-    { name: "Matthei Bolt", baseColor: '#f39c12', previewImage: "img/personaje4-cabeza.png", textures: { head: "img/personaje4-cabeza.png", torso: "img/personaje4-torso.png", upperArm: "img/personaje4-brazos.png", foreArm: "img/personaje4-antebrazos.png", thigh: "img/personaje4-muslos.png", lowerLeg: "img/personaje4-piernasbajas.png", glove_r: "img/personaje4-guantes-d.png", glove_l: "img/personaje4-guantes-i.png", shoe: "img/personaje4-zapatos.png", superEffectTexture: "img/personaje4-super-effect.png", yellowVest: "img/matthei-chaleco.png"  } },
-    { name: "Carolina Papelucho", baseColor: '#d35400', previewImage: "img/personaje5-cabeza.png", textures: { head: "img/personaje5-cabeza.png", torso: "img/personaje5-torso.png", upperArm: "img/personaje5-brazos.png", foreArm: "img/personaje5-antebrazos.png", thigh: "img/personaje5-muslos.png", lowerLeg: "img/personaje5-piernasbajas.png", glove_r: "img/personaje5-guantes-d.png", glove_l: "img/personaje5-guantes-i.png", shoe: "img/personaje5-zapatos.png", superEffectTexture: "img/personaje5-super-effect.png" } },
-    { name: "El Zanjas", baseColor: '#7f8c8d', previewImage: "img/personaje6-cabeza.png", textures: { head: "img/personaje6-cabeza.png", torso: "img/personaje6-torso.png", upperArm: "img/personaje6-brazos.png", foreArm: "img/personaje6-antebrazos.png", thigh: "img/personaje6-muslos.png", lowerLeg: "img/personaje6-piernasbajas.png", glove_r: "img/personaje6-guantes-d.png", glove_l: "img/personaje6-guantes-i.png", shoe: "img/personaje6-zapatos.png", superEffectTexture: "img/personaje6-super-effect.png" } },
-    { name: "Orsini Love", baseColor: '#ff69b4', previewImage: "img/personaje7-cabeza.png", textures: { head: "img/personaje7-cabeza.png", torso: "img/personaje7-torso.png", upperArm: "img/personaje7-brazos.png", foreArm: "img/personaje7-antebrazos.png", thigh: "img/personaje7-muslos.png", lowerLeg: "img/personaje7-piernasbajas.png", glove_r: "img/personaje7-guantes-d.png", glove_l: "img/personaje7-guantes-i.png", shoe: "img/personaje7-zapatos.png", superEffectTexture: "img/personaje7-super-effect.png" } },
-    { name: "Escape Room Jackson", baseColor: '#6c757d', previewImage: "img/personaje8-cabeza.png", textures: { head: "img/personaje8-cabeza.png", torso: "img/personaje8-torso.png", upperArm: "img/personaje8-brazos.png", foreArm: "img/personaje8-antebrazos.png", thigh: "img/personaje8-muslos.png", lowerLeg: "img/personaje8-piernasbajas.png", glove_r: "img/personaje8-guantes-d.png", glove_l: "img/personaje8-guantes-i.png", shoe: "img/personaje8-zapatos.png", superEffectTexture: "img/personaje8-super-effect.png" } },
-    { name: "Tía Cote", baseColor: '#9b59b6', previewImage: "img/personaje9-cabeza.png", textures: { head: "img/personaje9-cabeza.png", torso: "img/personaje9-torso.png", upperArm: "img/personaje9-brazos.png", foreArm: "img/personaje9-antebrazos.png", thigh: "img/personaje9-muslos.png", lowerLeg: "img/personaje9-piernasbajas.png", glove_r: "img/personaje9-guantes-d.png", glove_l: "img/personaje9-guantes-i.png", shoe: "img/personaje9-zapatos.png", superEffectTexture: "img/personaje9-super-effect.png" } }
-];
-
-const bodyTypeStats = {
-    normal: { width: 50, height: 100, speedMod: 1.0, damageMod: 1.0, rangeMod: 1.0, healthMod: 1.0 }
-};
-
-const ARM_GUARD_UPPER_ANGLE = Math.PI / 4.2;
-const ARM_GUARD_FOREARM_BEND = -Math.PI / 1.6;
-const ARM_PUNCH_UPPER_EXTEND_ANGLE = -Math.PI / 18;
-const ARM_PUNCH_FOREARM_EXTEND_ANGLE = Math.PI / 30;
-const ARM_PUNCH_UPPER_RECOIL_ANGLE = -Math.PI / 3;
-const ARM_PUNCH_FOREARM_RECOIL_ANGLE = Math.PI / 2.2;
-const LEG_ANGLE_RESTING_FRONT = Math.PI / 2 - Math.PI / 20;
-const LEG_ANGLE_RESTING_BACK = Math.PI / 2 + Math.PI / 30;
-const LEG_ANGLE_KICK_STRIKE = -Math.PI / 18;
-const LEG_ANGLE_KICK_SUPPORT = Math.PI / 2 + Math.PI / 6;
-
-let playerSelectedCharIndex = -1;
-let pcSelectedCharIndex = -1;
-let smokeParticles = [];
-
-class Player {
-    constructor(x, initialY, characterAsset, isPlayer1 = true, facingRight = true) {
-        this.name = characterAsset.name;
-        this.x = x;
-        this.baseColor = characterAsset.baseColor;
-        this.isPlayer1 = isPlayer1;
-        this.facingRight = facingRight;
-
-        this.headTextureImage = this.loadTexture(characterAsset.textures.head);
-        this.bodyTextureImage = this.loadTexture(characterAsset.textures.torso);
-        this.upperArmTextureImage = this.loadTexture(characterAsset.textures.upperArm);
-        this.foreArmTextureImage = this.loadTexture(characterAsset.textures.foreArm);
-        this.thighTextureImage = this.loadTexture(characterAsset.textures.thigh);
-        this.lowerLegTextureImage = this.loadTexture(characterAsset.textures.lowerLeg);
-        this.gloveTextureImage_r = this.loadTexture(characterAsset.textures.glove_r);
-        this.gloveTextureImage_l = this.loadTexture(characterAsset.textures.glove_l);
-        this.shoeTextureImage = this.loadTexture(characterAsset.textures.shoe);
-        this.superEffectTextureImage = this.loadTexture(characterAsset.textures.superEffectTexture);
-        this.yellowVestTextureImage = this.loadTexture(characterAsset.textures.yellowVest);
-
-        this.setStats();
-        this.y = initialY - this.height;
-        this.velocityX = 0;
-        this.velocityY = 0;
-        this.isJumping = false;
-        this.health = MAX_HEALTH * this.healthMod;
-        this.maxHealth = MAX_HEALTH * this.healthMod;
-
-        this.power = 0;
-        this.maxPower = MAX_POWER;
-        this.isSuperCharged = false;
-        this.isPerformingSuperAttackAnimation = false;
-        this.activePiranhaProjectiles = [];
-        this.activeMoneyWads = [];
-        this.activeCoins = [];
-        this.activeCalculators = [];
-        this.activePapers = [];
-        this.activeKisses = [];
-        
-        // --- MODIFICACIÓN TÍA COTE INICIO ---
-        // (Se ha eliminado la variable activeTeddies, ya no se usa)
-        this.isCastingBeam = false;
-        this.beamTimer = 0;
-        this.activeBeamHearts = [];
-        // --- MODIFICACIÓN TÍA COTE FIN ---
-
-        this.isDashing = false;
-        this.dashCount = 0;
-        this.dashTargetX = 0;
-        this.dashDamageApplied = false;
-        this.trail = [];
-
-        this.isPunching = false;
-        this.isKicking = false;
-        this.attackVisualActive = false;
-        this.lastAttackTime = 0;
-        this.lastAIDecisionTime = 0;
-        this.currentAction = null;
-        this.attackArm = null;
-        this.nextPunchArm = 'right';
-
-        this.isCastingCrack = false;
-        this.crackTimer = 0;
-        this.crackOpponentHit = false;
-        this.crackCenterX = 0;
-
-        this.isSwallowed = false;
-        this.swallowedTimer = 0;
-        this.isStunned = false;
-        this.stunTimer = 0;
-
-        this.isInvisible = false;
-        this.invisibilityTimer = 0;
-        this.isConfused = false;
-        this.confusionTimer = 0;
-        this.confusionBlinkTimer = 0;
-        this.showBlurred = false;
+/**
+ * Muestra un mensaje de confirmación efímero en la pantalla.
+ * @param {string} message - El mensaje a mostrar.
+ */
+const showConfirmationMessage = (message) => {
+    // Busca el elemento en el HTML para mostrar el mensaje bonito.
+    const messageEl = document.getElementById('emotion-confirmation-message');
+    
+    if (messageEl) {
+        messageEl.textContent = message;
+        messageEl.classList.add('show');
+        // Ocultar el mensaje después de 3 segundos.
+        setTimeout(() => {
+            messageEl.classList.remove('show');
+        }, 3000);
+    } else {
+        // Si por alguna razón no encuentra el elemento, usa un alert como respaldo.
+        alert(message);
     }
+};// This script runs after the DOM has been fully loaded.
+document.addEventListener('DOMContentLoaded', () => {
+    // --- Element Selections ---
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const mainContent = document.getElementById('main-content');
+    const faqPage = document.getElementById('faq-page');
+    const siteHeader = document.getElementById('site-header');
+    const siteFooterMain = document.getElementById('site-footer-main');
+    const viewAllFaqsBtn = document.getElementById('view-all-faqs-btn');
+    const backToMainBtn = document.getElementById('back-to-main-btn');
 
-    loadTexture(src) {
-        if (!src) return null;
-        const img = new Image();
-        img.src = src;
-        return img;
-    }
-
-    setStats() {
-        const stats = bodyTypeStats.normal;
-        this.width = stats.width;
-        this.height = stats.height;
-        this.speed = BASE_PLAYER_SPEED * stats.speedMod;
-        this.punchDamage = PUNCH_DAMAGE * stats.damageMod;
-        this.kickDamage = KICK_DAMAGE * stats.damageMod;
-        this.punchRange = PUNCH_RANGE * stats.rangeMod;
-        this.kickRange = KICK_RANGE * stats.rangeMod;
-        this.attackCooldown = ATTACK_COOLDOWN;
-        this.jumpStrength = BASE_JUMP_STRENGTH;
-        this.knockbackStrength = BASE_KNOCKBACK_STRENGTH;
-        this.healthMod = stats.healthMod;
-        let headSizeRatioFactor = 1.5, torsoHeightRatio = 0.5, torsoWidthRatio = 0.8, armWidthRatio = 0.20, armLengthTotalRatio = 0.85, legSegmentsTotalHeightRatio = 0.26, shoeHeightRatio = 0.22, shoeWidthFactor = 1.6, legWidthRatio = 0.22, gloveSizeFactor = 3.0;
-        this.headSize = (this.width * 0.5) * headSizeRatioFactor;
-        this.torsoHeight = this.height * torsoHeightRatio;
-        this.torsoWidth = this.width * torsoWidthRatio;
-        this.armWidth = this.width * armWidthRatio;
-        const totalArmLength = this.torsoHeight * armLengthTotalRatio;
-        this.upperArmLength = totalArmLength * 0.5;
-        this.foreArmLength = totalArmLength * 0.5;
-        const totalLegSegmentsCombinedH = this.height * legSegmentsTotalHeightRatio;
-        this.thighHeight = totalLegSegmentsCombinedH * 0.5;
-        this.lowerLegHeight = totalLegSegmentsCombinedH * 0.5;
-        this.legWidth = this.torsoWidth * legWidthRatio;
-        this.gloveSize = this.armWidth * gloveSizeFactor;
-        this.shoeHeight = this.height * shoeHeightRatio;
-        this.shoeWidth = this.legWidth * shoeWidthFactor;
-    }
-
-    drawPartWithTexture(partName, destX, destY, destWidth, destHeight, shouldFlipHorizontally = false) {
-        let currentTexture = null;
-        if (partName === 'head') currentTexture = this.headTextureImage;
-        else if (partName === 'torso') currentTexture = this.bodyTextureImage;
-        else if (partName === 'arm_upper') currentTexture = this.upperArmTextureImage;
-        else if (partName === 'arm_fore') currentTexture = this.foreArmTextureImage;
-        else if (partName === 'thigh') currentTexture = this.thighTextureImage;
-        else if (partName === 'lower_leg') currentTexture = this.lowerLegTextureImage;
-
-        if (currentTexture && currentTexture.complete && currentTexture.width > 0) {
-            ctx.save();
-            if (shouldFlipHorizontally) {
-                ctx.translate(destX + destWidth, destY);
-                ctx.scale(-1, 1);
-                ctx.drawImage(currentTexture, 0, 0, destWidth, destHeight);
-            } else {
-                ctx.drawImage(currentTexture, destX, destY, destWidth, destHeight);
-            }
-            ctx.restore();
-        }
-    }
-
-    drawArm(isPlayerRightArmActual) {
-        ctx.save();
-        const totalLegSegmentsHeight = this.thighHeight + this.lowerLegHeight;
-        const torsoTopY = this.y + (this.height - this.torsoHeight - totalLegSegmentsHeight - this.shoeHeight);
-        const baseShoulderY = torsoTopY + this.torsoHeight * 0.25;
-        let shoulderXOffset = this.facingRight ? (isPlayerRightArmActual ? this.torsoWidth * 0.30 : this.torsoWidth * 0.70) : (isPlayerRightArmActual ? this.torsoWidth * 0.70 : this.torsoWidth * 0.30);
-        const shoulderX = this.x + (this.width - this.torsoWidth) / 2 + shoulderXOffset;
-        const shoulderY = baseShoulderY;
-        ctx.translate(shoulderX, shoulderY);
-        let finalUpperArmAngle, finalForeArmAngle;
-        
-        // --- MODIFICACIÓN TÍA COTE INICIO ---
-        if (this.isCastingBeam) {
-            finalUpperArmAngle = -Math.PI / 2.5;
-            finalForeArmAngle = Math.PI / 3;
-        } else { // --- FIN DE LA MODIFICACIÓN, la lógica original sigue abajo
-            const isPunchingThisArm = this.isPunching && this.attackVisualActive && ((isPlayerRightArmActual && this.attackArm === 'right') || (!isPlayerRightArmActual && this.attackArm === 'left'));
-            if (isPunchingThisArm) {
-                finalUpperArmAngle = this.facingRight ? ARM_PUNCH_UPPER_EXTEND_ANGLE : Math.PI - ARM_PUNCH_UPPER_EXTEND_ANGLE;
-                finalForeArmAngle = this.facingRight ? ARM_PUNCH_FOREARM_EXTEND_ANGLE : -ARM_PUNCH_FOREARM_EXTEND_ANGLE;
-            } else if (this.isPunching && this.attackVisualActive) {
-                finalUpperArmAngle = this.facingRight ? ARM_PUNCH_UPPER_RECOIL_ANGLE : Math.PI - ARM_PUNCH_UPPER_RECOIL_ANGLE;
-                finalForeArmAngle = this.facingRight ? ARM_PUNCH_FOREARM_RECOIL_ANGLE : -ARM_PUNCH_FOREARM_RECOIL_ANGLE;
-            } else {
-                finalUpperArmAngle = this.facingRight ? ARM_GUARD_UPPER_ANGLE : Math.PI - ARM_GUARD_UPPER_ANGLE;
-                finalForeArmAngle = this.facingRight ? ARM_GUARD_FOREARM_BEND : -ARM_GUARD_FOREARM_BEND;
-            }
-        }
-        
-        ctx.save();
-        ctx.rotate(finalUpperArmAngle);
-        this.drawPartWithTexture('arm_upper', 0, -this.armWidth / 2, this.upperArmLength, this.armWidth, false);
-        ctx.translate(this.upperArmLength, 0);
-        ctx.rotate(finalForeArmAngle);
-        this.drawPartWithTexture('arm_fore', 0, -this.armWidth / 2, this.foreArmLength, this.armWidth, false);
-        let gloveTextureToUse = this.facingRight ? this.gloveTextureImage_r : this.gloveTextureImage_l;
-        if (gloveTextureToUse && gloveTextureToUse.complete && gloveTextureToUse.width > 0) {
-            const gloveDrawX = this.foreArmLength - (this.armWidth * 0.8);
-            const gloveDrawY = -this.gloveSize / 2;
-            ctx.drawImage(gloveTextureToUse, gloveDrawX, gloveDrawY, this.gloveSize, this.gloveSize);
-        }
-        ctx.restore();
-        ctx.restore();
-    }
-
-    drawLeg(isFrontLeg) {
-        ctx.save();
-        const totalLegSegmentsHeight = this.thighHeight + this.lowerLegHeight;
-        const hipXOffsetFactor = isFrontLeg ? 0.65 : 0.35;
-        const hipXOffset = this.facingRight ? this.torsoWidth * hipXOffsetFactor : this.torsoWidth * (1 - hipXOffsetFactor);
-        const hipYOffset = this.torsoHeight;
-        const hipX = this.x + (this.width - this.torsoWidth) / 2 + hipXOffset;
-        const hipY = this.y + (this.height - this.torsoHeight - totalLegSegmentsHeight - this.shoeHeight) + hipYOffset;
-        ctx.translate(hipX, hipY);
-        let angle;
-        if (this.isKicking && this.attackVisualActive) {
-            angle = isFrontLeg ? (this.facingRight ? LEG_ANGLE_KICK_STRIKE : Math.PI - LEG_ANGLE_KICK_STRIKE) : (this.facingRight ? LEG_ANGLE_KICK_SUPPORT : Math.PI - LEG_ANGLE_KICK_SUPPORT);
-        } else {
-            angle = isFrontLeg ? (this.facingRight ? LEG_ANGLE_RESTING_FRONT : Math.PI - LEG_ANGLE_RESTING_FRONT) : (this.facingRight ? LEG_ANGLE_RESTING_BACK : Math.PI - LEG_ANGLE_RESTING_BACK);
-        }
-        ctx.rotate(angle);
-        this.drawPartWithTexture('thigh', 0, -this.legWidth / 2, this.thighHeight, this.legWidth, false);
-        ctx.translate(this.thighHeight, 0);
-        this.drawPartWithTexture('lower_leg', 0, -this.legWidth / 2, this.lowerLegHeight, this.legWidth, false);
-        ctx.translate(this.lowerLegHeight - this.shoeHeight * 0.05, 0);
-        if (this.shoeTextureImage && this.shoeTextureImage.complete && this.shoeTextureImage.width > 0) {
-            ctx.drawImage(this.shoeTextureImage, -this.shoeWidth / 2, -this.shoeHeight / 2, this.shoeWidth, this.shoeHeight);
-        }
-        ctx.restore();
-    }
-
-    // --- MODIFICACIÓN TÍA COTE INICIO ---
-    // Nuevas funciones para dibujar el superpoder de Tía Cote
-    drawTiaCoteBeam() {
-        if (!this.isCastingBeam) return;
-        const beamProgress = 1 - (this.beamTimer / TIA_COTE_BEAM_DURATION);
-        const currentAlpha = 0.8 * Math.sin(beamProgress * Math.PI);
-        ctx.save();
-        const beamY = this.y + this.height * 0.3;
-        const beamStartX = this.facingRight ? this.x + this.width : 0;
-        const beamTotalWidth = this.facingRight ? CANVAS_WIDTH - beamStartX : this.x;
-        const gradient = ctx.createLinearGradient(beamStartX, beamY, beamStartX, beamY + TIA_COTE_BEAM_WIDTH);
-        gradient.addColorStop(0, `rgba(255, 255, 224, ${currentAlpha * 0.5})`);
-        gradient.addColorStop(0.5, `rgba(253, 224, 71, ${currentAlpha})`);
-        gradient.addColorStop(1, `rgba(255, 255, 224, ${currentAlpha * 0.5})`);
-        ctx.fillStyle = gradient;
-        ctx.fillRect(beamStartX, beamY, beamTotalWidth, TIA_COTE_BEAM_WIDTH);
-        for (let i = 0; i < 20; i++) {
-            ctx.fillStyle = `rgba(255, 255, 255, ${Math.random() * 0.9 * currentAlpha})`;
-            ctx.fillRect(beamStartX + Math.random() * beamTotalWidth, beamY + Math.random() * TIA_COTE_BEAM_WIDTH, Math.random() * 3 + 1, Math.random() * 3 + 1);
-        }
-        ctx.restore();
-    }
-
-    drawBeamHearts() {
-        if (!this.isCastingBeam) return;
-        this.activeBeamHearts.forEach(heart => {
-            ctx.save();
-            ctx.globalAlpha = heart.alpha;
-            ctx.fillStyle = '#ff69b4';
-            ctx.beginPath();
-            const d = heart.size;
-            const k = heart.y;
-            ctx.moveTo(heart.x, k - d / 4);
-            ctx.bezierCurveTo(heart.x, k - (d * 5) / 4, heart.x - d, k - d / 2, heart.x - d, k);
-            ctx.bezierCurveTo(heart.x - d, k + d / 2, heart.x, k + d, heart.x, k + d);
-            ctx.bezierCurveTo(heart.x, k + d, heart.x + d, k + d / 2, heart.x + d, k);
-            ctx.bezierCurveTo(heart.x + d, k - d / 2, heart.x, k - (d * 5) / 4, heart.x, k - d / 4);
-            ctx.fill();
-            ctx.restore();
+    // --- Mobile Menu Toggle ---
+    if (mobileMenuButton) {
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
         });
     }
-    // --- MODIFICACIÓN TÍA COTE FIN ---
 
-    draw() {
-        if (this.isInvisible) return;
-        ctx.save();
+    // --- Generic Modal Functionality ---
+    const openModalButtons = document.querySelectorAll('.open-modal-btn');
+    const closeModalButtons = document.querySelectorAll('.close-modal-btn');
+    const switchModalButtons = document.querySelectorAll('.switch-modal-btn');
 
-        if (this.isDashing) {
-            this.trail.forEach((pos, index) => {
-                ctx.globalAlpha = (index / this.trail.length) * 0.5;
-                this.drawPlayerModel(pos.x, pos.y);
-            });
-            ctx.globalAlpha = 1;
+    /**
+     * Opens a modal and hides any other active modals.
+     * @param {HTMLElement} modal - The modal element to open.
+     */
+    const openModal = (modal) => {
+        if (modal == null) return;
+        // Close any currently active modals before opening a new one.
+        document.querySelectorAll('.modal-overlay.active').forEach(activeModal => closeModal(activeModal));
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    };
+
+    /**
+     * Closes a modal.
+     * @param {HTMLElement} modal - The modal element to close.
+     */
+    const closeModal = (modal) => {
+        if (modal == null) return;
+        modal.classList.remove('active');
+        // Restore background scrolling if no modals are active.
+        if (!document.querySelector('.modal-overlay.active')) {
+            document.body.style.overflow = '';
         }
-        this.drawPlayerModel(this.x, this.y);
+    };
 
-        // ... llamadas a dibujar otros proyectiles ...
-
-        // --- MODIFICACIÓN TÍA COTE INICIO ---
-        if (this.name === "Tía Cote") {
-            this.drawTiaCoteBeam();
-            this.drawBeamHearts();
+    /**
+ * Muestra un mensaje de confirmación efímero en la pantalla.
+ * @param {string} message - El mensaje a mostrar.
+ */
+    const showConfirmationMessage = (message) => {
+        const emotionConfirmationMessage = document.getElementById('emotion-confirmation-message');
+        if (emotionConfirmationMessage) {
+            emotionConfirmationMessage.textContent = message;
+            emotionConfirmationMessage.classList.add('show');
+            // Ocultar el mensaje después de 3 segundos.
+            setTimeout(() => {
+                emotionConfirmationMessage.classList.remove('show');
+            }, 3000); 
         }
-        // --- MODIFICACIÓN TÍA COTE FIN ---
+    };
+    // Add event listeners for opening modals.
+    openModalButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.preventDefault(); 
+            const modalId = button.dataset.modalTarget;
+            const modal = document.getElementById(modalId);
+            openModal(modal);
+        });
+    });
 
-        if (this.isCastingCrack) { this.drawZanjasCrack(); }
-        if (this.isConfused) { ctx.font = `bold 24px 'Comic Sans MS'`; ctx.fillStyle = 'yellow'; ctx.textAlign = 'center'; ctx.fillText('???', this.x + this.width / 2, this.y - 20); }
-        else if (this.isStunned) { ctx.font = `bold 24px 'Comic Sans MS'`; ctx.fillStyle = 'white'; ctx.textAlign = 'center'; ctx.fillText('!!!', this.x + this.width / 2, this.y - 20); }
-
-        if (this.isPerformingSuperAttackAnimation && this.attackVisualActive && this.superEffectTextureImage && this.superEffectTextureImage.complete) {
-            const effectWidth = this.width * 1.5;
-            const effectHeight = this.height * 1.5;
-            const effectX = this.x + (this.width - effectWidth) / 2;
-            const effectY = this.y + (this.height - effectHeight) / 2;
-            ctx.globalAlpha = 0.7;
-            ctx.drawImage(this.superEffectTextureImage, effectX, effectY, effectWidth, effectHeight);
-            ctx.globalAlpha = 1.0;
-        }
-        ctx.restore();
-    }
-
-    drawPlayerModel(x, y) {
-        if (this.isSwallowed) { return; }
-        const originalX = this.x;
-        const originalY = this.y;
-        this.x = x;
-        this.y = y;
-
-        if (this.showBlurred) { ctx.filter = 'blur(4px)'; } 
-        else if ((this.isPerformingSuperAttackAnimation || this.isCastingBeam) && this.attackVisualActive) { ctx.filter = 'brightness(1.75) saturate(2.5)'; }
-
-        const totalLegSegmentsHeight = this.thighHeight + this.lowerLegHeight;
-        const torsoGlobalY = this.y + (this.height - this.torsoHeight - totalLegSegmentsHeight - this.shoeHeight);
-        const torsoGlobalX = this.x + (this.width - this.torsoWidth) / 2;
-        const headGlobalX = this.x + (this.width - this.headSize) / 2;
-        const headGlobalY = torsoGlobalY - this.headSize;
-        const visuallyBackLegIsFront = !this.facingRight;
-        
-        this.drawLeg(visuallyBackLegIsFront);
-        this.drawLeg(!visuallyBackLegIsFront);
-        
-        if (this.facingRight) {
-            this.drawArm(false);
-            this.drawPartWithTexture('torso', torsoGlobalX, torsoGlobalY, this.torsoWidth, this.torsoHeight, !this.facingRight);
-
-            // --- MODIFICACIÓN TÍA COTE INICIO: Corazón en el pecho ---
-            if (this.name === 'Tía Cote' && this.isCastingBeam) {
-                const heartSize = 15 + Math.sin(this.beamTimer * 0.2) * 5;
-                const heartX = torsoGlobalX + this.torsoWidth / 2;
-                const heartY = torsoGlobalY + this.torsoHeight / 2;
-                ctx.save();
-                ctx.fillStyle = `rgba(255, 105, 180, ${0.5 + Math.sin(this.beamTimer * 0.2) * 0.5})`;
-                ctx.strokeStyle = 'white';
-                ctx.lineWidth = 2;
-                ctx.shadowColor = '#ff69b4';
-                ctx.shadowBlur = 15;
-                ctx.beginPath();
-                const d = heartSize;
-                ctx.moveTo(heartX, heartY - d / 4);
-                ctx.bezierCurveTo(heartX, heartY - (d * 5) / 4, heartX - d, heartY - d / 2, heartX - d, heartY);
-                ctx.bezierCurveTo(heartX - d, heartY + d / 2, heartX, heartY + d, heartX, heartY + d);
-                ctx.bezierCurveTo(heartX, heartY + d, heartX + d, heartY + d / 2, heartX + d, heartY);
-                ctx.bezierCurveTo(heartX + d, heartY - d / 2, heartX, heartY - (d * 5) / 4, heartX, heartY - d / 4);
-                ctx.fill();
-                ctx.stroke();
-                ctx.restore();
-            }
-            // --- MODIFICACIÓN TÍA COTE FIN ---
-
-            if (this.name === 'Matthei Bolt' && this.isDashing) { this.drawVest(torsoGlobalX, torsoGlobalY); }
-            this.drawPartWithTexture('head', headGlobalX, headGlobalY, this.headSize, this.headSize, !this.facingRight);
-            this.drawArm(true);
-        } else {
-            this.drawArm(true);
-            this.drawPartWithTexture('torso', torsoGlobalX, torsoGlobalY, this.torsoWidth, this.torsoHeight, !this.facingRight);
-
-            // --- MODIFICACIÓN TÍA COTE INICIO: Corazón en el pecho ---
-            if (this.name === 'Tía Cote' && this.isCastingBeam) {
-                const heartSize = 15 + Math.sin(this.beamTimer * 0.2) * 5;
-                const heartX = torsoGlobalX + this.torsoWidth / 2;
-                const heartY = torsoGlobalY + this.torsoHeight / 2;
-                ctx.save();
-                ctx.fillStyle = `rgba(255, 105, 180, ${0.5 + Math.sin(this.beamTimer * 0.2) * 0.5})`;
-                ctx.strokeStyle = 'white';
-                ctx.lineWidth = 2;
-                ctx.shadowColor = '#ff69b4';
-                ctx.shadowBlur = 15;
-                ctx.beginPath();
-                const d = heartSize;
-                ctx.moveTo(heartX, heartY - d / 4);
-                ctx.bezierCurveTo(heartX, heartY - (d * 5) / 4, heartX - d, heartY - d / 2, heartX - d, heartY);
-                ctx.bezierCurveTo(heartX - d, heartY + d / 2, heartX, heartY + d, heartX, heartY + d);
-                ctx.bezierCurveTo(heartX, heartY + d, heartX + d, heartY + d / 2, heartX + d, heartY);
-                ctx.bezierCurveTo(heartX + d, heartY - d / 2, heartX, heartY - (d * 5) / 4, heartX, heartY - d / 4);
-                ctx.fill();
-                ctx.stroke();
-                ctx.restore();
-            }
-            // --- MODIFICACIÓN TÍA COTE FIN ---
-
-            if (this.name === 'Matthei Bolt' && this.isDashing) { this.drawVest(torsoGlobalX, torsoGlobalY); }
-            this.drawPartWithTexture('head', headGlobalX, headGlobalY, this.headSize, this.headSize, !this.facingRight);
-            this.drawArm(false);
-        }
-        ctx.filter = 'none';
-        this.x = originalX;
-        this.y = originalY;
-    }
-
-    // ... El resto de las funciones como updateAI, updateProyectiles, etc. ...
+    // Add event listeners for closing modals via buttons.
+    closeModalButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const modal = button.closest('.modal-overlay');
+            closeModal(modal);
+        });
+    });
     
-    // --- MODIFICACIÓN TÍA COTE INICIO ---
-    // Nueva función para actualizar los corazones
-    updateBeamHearts() {
-        for (let i = this.activeBeamHearts.length - 1; i >= 0; i--) {
-            const heart = this.activeBeamHearts[i];
-            heart.x += heart.speedX;
-            heart.alpha -= 0.015;
-            if (heart.alpha <= 0) {
-                this.activeBeamHearts.splice(i, 1);
+    // Add event listeners for switching between modals (e.g., from login to register).
+     switchModalButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const currentModal = button.closest('.modal-overlay');
+            const targetModalId = button.dataset.modalTarget;
+            const targetModal = document.getElementById(targetModalId);
+            closeModal(currentModal);
+            // Use a timeout to allow the close animation to finish before opening the new modal.
+            setTimeout(() => openModal(targetModal), 300);
+        });
+    });
+
+    // Add event listeners for closing modals by clicking on the overlay.
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                closeModal(overlay);
             }
-        }
-    }
-
-    // Nueva función para actualizar la lógica del rayo
-    updateTiaCoteBeam(opponent) {
-        if (!this.isCastingBeam) return;
-        this.beamTimer--;
-        if (this.beamTimer <= 0) {
-            this.isCastingBeam = false;
-            this.isPerformingSuperAttackAnimation = false;
-            this.attackVisualActive = false;
-            return;
-        }
-        const beamY = this.y + this.height * 0.3;
-        const beamHitbox = { x: this.facingRight ? this.x + this.width : 0, y: beamY, width: CANVAS_WIDTH, height: TIA_COTE_BEAM_WIDTH };
-        const opponentBox = { x: opponent.x, y: opponent.y, width: opponent.width, height: opponent.height };
-        if (!opponent.isSwallowed && !opponent.isStunned && beamHitbox.x < opponentBox.x + opponentBox.width && beamHitbox.x + beamHitbox.width > opponentBox.x && beamHitbox.y < opponentBox.y + opponentBox.height && beamHitbox.y + beamHitbox.height > opponentBox.y) {
-            opponent.takeDamage(TIA_COTE_BEAM_DAMAGE_PER_FRAME, this.facingRight);
-        }
-    }
-    // --- MODIFICACIÓN TÍA COTE FIN ---
-
-    update() {
-        if (this.isSwallowed) { /* ... */ return; }
-        if (this.isStunned) { /* ... */ return; }
-        
-        // --- MODIFICACIÓN TÍA COTE INICIO ---
-        const opponent = players.find(p => p !== this);
-        if (this.name === "Tía Cote" && opponent) {
-            this.updateTiaCoteBeam(opponent);
-            this.updateBeamHearts();
-        }
-        // --- MODIFICACIÓN TÍA COTE FIN ---
-
-        this.updateAI();
-        if (this.isInvisible) { /* ... */ return; }
-        if (this.isDashing) { /* ... */ return; }
-        
-        this.x += this.velocityX;
-        this.velocityY += GRAVITY;
-        this.y += this.velocityY;
-
-        // ... resto de la lógica de update ...
-    }
-
-    // ... (resto de las funciones de la clase Player sin cambios)
+        });
+    });
     
-    // --- MODIFICACIÓN TÍA COTE INICIO ---
-    // Nueva función para lanzar el superpoder
-    launchTiaCoteBeamAttack() {
-        this.isCastingBeam = true;
-        this.beamTimer = TIA_COTE_BEAM_DURATION;
-        this.isPerformingSuperAttackAnimation = true;
-        this.attackVisualActive = true;
-        this.activeBeamHearts = [];
-        for (let i = 0; i < TIA_COTE_HEART_COUNT; i++) {
-            this.activeBeamHearts.push({
-                x: this.x + this.width / 2,
-                y: this.y + this.height * 0.3 + Math.random() * TIA_COTE_BEAM_WIDTH,
-                size: Math.random() * 8 + 8,
-                speedX: (this.facingRight ? 1 : -1) * (TIA_COTE_HEART_SPEED + Math.random() * 2),
-                alpha: 0.5 + Math.random() * 0.5
-            });
-        }
-        screenShakeMagnitude = 8;
-        screenShakeTimeLeft = TIA_COTE_BEAM_DURATION;
-        // new Audio('audio/angelic-choir.wav').play().catch(e => console.error("Error playing sound:", e));
-    }
-    // --- MODIFICACIÓN TÍA COTE FIN ---
+    // --- User Dashboard and Login/Registration Logic ---
+    const loginForm = document.getElementById('login-form');
+    const registerForm = document.getElementById('register-form');
+    const onboardingForm = document.getElementById('onboarding-form');
+    const b2bForm = document.getElementById('b2b-form');
+    const paymentForm = document.getElementById('payment-form');
+    const userDashboard = document.getElementById('user-dashboard');
+    const dashboardUsername = document.getElementById('dashboard-username');
+    const emotionButtons = document.querySelectorAll('.emotion-btn');
+    const emotionConfirmationMessage = document.getElementById('emotion-confirmation-message');
+    const emotionSelectorContainer = document.getElementById('emotion-selector-container');
+    
+    // Profile Dropdown elements
+    const profileButton = document.getElementById('profile-button');
+    const profileDropdown = document.getElementById('profile-dropdown');
+    const loggedOutView = document.getElementById('logged-out-view');
+    const loggedInView = document.getElementById('logged-in-view');
+    const profileEmail = document.getElementById('profile-email');
+    const logoutButton = document.getElementById('logout-button');
+    
+    let loggedInUserEmail = ''; // Store the logged-in user's email.
+  // --- Chatbot Floater Logic ---
+    const chatbotFloater = document.getElementById('chatbot-floater');
+    const chatbotBubble = document.getElementById('chatbot-bubble');
+    const chatbotCloseBtn = document.getElementById('chatbot-close-btn');
 
-    _performAttack(isKickMove) {
-        if (this.isPunching || this.isKicking || this.isCastingBeam || (Date.now() - this.lastAttackTime < this.attackCooldown)) return;
-        let isSuperMove = this.isSuperCharged;
-        if (isSuperMove) {
-            if (this.name === "Tía Cote") {
-                this.launchTiaCoteBeamAttack(); // <-- LLAMADA AL NUEVO SUPER
-            } else if (this.name === "Piraña") {
-                this.launchPiranhaProjectiles();
-            } // ... y así sucesivamente para los otros personajes ...
+    if (chatbotBubble) {
+        chatbotBubble.addEventListener('click', () => {
+            chatbotFloater.classList.remove('is-minimized');
+        });
+    }
+
+    if (chatbotCloseBtn) {
+        chatbotCloseBtn.addEventListener('click', () => {
+            chatbotFloater.classList.add('is-minimized');
+        });
+    }
+
+    /**
+     * Shows the user dashboard view and hides the main site.
+     * @param {string} username - The username to display on the dashboard.
+     * @param {boolean} isNewUser - Flag to determine if the onboarding modal should be shown.
+     */
+    const showDashboard = (username, isNewUser) => {
+        siteHeader.classList.add('hidden');
+        mainContent.classList.add('hidden');
+        siteFooterMain.classList.add('hidden');
+        faqPage.classList.add('hidden');
+        userDashboard.classList.remove('hidden');
+        userDashboard.classList.add('flex');
+        dashboardUsername.textContent = username || 'usuario'; 
+
+        // Reset dashboard view to its initial state.
+        emotionSelectorContainer.classList.remove('hidden');
+        emotionButtons.forEach(btn => btn.classList.remove('selected'));
+
+        // If it's a new user, show the onboarding modal after a short delay.
+        if(isNewUser) {
+            setTimeout(() => {
+               openModal(document.getElementById('onboarding-modal'));
+            }, 500);
+        }
+    };
+
+    /**
+     * Shows the main marketing site view and hides the dashboard.
+     */
+    const showMainSiteView = () => {
+        siteHeader.classList.remove('hidden');
+        mainContent.classList.remove('hidden');
+        siteFooterMain.classList.remove('hidden');
+        userDashboard.classList.add('hidden');
+        userDashboard.classList.remove('flex');
+        faqPage.classList.add('hidden'); 
+    };
+    
+    /**
+     * Updates the UI to reflect a logged-in state.
+     * @param {string} email - The user's email.
+     * @param {boolean} isNewUser - Flag to determine if it's a fresh registration.
+     */
+    const updateUIForLogin = (email, isNewUser) => {
+        loggedInUserEmail = email;
+        loggedOutView.classList.add('hidden');
+        loggedInView.classList.remove('hidden');
+        profileEmail.textContent = email;
+        showDashboard(email.split('@')[0], isNewUser);
+    };
+
+    /**
+     * Updates the UI to reflect a logged-out state.
+     */
+    const updateUIForLogout = () => {
+        loggedInUserEmail = '';
+        loggedOutView.classList.remove('hidden');
+        loggedInView.classList.add('hidden');
+        showMainSiteView();
+        showConfirmationMessage('Has cerrado sesión. ¡Esperamos verte pronto!');
+    };
+    
+    // --- Form Submission Handlers (Simulation) ---
+
+    if (loginForm) {
+        loginForm.addEventListener('submit', async (e) => { // Hacemos la función async
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const errorMessage = document.getElementById('login-error-message');
+            
+            // 1. Define la URL de tu Webhook de LOGIN.
+            // !!! REEMPLAZA ESTA URL POR LA TUYA (la de producción, con el path /login) !!!
+            const webhookURL = 'https://muna.auto.hostybee.com/webhook-test/login';
+
+            const formData = {
+                email: email,
+                password: password
+            };
+
+            try {
+                const response = await fetch(webhookURL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData),
+                });
+
+                // 2. Analizar la respuesta que nos envía n8n
+                const result = await response.json(); 
+
+                if (response.ok) {
+                    // ÉXITO: n8n dijo que el login es correcto.
+                    errorMessage.classList.add('hidden');
+                    closeModal(document.getElementById('login-modal'));
+                    updateUIForLogin(email, false); // Actualiza la UI para el usuario logueado.
+                } else {
+                    // ERROR: n8n devolvió un error (ej: usuario no encontrado, pass incorrecta).
+                    errorMessage.textContent = result.error || 'Email o contraseña incorrectos.';
+                    errorMessage.classList.remove('hidden');
+                }
+            } catch (error) {
+                // ERROR DE RED: No se pudo conectar con n8n.
+                console.error('Failed to connect to login webhook:', error);
+                errorMessage.textContent = 'No se pudo conectar con el servidor. Revisa tu conexión.';
+                errorMessage.classList.remove('hidden');
+            }
+        });
+    }
+    
+    if (registerForm) {
+        // Handle registration form submission with webhook integration.
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
             
-            this.power = 0;
-            this.isSuperCharged = false;
-            updatePowerBars();
-        } else {
-            // ... lógica de ataque normal ...
-        }
-    }
-}
+            // ** WEBHOOK INTEGRATION **
+            // Replace this with your actual webhook URL.
+            const webhookURL = 'https://muna.auto.hostybee.com/webhook-test/registro'; 
+            
+            const formData = {
+                email: email,
+                password: password, // Note: Sending passwords should be done securely (e.g., over HTTPS).
+                registeredAt: new Date().toISOString()
+            };
 
-// ... (Resto del archivo script.js)
+            try {
+                const response = await fetch(webhookURL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData),
+                });
+
+                if (response.ok) {
+                    console.log('Registration data sent to webhook successfully.');
+                    // Proceed with the original success logic only if the webhook call succeeds.
+                    closeModal(document.getElementById('register-modal'));
+                    updateUIForLogin(email, true); // This is a new user
+                } else {
+                    // Handle cases where the webhook returns an error.
+                    console.error('Webhook returned an error:', response.status, response.statusText);
+                    alert('Hubo un problema con el registro. Por favor, inténtalo de nuevo.');
+                }
+            } catch (error) {
+                // Handle network errors or other issues with the fetch call.
+                console.error('Failed to send registration data to webhook:', error);
+                alert('No se pudo completar el registro debido a un error de red. Por favor, revisa tu conexión.');
+            }
+        });
+    }
+    
+    if (b2bForm) {
+    // Convertimos la función a 'async'
+    b2bForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        // 1. Recolectar todos los datos del formulario.
+        const institutionName = document.getElementById('b2b-institution').value;
+        const formData = {
+            name: document.getElementById('b2b-name').value,
+            email: document.getElementById('b2b-email').value,
+            institution: institutionName,
+            role: document.getElementById('b2b-role').value,
+            families: document.getElementById('b2b-families').value
+        };
+
+        // 2. Definir la URL de tu webhook B2B.
+        // !!! REEMPLAZA ESTA URL POR LA DE PRODUCCIÓN DE TU NUEVO FLUJO !!!
+        const webhookURL = 'https://muna.auto.hostybee.com/webhook-test/solicitud-b2b';
+
+        // 3. Enviar los datos al webhook.
+        try {
+            const response = await fetch(webhookURL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData),
+            });
+
+            if (response.ok) {
+                // Si todo sale bien, cerramos el modal y mostramos el mensaje de éxito.
+                console.log('B2B form data sent successfully.');
+                closeModal(document.getElementById('b2b-modal'));
+                showConfirmationMessage(`¡Gracias! El kit para ${institutionName} se ha enviado a tu correo.`);
+            } else {
+                // Si n8n devuelve un error.
+                console.error('B2B webhook returned an error:', response.status);
+                alert('Hubo un problema al enviar tu solicitud. Por favor, inténtalo de nuevo.');
+            }
+        } catch (error) {
+            // Si hay un error de red.
+            console.error('Failed to send B2B form data:', error);
+            alert('No se pudo enviar tu solicitud debido a un error de red.');
+        }
+    });
+}
+    if (paymentForm) {
+        paymentForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const planName = document.getElementById('payment-plan-name').textContent;
+            closeModal(document.getElementById('payment-modal'));
+            showConfirmationMessage(`¡Felicidades! Has mejorado al ${planName}.`);
+            // In a real app, you would redirect to a payment gateway like Mercado Pago here.
+        });
+    }
+
+   if(onboardingForm) {
+        onboardingForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // 1. Recolectar los nuevos datos del formulario.
+            const caregiverName = document.getElementById('caregiver-name').value;
+            const childName = document.getElementById('child-name').value;
+            const childAge = document.getElementById('child-age').value;
+            const selectedInterests = Array.from(document.querySelectorAll('input[name="interest-topic"]:checked')).map(checkbox => checkbox.value);
+
+            // 2. Definir la URL de tu NUEVO webhook (el de actualización).
+            // !!! REEMPLAZA ESTA URL POR LA TUYA !!!
+            const webhookURL = 'https://muna.auto.hostybee.com/webhook-test/actualizar-perfil'; 
+
+            // 3. Preparar los datos para enviar. ¡Incluimos el email del usuario logueado!
+            const formData = {
+                email: loggedInUserEmail, // ¡MUY IMPORTANTE para saber a quién actualizar!
+                nombre: caregiverName, 
+                nombre_niño: childName,
+                edad_niño: childAge,
+                intereses: selectedInterests
+            };
+
+            // 4. Enviar los datos al webhook.
+            try {
+                const response = await fetch(webhookURL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData),
+                });
+
+                if (response.ok) {
+                    console.log('Profile update data sent successfully.');
+                    // Si todo sale bien, cerramos el modal y mostramos la confirmación.
+                    closeModal(document.getElementById('onboarding-modal'));
+                    showConfirmationMessage("¡Gracias por completar tu perfil!");
+                } else {
+                    console.error('Webhook returned an error:', response.status);
+                    alert('Hubo un problema al guardar tu perfil.');
+                }
+            } catch (error) {
+                console.error('Failed to send profile data:', error);
+                alert('No se pudo guardar tu perfil debido a un error de red.');
+            }
+        });
+        }
+
+   emotionButtons.forEach(button => {
+    // Convertimos la función a 'async' para poder usar 'await'
+    button.addEventListener('click', async () => { 
+        emotionButtons.forEach(btn => btn.classList.remove('selected'));
+        button.classList.add('selected');
+        
+        const selectedEmotion = button.dataset.emotion; 
+        
+        // --- INICIO DE LA INTEGRACIÓN CON N8N ---
+
+        // 1. Define la URL de tu NUEVO webhook.
+        // !!! REEMPLAZA ESTA URL POR LA URL DE PRODUCCIÓN DE TU NUEVO FLUJO !!!
+        const webhookURL = 'https://muna.auto.hostybee.com/webhook-test/registrar-emocion';
+
+        // 2. Prepara los datos para enviar.
+        const emotionData = {
+            email: loggedInUserEmail, // Usamos la variable que ya guarda el email del usuario.
+            emotion: selectedEmotion
+        };
+
+        // 3. Envía los datos al webhook usando fetch.
+        try {
+            const response = await fetch(webhookURL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(emotionData)
+            });
+
+            if (response.ok) {
+                // Si n8n responde 'OK', mostramos el mensaje de confirmación que ya tenías.
+                console.log('Emotion data sent successfully.');
+                showConfirmationMessage(`¡Emoción "${selectedEmotion}" registrada!`);
+            } else {
+                // Si n8n responde con un error.
+                console.error('Webhook for emotion returned an error:', response.status);
+                showConfirmationMessage('Hubo un problema al registrar tu emoción.');
+            }
+
+        } catch (error) {
+            // Si hay un error de red y no se puede conectar con n8n.
+            console.error('Failed to send emotion data:', error);
+            showConfirmationMessage('Error de conexión al registrar tu emoción.');
+        }
+
+        // --- FIN DE LA INTEGRACIÓN CON N8N ---
+
+        // El resto de tu lógica original se mantiene.
+        if (chatbotIframe) {
+            const personalizedUrl = `${genericChatbotUrl}?user=${encodeURIComponent(loggedInUserEmail)}&emotion=${encodeURIComponent(selectedEmotion)}`;
+            chatbotIframe.src = personalizedUrl;
+            console.log('Chatbot URL updated for personalization:', personalizedUrl);
+        }
+
+        if (chatbotFloater && chatbotFloater.classList.contains('is-minimized')) {
+            chatbotFloater.classList.remove('is-minimized');
+        }
+        
+        // Esta línea la puedes mantener o quitar según prefieras la experiencia.
+        // showMainSiteView(); 
+    });
+});
+    if (logoutButton) {
+        logoutButton.addEventListener('click', () => {
+            profileDropdown.classList.remove('active');
+            updateUIForLogout();
+        });
+    }
+
+    // --- Profile Dropdown Logic ---
+    if (profileButton) {
+        profileButton.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent the click from bubbling up to the document.
+            profileDropdown.classList.toggle('active');
+        });
+    }
+
+    // Close the dropdown if clicking outside of it.
+    document.addEventListener('click', (e) => {
+        if (profileDropdown && !profileDropdown.contains(e.target) && !profileButton.contains(e.target)) {
+            profileDropdown.classList.remove('active');
+        }
+    });
+
+
+    // --- FAQ Page Navigation ---
+    if(viewAllFaqsBtn) {
+        viewAllFaqsBtn.addEventListener('click', () => {
+            mainContent.classList.add('hidden');
+            siteFooterMain.classList.add('hidden');
+            faqPage.classList.remove('hidden');
+            window.scrollTo(0, 0); // Scroll to the top of the new page.
+        });
+    }
+
+    if(backToMainBtn) {
+        backToMainBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            showMainSiteView();
+        });
+    }
+
+
+    // --- FAQ Accordion Logic ---
+    document.querySelectorAll('.faq-question').forEach(button => {
+        button.addEventListener('click', () => {
+            const answer = document.getElementById(button.getAttribute('aria-controls'));
+            const isAlreadyActive = button.getAttribute('aria-expanded') === 'true';
+
+            if (isAlreadyActive) {
+                // Close the clicked accordion.
+                button.setAttribute('aria-expanded', 'false');
+                answer.style.maxHeight = null;
+                answer.style.padding = '0 1.5rem';
+            } else {
+                // Open the clicked accordion.
+                button.setAttribute('aria-expanded', 'true');
+                answer.style.padding = '0 1.5rem 1.5rem 1.5rem';
+                // Set max-height to the scroll height to animate opening.
+                answer.style.maxHeight = answer.scrollHeight + 'px';
+            }
+        });
+    });
+
+    // --- Blog Search and Filter Logic ---
+    const searchInput = document.getElementById('blog-search-input');
+    const filterButtons = document.querySelectorAll('.blog-filter-btn');
+    const articles = document.querySelectorAll('.blog-article-card');
+    const noResultsMessage = document.getElementById('no-results-message');
+    let currentCategory = 'todos';
+
+    /**
+     * Filters and searches blog articles based on the current category and search input.
+     */
+    function filterAndSearch() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        let articlesFound = false;
+
+        articles.forEach(article => {
+            const category = article.dataset.category;
+            const keywords = article.dataset.keywords.toLowerCase();
+            const title = article.querySelector('h3').textContent.toLowerCase();
+
+            const categoryMatch = currentCategory === 'todos' || category === currentCategory;
+            const searchMatch = searchTerm === '' || title.includes(searchTerm) || keywords.includes(searchTerm);
+
+            if (categoryMatch && searchMatch) {
+                article.style.display = 'flex';
+                articlesFound = true;
+            } else {
+                article.style.display = 'none';
+            }
+        });
+        
+        noResultsMessage.style.display = articlesFound ? 'none' : 'block';
+    }
+
+    if (searchInput) {
+         searchInput.addEventListener('input', filterAndSearch);
+    }
+
+    if (filterButtons) {
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                currentCategory = button.dataset.category;
+                filterAndSearch();
+            });
+        });
+    }
+    
+    // ----------- ÚNICO CAMBIO REALIZADO -----------
+    // El siguiente bloque se ha movido desde fuera hacia aquí adentro.
+    const contactForm = document.getElementById('contact-form');
+    if (contactForm) {
+        contactForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const webhookURL = 'https://muna.auto.hostybee.com/webhook-test/solicitud-contacto';
+            const submitButton = contactForm.querySelector('button[type="submit"]');
+            const originalButtonHTML = submitButton.innerHTML;
+
+            // Deshabilitamos el botón para prevenir envíos múltiples
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<span>Enviando...</span>';
+
+            const formData = {
+                name: contactForm.querySelector('#name').value,
+                email: contactForm.querySelector('#email').value,
+                message: contactForm.querySelector('#message').value
+            };
+
+            try {
+                // --- LA CORRECCIÓN CLAVE ESTÁ AQUÍ ---
+                // Se cambia el tipo de contenido para evitar la petición de permiso CORS (preflight)
+                // que está siendo bloqueada por el servidor de Hostybee.
+                const response = await fetch(webhookURL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams(formData).toString(),
+                });
+
+                if (response.ok) {
+                    showConfirmationMessage('¡Gracias! Tu mensaje ha sido enviado.');
+                    contactForm.reset();
+                } else {
+                    const errorText = await response.text();
+                    console.error('Error del servidor:', response.status, errorText);
+                    alert('Hubo un problema al procesar tu mensaje en el servidor.');
+                }
+            } catch (error) {
+                console.error('Error de red:', error);
+                alert('No se pudo enviar el mensaje por un error de red.');
+            } finally {
+                // Volvemos a habilitar el botón al final
+                submitButton.disabled = false;
+                submitButton.innerHTML = originalButtonHTML;
+            }
+        });
+    }
+    // ----------- FIN DEL CAMBIO -----------
+
+});
