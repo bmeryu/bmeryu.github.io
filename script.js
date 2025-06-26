@@ -203,32 +203,42 @@ const showConfirmationMessage = (message) => {
         });
     }
 
-    if (registerForm) {
-        registerForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('register-email').value;
-            const password = document.getElementById('register-password').value;
-            const webhookURL = 'https://muna.auto.hostybee.com/webhook-test/registro';
-            const formData = { email, password, registeredAt: new Date().toISOString() };
+    // --- CÓDIGO CORREGIDO Y LISTO PARA USAR ---
+if (registerForm) {
+    registerForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('register-email').value;
+        const password = document.getElementById('register-password').value;
+        const webhookURL = 'https://muna.auto.hostybee.com/webhook-test/registro'; // Asegúrate que esta URL es la correcta para tu webhook de registro.
+        const formData = { email, password, registeredAt: new Date().toISOString() };
 
-            try {
-                const response = await fetch(webhookURL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(formData),
-                });
-                if (response.ok) {
-                    closeModal(document.getElementById('register-modal'));
-                    updateUIForLogin(email, true);
-                } else {
-                    alert('Hubo un problema con el registro. Inténtalo de nuevo.');
-                }
-            } catch (error) {
-                console.error('Error de red en registro:', error);
-                alert('No se pudo completar el registro por un error de red.');
+        try {
+            const response = await fetch(webhookURL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData),
+            });
+
+            // 1. Leemos la respuesta JSON SIEMPRE.
+            const result = await response.json();
+
+            // 2. ¡LA LÓGICA CLAVE! Revisamos la propiedad "success" que viene de n8n.
+            if (result.success === true) {
+                // Si es true, el usuario es nuevo y procedemos con el login.
+                closeModal(document.getElementById('register-modal'));
+                updateUIForLogin(email, true);
+            } else {
+                // Si es false, significa que el email ya existía.
+                // Mostramos el mensaje de error que viene directamente de n8n.
+                alert(result.message);
             }
-        });
-    }
+        } catch (error) {
+            // Este bloque solo se activa si hay un error de red o de conexión.
+            console.error('Error de red en registro:', error);
+            alert('No se pudo completar el registro por un error de red.');
+        }
+    });
+}
 
     if (onboardingForm) {
         onboardingForm.addEventListener('submit', async (e) => {
