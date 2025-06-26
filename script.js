@@ -2,25 +2,35 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     // --- FUNCIONES AUXILIARES ---
-    /**
-     * Muestra un mensaje de confirmación efímero en la pantalla.
-     * @param {string} message - El mensaje a mostrar.
-     */
-    const showConfirmationMessage = (message) => {
-        const messageEl = document.getElementById('emotion-confirmation-message');
-        if (messageEl) {
-            messageEl.textContent = message;
-            messageEl.classList.add('show');
-            // Ocultar el mensaje después de 3 segundos.
-            setTimeout(() => {
-                messageEl.classList.remove('show');
-            }, 3000);
-        } else {
-            // Respaldo por si el elemento no se encuentra.
-            alert(message);
-        }
-    };
+/**
+ * Muestra un mensaje de confirmación global y efímero en la pantalla.
+ * @param {string} message - El mensaje a mostrar.
+ */
+const showConfirmationMessage = (message) => {
+    // 1. Crear el elemento del mensaje
+    const messageEl = document.createElement('div');
+    messageEl.textContent = message;
+    // Usaremos una clase CSS para darle estilo
+    messageEl.className = 'ephemeral-message';
 
+    // 2. Añadir el mensaje al cuerpo (body) de la página
+    document.body.appendChild(messageEl);
+
+    // 3. Forzar un pequeño delay para que la animación CSS funcione
+    // y luego añadir la clase 'show' para hacerlo visible.
+    setTimeout(() => {
+        messageEl.classList.add('show');
+    }, 10);
+
+    // 4. Ocultar y eliminar el mensaje después de 3 segundos
+    setTimeout(() => {
+        messageEl.classList.remove('show');
+        // Esperar a que la animación de salida termine para eliminar el elemento del DOM
+        messageEl.addEventListener('transitionend', () => {
+            messageEl.remove();
+        });
+    }, 3000);
+};
     // --- SELECCIÓN DE ELEMENTOS ---
     const mobileMenuButton = document.getElementById('mobile-menu-button');
     const mobileMenu = document.getElementById('mobile-menu');
