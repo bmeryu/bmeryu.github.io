@@ -178,7 +178,7 @@ const showConfirmationMessage = (message) => {
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
             const errorMessage = document.getElementById('login-error-message');
-            const webhookURL = 'https://muna.auto.hostybee.com/webhook-test/login';
+            const webhookURL = 'https://muna.auto.hostybee.com/webhook/login';
 
             try {
                 const response = await fetch(webhookURL, {
@@ -209,7 +209,7 @@ if (registerForm) {
         e.preventDefault();
         const email = document.getElementById('register-email').value;
         const password = document.getElementById('register-password').value;
-        const webhookURL = 'https://muna.auto.hostybee.com/webhook-test/registro'; // Asegúrate que esta URL es la correcta para tu webhook de registro.
+        const webhookURL = 'https://muna.auto.hostybee.com/webhook/registro'; // Asegúrate que esta URL es la correcta para tu webhook de registro.
         const formData = { email, password, registeredAt: new Date().toISOString() };
 
         try {
@@ -243,7 +243,7 @@ if (registerForm) {
     if (onboardingForm) {
         onboardingForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const webhookURL = 'https://muna.auto.hostybee.com/webhook-test/actualizar-perfil';
+            const webhookURL = 'https://muna.auto.hostybee.com/webhook/actualizar-perfil';
             const formData = {
                 email: loggedInUserEmail,
                 nombre: document.getElementById('caregiver-name').value,
@@ -274,7 +274,7 @@ if (registerForm) {
         b2bForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const institutionName = document.getElementById('b2b-institution').value;
-            const webhookURL = 'https://muna.auto.hostybee.com/webhook-test/solicitud-b2b';
+            const webhookURL = 'https://muna.auto.hostybee.com/webhook/solicitud-b2b';
             const formData = {
                 name: document.getElementById('b2b-name').value,
                 email: document.getElementById('b2b-email').value,
@@ -314,7 +314,7 @@ if (registerForm) {
     if (contactForm) {
         contactForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const webhookURL = 'https://muna.auto.hostybee.com/webhook-test/solicitud-contacto';
+            const webhookURL = 'https://muna.auto.hostybee.com/webhook/solicitud-contacto';
             const submitButton = contactForm.querySelector('button[type="submit"]');
             const originalButtonHTML = submitButton.innerHTML;
     
@@ -375,7 +375,7 @@ if (registerForm) {
             emotionButtons.forEach(btn => btn.classList.remove('selected'));
             button.classList.add('selected');
             const selectedEmotion = button.dataset.emotion; 
-            const webhookURL = 'https://muna.auto.hostybee.com/webhook-test/registrar-emocion';
+            const webhookURL = 'https://muna.auto.hostybee.com/webhook/registrar-emocion';
             const emotionData = { email: loggedInUserEmail, emotion: selectedEmotion };
 
             try {
