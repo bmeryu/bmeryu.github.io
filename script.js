@@ -2,35 +2,36 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     // --- FUNCIONES AUXILIARES ---
-/**
- * Muestra un mensaje de confirmación global y efímero en la pantalla.
- * @param {string} message - El mensaje a mostrar.
- */
-const showConfirmationMessage = (message) => {
-    // 1. Crear el elemento del mensaje
-    const messageEl = document.createElement('div');
-    messageEl.textContent = message;
-    // Usaremos una clase CSS para darle estilo
-    messageEl.className = 'ephemeral-message';
+    /**
+     * Muestra un mensaje de confirmación global y efímero en la pantalla.
+     * @param {string} message - El mensaje a mostrar.
+     */
+    const showConfirmationMessage = (message) => {
+        // 1. Crear el elemento del mensaje
+        const messageEl = document.createElement('div');
+        messageEl.textContent = message;
+        // Usaremos una clase CSS para darle estilo
+        messageEl.className = 'ephemeral-message';
 
-    // 2. Añadir el mensaje al cuerpo (body) de la página
-    document.body.appendChild(messageEl);
+        // 2. Añadir el mensaje al cuerpo (body) de la página
+        document.body.appendChild(messageEl);
 
-    // 3. Forzar un pequeño delay para que la animación CSS funcione
-    // y luego añadir la clase 'show' para hacerlo visible.
-    setTimeout(() => {
-        messageEl.classList.add('show');
-    }, 10);
+        // 3. Forzar un pequeño delay para que la animación CSS funcione
+        // y luego añadir la clase 'show' para hacerlo visible.
+        setTimeout(() => {
+            messageEl.classList.add('show');
+        }, 10);
 
-    // 4. Ocultar y eliminar el mensaje después de 3 segundos
-    setTimeout(() => {
-        messageEl.classList.remove('show');
-        // Esperar a que la animación de salida termine para eliminar el elemento del DOM
-        messageEl.addEventListener('transitionend', () => {
-            messageEl.remove();
-        });
-    }, 3000);
-};
+        // 4. Ocultar y eliminar el mensaje después de 3 segundos
+        setTimeout(() => {
+            messageEl.classList.remove('show');
+            // Esperar a que la animación de salida termine para eliminar el elemento del DOM
+            messageEl.addEventListener('transitionend', () => {
+                messageEl.remove();
+            });
+        }, 3000);
+    };
+    
     // --- SELECCIÓN DE ELEMENTOS ---
     const mobileMenuButton = document.getElementById('mobile-menu-button');
     const mobileMenu = document.getElementById('mobile-menu');
@@ -40,13 +41,6 @@ const showConfirmationMessage = (message) => {
     const siteFooterMain = document.getElementById('site-footer-main');
     const viewAllFaqsBtn = document.getElementById('view-all-faqs-btn');
     const backToMainBtn = document.getElementById('back-to-main-btn');
-
-    // --- MENÚ MÓVIL ---
-    if (mobileMenuButton) {
-        mobileMenuButton.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
-        });
-    }
 
     // --- FUNCIONALIDAD DE MODALES (VENTANAS EMERGENTES) ---
     const openModalButtons = document.querySelectorAll('.open-modal-btn');
@@ -113,8 +107,15 @@ const showConfirmationMessage = (message) => {
     const contactForm = document.getElementById('contact-form');
     const userDashboard = document.getElementById('user-dashboard');
     const dashboardUsername = document.getElementById('dashboard-username');
+    
+    // --- INICIO DE CAMBIOS: SELECCIÓN DE NUEVOS ELEMENTOS ---
     const emotionButtons = document.querySelectorAll('.emotion-btn');
     const emotionSelectorContainer = document.getElementById('emotion-selector-container');
+    const postEmotionView = document.getElementById('post-emotion-view');
+    const emotionAckMessage = document.getElementById('emotion-ack-message');
+    const startChatBtn = document.getElementById('start-chat-btn');
+    const changeEmotionBtn = document.getElementById('change-emotion-btn');
+    // --- FIN DE CAMBIOS ---
     
     // Elementos del Dropdown de Perfil
     const profileButton = document.getElementById('profile-button');
@@ -135,8 +136,11 @@ const showConfirmationMessage = (message) => {
         userDashboard.classList.add('flex');
         dashboardUsername.textContent = username || 'usuario';
 
+        // --- INICIO DE CAMBIOS: Asegurar que la vista correcta se muestra al entrar al dashboard ---
+        postEmotionView.classList.add('hidden');
         emotionSelectorContainer.classList.remove('hidden');
         emotionButtons.forEach(btn => btn.classList.remove('selected'));
+        // --- FIN DE CAMBIOS ---
 
         if (isNewUser) {
             setTimeout(() => {
@@ -203,42 +207,35 @@ const showConfirmationMessage = (message) => {
         });
     }
 
-    // --- CÓDIGO CORREGIDO Y LISTO PARA USAR ---
-if (registerForm) {
-    registerForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const email = document.getElementById('register-email').value;
-        const password = document.getElementById('register-password').value;
-        const webhookURL = 'https://muna.auto.hostybee.com/webhook/registro'; // Asegúrate que esta URL es la correcta para tu webhook de registro.
-        const formData = { email, password, registeredAt: new Date().toISOString() };
-
-        try {
-            const response = await fetch(webhookURL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData),
-            });
-
-            // 1. Leemos la respuesta JSON SIEMPRE.
-            const result = await response.json();
-
-            // 2. ¡LA LÓGICA CLAVE! Revisamos la propiedad "success" que viene de n8n.
-            if (result.success === true) {
-                // Si es true, el usuario es nuevo y procedemos con el login.
-                closeModal(document.getElementById('register-modal'));
-                updateUIForLogin(email, true);
-            } else {
-                // Si es false, significa que el email ya existía.
-                // Mostramos el mensaje de error que viene directamente de n8n.
-                alert(result.message);
+    if (registerForm) {
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            const webhookURL = 'https://muna.auto.hostybee.com/webhook/registro'; 
+            const formData = { email, password, registeredAt: new Date().toISOString() };
+    
+            try {
+                const response = await fetch(webhookURL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData),
+                });
+    
+                const result = await response.json();
+    
+                if (result.success === true) {
+                    closeModal(document.getElementById('register-modal'));
+                    updateUIForLogin(email, true);
+                } else {
+                    alert(result.message);
+                }
+            } catch (error) {
+                console.error('Error de red en registro:', error);
+                alert('No se pudo completar el registro por un error de red.');
             }
-        } catch (error) {
-            // Este bloque solo se activa si hay un error de red o de conexión.
-            console.error('Error de red en registro:', error);
-            alert('No se pudo completar el registro por un error de red.');
-        }
-    });
-}
+        });
+    }
 
     if (onboardingForm) {
         onboardingForm.addEventListener('submit', async (e) => {
@@ -310,7 +307,6 @@ if (registerForm) {
         });
     }
 
-    // ESTE ES EL CÓDIGO QUE SE MOVIÓ ADENTRO
     if (contactForm) {
         contactForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -368,45 +364,75 @@ if (registerForm) {
             profileDropdown.classList.remove('active');
         }
     });
-
-    // --- MANEJO DE EMOCIONES ---
-    emotionButtons.forEach(button => {
-        button.addEventListener('click', async () => { 
-            emotionButtons.forEach(btn => btn.classList.remove('selected'));
-            button.classList.add('selected');
-            const selectedEmotion = button.dataset.emotion; 
-            const webhookURL = 'https://muna.auto.hostybee.com/webhook/registrar-emocion';
-            const emotionData = { email: loggedInUserEmail, emotion: selectedEmotion };
-
-            try {
-                const response = await fetch(webhookURL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(emotionData)
-                });
-                if (response.ok) {
-                    showConfirmationMessage(`¡Emoción "${selectedEmotion}" registrada!`);
-                } else {
-                    showConfirmationMessage('Hubo un problema al registrar tu emoción.');
-                }
-            } catch (error) {
-                console.error('Error de red al registrar emoción:', error);
-                showConfirmationMessage('Error de conexión al registrar tu emoción.');
-            }
-        });
-    });
+    
+    // --- INICIO DE CAMBIOS: NUEVA LÓGICA DE EMOCIONES Y CHATBOT ---
 
     // --- LÓGICA DEL CHATBOT FLOTANTE ---
     const chatbotFloater = document.getElementById('chatbot-floater');
     const chatbotBubble = document.getElementById('chatbot-bubble');
     const chatbotCloseBtn = document.getElementById('chatbot-close-btn');
 
+    const openChatbot = () => {
+        if (chatbotFloater) {
+            chatbotFloater.classList.remove('is-minimized');
+        }
+    };
+
     if (chatbotBubble) {
-        chatbotBubble.addEventListener('click', () => chatbotFloater.classList.remove('is-minimized'));
+        chatbotBubble.addEventListener('click', openChatbot);
     }
     if (chatbotCloseBtn) {
         chatbotCloseBtn.addEventListener('click', () => chatbotFloater.classList.add('is-minimized'));
     }
+
+    // --- MANEJO DE EMOCIONES ---
+    emotionButtons.forEach(button => {
+        button.addEventListener('click', async () => { 
+            emotionButtons.forEach(btn => btn.classList.remove('selected'));
+            button.classList.add('selected');
+
+            const selectedEmotion = button.dataset.emotion; 
+            const feeling = button.dataset.feeling;
+            const webhookURL = 'https://muna.auto.hostybee.com/webhook/registrar-emocion';
+            const emotionData = { email: loggedInUserEmail, emotion: selectedEmotion };
+
+            // 1. Transición de la UI
+            emotionSelectorContainer.classList.add('hidden');
+            emotionAckMessage.textContent = `Gracias por compartir que te sientes ${feeling}. Estoy aquí para ti. ¿Hablamos?`;
+            postEmotionView.classList.remove('hidden');
+
+            // 2. Asignar evento al botón para iniciar chat
+            if (startChatBtn) {
+                startChatBtn.onclick = openChatbot;
+            }
+
+            // 3. Enviar datos al webhook en segundo plano
+            try {
+                const response = await fetch(webhookURL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(emotionData)
+                });
+                if (!response.ok) {
+                    console.warn('Hubo un problema al registrar tu emoción.');
+                }
+            } catch (error) {
+                console.error('Error de red al registrar emoción:', error);
+            }
+        });
+    });
+
+    // Lógica para el botón "Cambiar mi emoción"
+    if (changeEmotionBtn) {
+        changeEmotionBtn.addEventListener('click', () => {
+            postEmotionView.classList.add('hidden');
+            emotionSelectorContainer.classList.remove('hidden');
+            emotionButtons.forEach(btn => btn.classList.remove('selected'));
+        });
+    }
+
+    // --- FIN DE CAMBIOS ---
+
 
     // --- NAVEGACIÓN A PÁGINA DE FAQ ---
     if (viewAllFaqsBtn) {
