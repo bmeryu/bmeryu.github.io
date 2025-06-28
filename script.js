@@ -41,6 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const siteFooterMain = document.getElementById('site-footer-main');
     const viewAllFaqsBtn = document.getElementById('view-all-faqs-btn');
     const backToMainBtn = document.getElementById('back-to-main-btn');
+    const chatbotIframe = document.querySelector('#chatbot-body iframe');
 
     // --- FUNCIONALIDAD DE MODALES (VENTANAS EMERGENTES) ---
     const openModalButtons = document.querySelectorAll('.open-modal-btn');
@@ -393,6 +394,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const selectedEmotion = button.dataset.emotion; 
             const feeling = button.dataset.feeling;
+            
+            // LÓGICA PARA ACTUALIZAR EL CHATBOT
+            if (chatbotIframe) {
+                const baseUrl = 'https://muna.auto.hostybee.com/webhook/9bedfe60-a6f1-4592-8d6f-51e7e309affc/chat';
+                // Se codifica la emoción para que sea segura en una URL y se añade como parámetro.
+                const newUrl = `${baseUrl}?startEmotion=${encodeURIComponent(selectedEmotion)}`;
+                chatbotIframe.src = newUrl;
+            }
+
             const webhookURL = 'https://muna.auto.hostybee.com/webhook/registrar-emocion';
             const emotionData = { email: loggedInUserEmail, emotion: selectedEmotion };
 
