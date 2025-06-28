@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Muna IA - Tu Compañera de Crianza</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Custom Tailwind Configuration for Muna IA Colors and Fonts -->
     <script>
         tailwind.config = {
             theme: {
@@ -28,16 +26,12 @@
         }
     </script>
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <!-- Google Fonts - Inter for a friendly and legible font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- External Stylesheet -->
     <link rel="stylesheet" href="styles.css">
 </head>
 <body class="bg-muna-bg text-muna-text font-inter">
 
-    <!-- Header / Navigation -->
     <header id="site-header" class="fixed w-full z-50 bg-muna-bg shadow-md">
         <nav class="container mx-auto px-4 py-3 flex items-center justify-between">
             <a href="#inicio" class="flex-shrink-0 flex items-center space-x-2">
@@ -49,7 +43,6 @@
                 <span class="text-2xl font-bold text-muna-primary">Muna IA</span>
             </a>
 
-            <!-- Desktop Navigation -->
             <nav class="hidden lg:flex flex-grow justify-center items-center gap-x-8">
                  <a href="#inicio" class="text-muna-text hover:text-muna-primary transition-colors">Inicio</a>
                 <a href="#como-funciona" class="text-muna-text hover:text-muna-primary transition-colors">Cómo funciona</a>
@@ -59,13 +52,11 @@
                 <a href="#faq" class="text-muna-text hover:text-muna-primary transition-colors">FAQ</a>
             </nav>
 
-            <!-- Profile / Actions Section -->
             <div class="relative">
                 <button id="profile-button" class="bg-muna-primary text-white w-10 h-10 rounded-full flex items-center justify-center shadow-md hover:bg-muna-accent transition-colors">
                     <i class="fas fa-user"></i>
                 </button>
                 <div id="profile-dropdown" class="profile-dropdown">
-                    <!-- Logged Out State -->
                     <div id="logged-out-view">
                         <div class="p-4 border-b border-gray-100">
                              <p class="text-center font-semibold text-muna-text">Bienvenido/a a Muna</p>
@@ -82,7 +73,6 @@
                             </button>
                         </div>
                     </div>
-                    <!-- Logged In State -->
                     <div id="logged-in-view" class="hidden">
                         <div class="p-4 border-b border-gray-100">
                              <p class="font-semibold text-muna-text truncate" id="profile-email">bmeryu@gmail.com</p>
@@ -98,13 +88,11 @@
                 </div>
             </div>
 
-            <!-- Mobile Menu Button -->
             <button id="mobile-menu-button" class="lg:hidden text-muna-primary focus:outline-none ml-4">
                 <i class="fas fa-bars text-2xl"></i>
             </button>
         </nav>
         
-        <!-- Mobile Menu -->
         <nav id="mobile-menu" class="hidden lg:hidden bg-muna-bg">
             <div class="px-4 pt-2 pb-4 space-y-2 text-center">
                 <a href="#inicio" class="block py-2 text-muna-text hover:bg-muna-primary hover:text-white rounded-md transition-colors">Inicio</a>
@@ -118,7 +106,6 @@
     </header>
 
     <main id="main-content">
-        <!-- Sección de Inicio -->
         <section id="inicio" class="section-padding min-h-screen flex flex-col justify-center items-center text-center px-4 bg-muna-bg">
             <div class="max-w-4xl mx-auto">
                 <h1 class="text-5xl md:text-6xl font-bold text-muna-primary mb-6 leading-tight">
@@ -149,7 +136,6 @@
             </div>
         </section>
 
-        <!-- Sección Cómo funciona -->
         <section id="como-funciona" class="section-padding bg-white">
             <div class="container mx-auto px-4">
                 <h2 class="text-4xl font-bold text-center text-muna-secondary mb-12">Cómo funciona Muna IA</h2>
@@ -157,25 +143,21 @@
                     Muna IA va más allá de un simple chatbot, ofreciéndote herramientas y apoyo emocional personalizado para cada etapa de la crianza.
                 </p>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
-                    <!-- Característica 1: Panel emocional diario -->
                     <div class="flex flex-col items-center p-6 bg-muna-bg rounded-card shadow-lg hover:shadow-xl transition-all duration-300">
                         <i class="fas fa-chart-line icon-large mb-4"></i>
                         <h3 class="text-2xl font-semibold text-muna-primary mb-3">Panel Emocional Diario</h3>
                         <p class="text-muna-text text-center">Registra y visualiza tu estado emocional, recibiendo apoyo y comprensión para cada día.</p>
                     </div>
-                    <!-- Característica 2: Cuentos personalizados -->
                     <div class="flex flex-col items-center p-6 bg-muna-bg rounded-card shadow-lg hover:shadow-xl transition-all duration-300">
                         <i class="fas fa-book-open icon-large mb-4"></i>
                         <h3 class="text-2xl font-semibold text-muna-primary mb-3">Cuentos Personalizados</h3>
                         <p class="text-muna-text text-center">Cuentos únicos creados con el nombre de tu niño/a para fomentar la imaginación y el vínculo.</p>
                     </div>
-                    <!-- Característica 3: Memoria emocional adaptativa -->
                     <div class="flex flex-col items-center p-6 bg-muna-bg rounded-card shadow-lg hover:shadow-xl transition-all duration-300">
                         <i class="fas fa-brain icon-large mb-4"></i>
                         <h3 class="text-2xl font-semibold text-muna-primary mb-3">Memoria Emocional Adaptativa</h3>
                         <p class="text-muna-text text-center">Muna aprende de tus interacciones para ofrecerte un apoyo cada vez más relevante y empático.</p>
                     </div>
-                    <!-- Característica 4: Recomendaciones diarias -->
                     <div class="flex flex-col items-center p-6 bg-muna-bg rounded-card shadow-lg hover:shadow-xl transition-all duration-300">
                         <i class="fas fa-lightbulb icon-large mb-4"></i>
                         <h3 class="text-2xl font-semibold text-muna-primary mb-3">Recomendaciones Diarias</h3>
@@ -190,7 +172,6 @@
             </div>
         </section>
 
-        <!-- Sección de Planes - Oferta de Lanzamiento -->
         <section id="planes" class="section-padding bg-muna-bg">
             <div class="container mx-auto px-4">
                 <div class="max-w-3xl mx-auto text-center">
@@ -218,7 +199,6 @@
             </div>
         </section>
 
-        <!-- Sección Para Instituciones -->
         <section id="instituciones" class="section-padding bg-muna-secondary text-white">
             <div class="container mx-auto px-4 text-center">
                 <h2 class="text-4xl font-bold mb-6">Muna IA para Instituciones</h2>
@@ -244,26 +224,22 @@
             </div>
         </section>
 
-        <!-- Sección de Testimonios Reales -->
         <section id="testimonios" class="section-padding bg-muna-bg">
             <div class="container mx-auto px-4">
                 <h2 class="text-4xl font-bold text-center text-muna-secondary mb-12">Lo que Dicen Nuestras Madres</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <!-- Testimonio 1 -->
                     <div class="bg-white p-6 rounded-card shadow-lg flex flex-col justify-between">
                         <p class="text-muna-text text-lg italic mb-6">
                             "Muna IA es mi refugio diario. Sus consejos son tan acertados y me siento realmente escuchada. Los cuentos personalizados son la magia de la noche para mi hijo."
                         </p>
                         <p class="font-semibold text-muna-primary text-right">- Sofía R., Madre de 2</p>
                     </div>
-                    <!-- Testimonio 2 -->
                     <div class="bg-white p-6 rounded-card shadow-lg flex flex-col justify-between">
                         <p class="text-muna-text text-lg italic mb-6">
                             "Nunca pensé que un chatbot pudiera ser tan empático. Muna me ha ayudado a manejar el estrés de la crianza de una forma muy práctica. ¡Una herramienta indispensable!"
                         </p>
                         <p class="font-semibold text-muna-primary text-right">- Carolina P., Madre primeriza</p>
                     </div>
-                    <!-- Testimonio 3 -->
                     <div class="bg-white p-6 rounded-card shadow-lg flex flex-col justify-between">
                         <p class="text-muna-text text-lg italic mb-6">
                             "La función de panel emocional me ha sorprendido. Muna realmente me ayuda a reflexionar y me da recomendaciones que puedo aplicar al instante. ¡Gracias, Muna!"
@@ -274,7 +250,6 @@
             </div>
         </section>
         
-        <!-- Sección del Blog - Diseño Mejorado con SEO y UX -->
         <section id="blog" class="section-padding bg-muna-bg">
             <div class="container mx-auto px-4">
                 <h2 class="text-4xl font-bold text-center text-muna-secondary mb-4">Encuentra respuestas en Nuestro Blog</h2>
@@ -282,7 +257,6 @@
                     Sabemos que buscas respuestas. Aquí encontrarás guías y consejos sobre los temas que más te importan, desde cómo manejar pataletas hasta rutinas de sueño.
                 </p>
 
-                <!-- Search and Filter Controls -->
                 <div class="flex flex-col md:flex-row gap-4 justify-center items-center mb-10">
                     <div class="relative w-full md:w-1/2 lg:w-1/3">
                         <input type="search" id="blog-search-input" placeholder="Buscar temas: sueño, pataletas, límites..." class="w-full pl-10 pr-4 py-3 rounded-full border-2 border-gray-200 focus:border-muna-primary focus:ring-muna-primary transition">
@@ -298,7 +272,6 @@
                 </div>
 
                 <div id="blog-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    <!-- Card Template -->
                     <div class="blog-article-card flex flex-col bg-white rounded-2xl shadow-md overflow-hidden" data-category="pataletas" data-keywords="pataletas,berrinche,rabieta,llanto,gritos,frustración,enojo,crisis,público,calma,conectar">
                         <a href="#" class="block overflow-hidden"><img src="https://placehold.co/600x400/FF9A8D/3C3C3C?text=Empatía" alt="Niño y madre abrazados" class="w-full h-48 object-cover"></a>
                         <div class="p-4 flex flex-col flex-grow">
@@ -351,7 +324,6 @@
         </section>
 
 
-        <!-- Sección de Preguntas Frecuentes (FAQ) - ACTUALIZADA -->
         <section id="faq" class="section-padding bg-muna-secondary">
             <div class="container mx-auto px-4">
                  <div class="max-w-3xl mx-auto bg-white rounded-2xl shadow-lg p-8">
@@ -401,7 +373,6 @@
             </div>
         </section>
 
-        <!-- Sección Nuestro Equipo -->
         <section id="equipo" class="section-padding bg-white hidden">
             <div class="container mx-auto px-4 text-center">
                 <h2 class="text-4xl font-bold text-muna-primary mb-12">Conoce a Nuestro Equipo</h2>
@@ -409,21 +380,18 @@
                     Somos un equipo apasionado por la tecnología, la salud mental y la crianza respetuosa, unidos por la visión de apoyar a cada familia.
                 </p>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <!-- Miembro del Equipo 1 -->
                     <div class="bg-muna-bg p-6 rounded-card shadow-lg flex flex-col items-center">
                         <img src="https://placehold.co/120x120/8A7ADF/FFFFFF?text=Equipo+1" alt="Miembro del Equipo" class="w-32 h-32 rounded-full object-cover mb-4 shadow-md">
                         <h3 class="text-2xl font-semibold text-muna-secondary mb-2">Dr. Elena Rodríguez</h3>
                         <p class="text-muna-text text-center">CEO & Experta en IA y Salud Mental Infantil.</p>
                         <p class="text-sm text-gray-500 mt-2">Con años de experiencia en desarrollo de IA aplicada a la psicología infantil.</p>
                     </div>
-                    <!-- Miembro del Equipo 2 -->
                     <div class="bg-muna-bg p-6 rounded-card shadow-lg flex flex-col items-center">
                         <img src="https://placehold.co/120x120/6AB09B/FFFFFF?text=Equipo+2" alt="Miembro del Equipo" class="w-32 h-32 rounded-full object-cover mb-4 shadow-md">
                         <h3 class="text-2xl font-semibold text-muna-secondary mb-2">Ing. Marcos Valdés</h3>
                         <p class="text-muna-text text-center">CTO & Desarrollador Principal.</p>
                         <p class="text-sm text-gray-500 mt-2">Visionario de la tecnología con foco en escalabilidad y experiencia de usuario.</p>
                     </div>
-                    <!-- Miembro del Equipo 3 -->
                     <div class="bg-white p-6 rounded-card shadow-lg flex flex-col items-center">
                         <img src="https://placehold.co/120x120/FF9A8D/FFFFFF?text=Equipo+3" alt="Miembro del Equipo" class="w-32 h-32 rounded-full object-cover mb-4 shadow-md">
                         <h3 class="text-2xl font-semibold text-muna-secondary mb-2">Lic. Ana Bustamante</h3>
@@ -434,7 +402,6 @@
             </div>
         </section>
 
-        <!-- Sección de Contacto -->
         <section id="contacto" class="section-padding bg-muna-secondary text-white">
             <div class="container mx-auto px-4 text-center">
                 <h2 class="text-4xl font-bold mb-6">Contáctanos o Descarga Muna IA</h2>
@@ -442,7 +409,6 @@
                     ¿Tienes preguntas? ¿Quieres explorar opciones para tu institución? Estamos aquí para ayudarte.
                 </p>
                 <div class="flex flex-col md:flex-row justify-center items-start gap-12">
-                    <!-- Formulario de Contacto -->
                     <div class="w-full md:w-1/2 bg-muna-primary p-8 rounded-card shadow-lg text-left">
                         <h3 class="text-2xl font-semibold mb-6 text-white">Envíanos un mensaje</h3>
                         <form id="contact-form" class="space-y-4">
@@ -465,7 +431,6 @@
                         </form>
                     </div>
 
-                    <!-- Llamada a la Acción y Redes Sociales -->
                     <div class="w-full md:w-1/2 flex flex-col justify-center items-center md:items-start text-center md:text-left">
                         <h3 class="text-2xl font-semibold mb-6">Prepárate para Muna IA</h3>
                         <p class="text-lg mb-8">
@@ -497,7 +462,6 @@
         </section>
     </main>
 
-    <!-- PÁGINA COMPLETA DE FAQ (Oculta por defecto) -->
     <div id="faq-page" class="hidden bg-muna-bg min-h-screen">
         <header class="bg-muna-bg shadow-md py-4">
             <div class="container mx-auto px-4 flex justify-between items-center">
@@ -511,7 +475,6 @@
         <main class="section-padding">
             <div class="container mx-auto px-4">
                 <div class="max-w-4xl mx-auto">
-                    <!-- Categoría: Sobre Muna IA -->
                     <h3 class="text-3xl font-bold text-muna-secondary mb-6 mt-0">Sobre Muna IA</h3>
                     <div class="faq-item">
                         <button class="faq-question" aria-expanded="false" aria-controls="faq-answer-full-1">
@@ -532,7 +495,6 @@
                         </div>
                     </div>
 
-                    <!-- Categoría: Uso y Funcionalidades -->
                     <h3 class="text-3xl font-bold text-muna-secondary mb-6 mt-10">Uso y Funcionalidades</h3>
                     <div class="faq-item">
                         <button class="faq-question" aria-expanded="false" aria-controls="faq-answer-full-3">
@@ -553,8 +515,7 @@
                         </div>
                     </div>
 
-                     <!-- Categoría: Cuentas y Pagos -->
-                    <h3 class="text-3xl font-bold text-muna-secondary mb-6 mt-10">Cuentas y Pagos</h3>
+                     <h3 class="text-3xl font-bold text-muna-secondary mb-6 mt-10">Cuentas y Pagos</h3>
                      <div class="faq-item">
                         <button class="faq-question" aria-expanded="false" aria-controls="faq-answer-full-5">
                             <span>¿Puedo cancelar mi plan en cualquier momento?</span>
@@ -574,7 +535,6 @@
                         </div>
                     </div>
 
-                    <!-- Categoría: Privacidad y Seguridad -->
                     <h3 class="text-3xl font-bold text-muna-secondary mb-6 mt-10">Privacidad y Seguridad</h3>
                     <div class="faq-item">
                         <button class="faq-question" aria-expanded="false" aria-controls="faq-answer-full-7">
@@ -599,8 +559,6 @@
         </main>
     </div>
 
-    <!-- Modals Section -->
-    <!-- Register Modal -->
     <div id="register-modal" class="modal-overlay">
         <div class="modal-content" style="max-width: 500px;">
             <button class="modal-close-btn close-modal-btn">&times;</button>
@@ -631,7 +589,6 @@
         </div>
     </div>
     
-    <!-- Login Modal -->
     <div id="login-modal" class="modal-overlay">
         <div class="modal-content" style="max-width: 500px;">
             <button class="modal-close-btn close-modal-btn">&times;</button>
@@ -659,7 +616,6 @@
         </div>
     </div>
     
-    <!-- Onboarding Modal (Paso 2: Perfilado Post-Registro) -->
     <div id="onboarding-modal" class="modal-overlay">
         <div class="modal-content">
             <h3 class="text-3xl font-bold text-center text-muna-primary mb-4">¡Bienvenido/a a Muna IA!</h3>
@@ -679,7 +635,6 @@
                     <input type="number" id="child-age" name="child-age" min="0" max="18" class="w-full p-3 rounded-lg bg-muna-bg text-muna-text focus:outline-none focus:ring-2 focus:ring-muna-accent" placeholder="Ej: 3">
                 </div>
 
-                <!-- Sección de Temas de Interés (Consolidados) -->
                 <div class="bg-muna-bg p-6 rounded-lg shadow-inner mt-6">
                     <h4 class="font-bold text-muna-primary text-xl mb-4 text-center">Temas de Interés</h4>
                     <p class="text-sm text-muna-text mb-4 text-center">Selecciona los temas que más te resuenan para personalizar tu experiencia:</p>
@@ -711,7 +666,6 @@
         </div>
     </div>
     
-    <!-- B2B Modal -->
     <div id="b2b-modal" class="modal-overlay">
         <div class="modal-content" style="max-width: 600px;">
             <button class="modal-close-btn close-modal-btn">&times;</button>
@@ -746,7 +700,6 @@
         </div>
     </div>
     
-    <!-- Payment Modal -->
     <div id="payment-modal" class="modal-overlay">
         <div class="modal-content" style="max-width: 500px;">
             <button class="modal-close-btn close-modal-btn">&times;</button>
@@ -766,7 +719,6 @@
         </div>
     </div>
     
-    <!-- Privacy Policy Modal -->
     <div id="privacy-policy-modal" class="modal-overlay">
         <div class="modal-content">
             <button class="modal-close-btn close-modal-btn">&times;</button>
@@ -814,7 +766,6 @@
         </div>
     </div>
     
-    <!-- Terms of Service Modal -->
     <div id="terms-of-service-modal" class="modal-overlay">
         <div class="modal-content">
             <button class="modal-close-btn close-modal-btn">&times;</button>
@@ -840,53 +791,60 @@
             <p class="mb-4">Todo el contenido del servicio, incluyendo el diseño, texto, gráficos, logos, y el software (excluyendo el contenido generado por el usuario), es propiedad de Muna IA o de sus licenciantes y está protegido por las leyes de propiedad intelectual. No puedes copiar, modificar o distribuir nuestro contenido sin nuestro permiso explícito.</p>
 
             <h4 class="text-2xl font-semibold">6. Limitación de Responsabilidad</h4>
-            <p class="mb-4">Muna IA se proporciona "tal cual" y no garantizamos que el servicio sea ininterrumpido o libre de errores. En la medida máxima permitida por la ley, Muna IA no será responsable de ningún daño directo, indirecto, incidental o consecuente que resulte del uso o la incapacidad de usar nuestro servicio.</p>
+            <p class="mb-4">Muna IA se proporciona "tal cual" y no garantizamos que el servicio sea ininterrumpido o libre de errores. En la medida máxima permitida por la ley, Muna IA не será responsable de ningún daño directo, indirecto, incidental o consecuente que resulte del uso o la incapacidad de usar nuestro servicio.</p>
 
             <h4 class="text-2xl font-semibold">7. Modificación de los Términos</h4>
             <p class="mb-4">Nos reservamos el derecho de modificar estos términos en cualquier momento. Te notificaremos de los cambios importantes. El uso continuado del servicio después de dichos cambios constituirá tu aceptación de los nuevos términos.</p>
         </div>
     </div>
 
-    <!-- Sección privada: Panel de Emociones y Chatbot -->
     <section id="user-dashboard" class="section-padding min-h-screen flex-col justify-center items-center px-4 bg-muna-bg hidden">
         <div class="max-w-3xl mx-auto p-8 bg-white rounded-card shadow-lg text-center w-full relative">
-            <!-- Ephemeral confirmation message -->
-            <div id="emotion-confirmation-message" class="ephemeral-message">
-                ¡Emoción registrada!
-            </div>
 
             <h2 class="text-4xl font-bold text-muna-primary mb-6">¡Hola, <span id="dashboard-username">usuario!</span></h2>
 
-            <!-- Quick Emotion Selector (Streamlined) -->
             <div id="emotion-selector-container">
-                 <p class="text-xl text-muna-text mb-8">¿Cómo te sientes hoy?</p>
+                <p class="text-xl text-muna-text mb-8">¿Cómo te sientes hoy?</p>
                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
-                    <button class="emotion-btn flex flex-col items-center p-4 rounded-xl shadow-md bg-muna-bg hover:bg-muna-accent hover:text-white transition-all duration-200" data-emotion="Feliz">
+                    <button class="emotion-btn flex flex-col items-center p-4 rounded-xl shadow-md bg-muna-bg hover:bg-muna-accent hover:text-white transition-all duration-200" data-emotion="Feliz" data-feeling="feliz">
                         <span class="text-5xl">😊</span>
                         <span class="mt-2 text-muna-text text-lg font-medium">Feliz</span>
                     </button>
-                    <button class="emotion-btn flex flex-col items-center p-4 rounded-xl shadow-md bg-muna-bg hover:bg-muna-accent hover:text-white transition-all duration-200" data-emotion="Triste">
+                    <button class="emotion-btn flex flex-col items-center p-4 rounded-xl shadow-md bg-muna-bg hover:bg-muna-accent hover:text-white transition-all duration-200" data-emotion="Triste" data-feeling="triste">
                         <span class="text-5xl">😔</span>
                         <span class="mt-2 text-muna-text text-lg font-medium">Triste</span>
                     </button>
-                    <button class="emotion-btn flex flex-col items-center p-4 rounded-xl shadow-md bg-muna-bg hover:bg-muna-accent hover:text-white transition-all duration-200" data-emotion="Enojado/a">
+                    <button class="emotion-btn flex flex-col items-center p-4 rounded-xl shadow-md bg-muna-bg hover:bg-muna-accent hover:text-white transition-all duration-200" data-emotion="Enojado/a" data-feeling="enojado/a">
                         <span class="text-5xl">😠</span>
                         <span class="mt-2 text-muna-text text-lg font-medium">Enojado/a</span>
                     </button>
-                    <button class="emotion-btn flex flex-col items-center p-4 rounded-xl shadow-md bg-muna-bg hover:bg-muna-accent hover:text-white transition-all duration-200" data-emotion="Tranquilo/a">
+                    <button class="emotion-btn flex flex-col items-center p-4 rounded-xl shadow-md bg-muna-bg hover:bg-muna-accent hover:text-white transition-all duration-200" data-emotion="Tranquilo/a" data-feeling="tranquilo/a">
                         <span class="text-5xl">😌</span>
                         <span class="mt-2 text-muna-text text-lg font-medium">Tranquilo/a</span>
                     </button>
-                    <button class="emotion-btn flex flex-col items-center p-4 rounded-xl shadow-md bg-muna-bg hover:bg-muna-accent hover:text-white transition-all duration-200" data-emotion="Estresado/a">
+                    <button class="emotion-btn flex flex-col items-center p-4 rounded-xl shadow-md bg-muna-bg hover:bg-muna-accent hover:text-white transition-all duration-200" data-emotion="Estresado/a" data-feeling="estresado/a">
                         <span class="text-5xl">😩</span>
                         <span class="mt-2 text-muna-text text-lg font-medium">Estresado/a</span>
                     </button>
-                    <button class="emotion-btn flex flex-col items-center p-4 rounded-xl shadow-md bg-muna-bg hover:bg-muna-accent hover:text-white transition-all duration-200" data-emotion="Agradecido/a">
+                    <button class="emotion-btn flex flex-col items-center p-4 rounded-xl shadow-md bg-muna-bg hover:bg-muna-accent hover:text-white transition-all duration-200" data-emotion="Agradecido/a" data-feeling="agradecido/a">
                         <span class="text-5xl">💖</span>
                         <span class="mt-2 text-muna-text text-lg font-medium">Agradecido/a</span>
                     </button>
                 </div>
             </div>
+
+            <div id="post-emotion-view" class="hidden">
+                <p id="emotion-ack-message" class="text-xl text-muna-text mb-8">
+                    </p>
+                <button id="start-chat-btn" class="btn-accent">
+                    <span>Hablar con Muna ahora</span>
+                    <i class="fas fa-comments ml-3"></i>
+                </button>
+                <button id="change-emotion-btn" class="mt-4 text-sm text-muna-secondary hover:underline">
+                    Cambiar mi emoción
+                </button>
+            </div>
+
         </div>
     </section>
 
@@ -908,7 +866,6 @@
     </div>
 </div>
 
-    <!-- Footer -->
     <footer id="site-footer-main" class="bg-muna-primary py-8 text-white text-center text-lg">
         <div class="container mx-auto px-4">
             <p>&copy; 2024-2025 Muna IA. Todos los derechos reservados.</p>
@@ -921,7 +878,6 @@
         </div>
     </footer>
 
-    <!-- External JavaScript -->
-<script src="script.js?v=1.1"></script>
+    <script src="script.js?v=1.1"></script>
 </body>
 </html>
