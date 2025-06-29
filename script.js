@@ -434,30 +434,32 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     /**
-     * ¡ACCIÓN REQUERIDA!
-     * * Para que el chatbot reciba la emoción, debes añadir el siguiente
-     * código en la sección de "Custom JS" o "JavaScript Personalizado"
-     * dentro de la configuración de tu chatbot en la plataforma Hostybee.
-     * * Este código escuchará el mensaje que le enviamos desde la página principal.
+     * ===================================================================
+     * ¡ACCIÓN REQUERIDA EN HOSTYBEE!
+     * ===================================================================
+     * Para que el chatbot reciba y utilice la emoción, debes encontrar
+     * la sección de "Custom JS" o "JavaScript Personalizado" en Hostybee
+     * (NO en la sección de CSS) y pegar el siguiente código:
      */
     /*
     window.addEventListener('message', function(event) {
-        // Opcional: añadir una comprobación de seguridad del origen
-        // if (event.origin !== 'URL_DE_TU_PAGINA') return;
+        // Opcional: por seguridad, puedes verificar que el mensaje viene de tu sitio web
+        // if (event.origin !== 'https://URL-DE-TU-SITIO.com') return;
 
         if (event.data && event.data.type === 'startConversation') {
             const userEmotion = event.data.emotion;
-            
-            // Aquí es donde usas la variable `userEmotion` en tu chatbot.
-            // Por ejemplo, podrías guardarla en una variable para usarla en el flujo
-            // o enviar un mensaje inicial al usuario.
-            // La sintaxis exacta dependerá de cómo Hostybee maneja las variables y acciones.
-            
-            // Ejemplo conceptual:
-            // hostybee.setVariable('emotion', userEmotion);
-            // hostybee.sendMessage(`Veo que te sientes ${userEmotion}. ¿Quieres hablar de ello?`, { from: 'bot' });
 
-            console.log('Emoción recibida desde la página principal:', userEmotion);
+            // La forma más efectiva de iniciar el flujo de Hostybee es
+            // enviar la emoción como si fuera el primer mensaje del usuario.
+            // Hostybee usa una función `send()` para esto.
+            if (typeof send === 'function') {
+                // Esto hará que el nodo "AI Agent" que tienes en la captura
+                // reciba la emoción en su campo {{ $json.chatInput }}.
+                send(`Hola, me siento ${userEmotion} hoy.`);
+            } else {
+                console.error("La función `send()` de Hostybee no fue encontrada. No se pudo iniciar el chat con la emoción.");
+                console.log("Emoción que se intentó enviar:", userEmotion);
+            }
         }
     });
     */
