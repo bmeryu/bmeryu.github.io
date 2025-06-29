@@ -63,6 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatbotCloseBtn = document.getElementById('chatbot-close-btn');
 
     let loggedInUserEmail = '';
+    let emotionToSendMessage = null; // Variable para "grabar" la emoción
 
     // --- LÓGICA DE VISUALIZACIÓN ---
     const showDashboard = (username, isNewUser) => {
@@ -124,12 +125,30 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
     
+    // --- LÓGICA DEL CHATBOT ---
+    const openChatbot = () => {
+        if (chatbotFloater) {
+            chatbotFloater.classList.remove('is-minimized');
+        }
+
+        // Lógica de "Reproducir": Se ejecuta DESPUÉS de abrir el chat.
+        if (emotionToSendMessage && chatbotIframe && chatbotIframe.contentWindow) {
+            // Esperamos un instante para asegurar que el iframe está listo
+            setTimeout(() => {
+                const message = {
+                    type: 'startConversation',
+                    emotion: emotionToSendMessage
+                };
+                chatbotIframe.contentWindow.postMessage(message, '*');
+                emotionToSendMessage = null; // Borramos la grabación
+            }, 300); // 300ms de espera prudencial
+        }
+    };
+
     // --- INICIALIZACIÓN DE EVENTOS ---
     
-    // Menú móvil
     if (mobileMenuButton) mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
 
-    // Modales
     document.querySelectorAll('.open-modal-btn').forEach(button => {
         button.addEventListener('click', (e) => {
             e.preventDefault();
@@ -157,7 +176,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
     
-    // Dropdown de perfil
     if (profileButton) {
         profileButton.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -174,10 +192,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Chatbot
-    const openChatbot = () => {
-        if (chatbotFloater) chatbotFloater.classList.remove('is-minimized');
-    };
     if (chatbotBubble) chatbotBubble.addEventListener('click', openChatbot);
     if (chatbotCloseBtn) chatbotCloseBtn.addEventListener('click', () => chatbotFloater.classList.add('is-minimized'));
 
@@ -333,23 +347,18 @@ document.addEventListener('DOMContentLoaded', () => {
             const selectedEmotion = button.dataset.emotion; 
             const feeling = button.dataset.feeling;
             
-            // LÓGICA PARA ENVIAR MENSAJE AL CHATBOT (MÉTODO postMessage)
-            if (chatbotIframe && chatbotIframe.contentWindow) {
-                const message = {
-                    type: 'startConversation',
-                    emotion: selectedEmotion
-                };
-                // Envía el "mensajero secreto" al iframe del chatbot
-                chatbotIframe.contentWindow.postMessage(message, '*');
-            }
+            // Lógica de "Grabar": Guardamos la emoción para más tarde
+            emotionToSendMessage = selectedEmotion;
     
             const webhookURL = 'https://muna.auto.hostybee.com/webhook/registrar-emocion';
             const emotionData = { email: loggedInUserEmail, emotion: selectedEmotion };
     
             showConfirmationMessage(`Gracias por compartir que te sientes ${feeling}.`);
     
-            setTimeout(openChatbot, 1500); // Abre el chat después de un momento
+            // Abrimos el chat inmediatamente
+            openChatbot();
     
+            // Enviamos el registro de la emoción al servidor en segundo plano
             try {
                 await fetch(webhookURL, {
                     method: 'POST',
