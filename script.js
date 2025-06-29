@@ -366,8 +366,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    // --- INICIO DE CAMBIOS: NUEVA LÓGICA DE EMOCIONES Y CHATBOT ---
-
     // --- LÓGICA DEL CHATBOT FLOTANTE ---
     const chatbotFloater = document.getElementById('chatbot-floater');
     const chatbotBubble = document.getElementById('chatbot-bubble');
@@ -386,7 +384,7 @@ document.addEventListener('DOMContentLoaded', () => {
         chatbotCloseBtn.addEventListener('click', () => chatbotFloater.classList.add('is-minimized'));
     }
 
-    // --- MANEJO DE EMOCIONES ---
+    // --- MANEJO DE EMOCIONES (VERSIÓN FINAL) ---
     emotionButtons.forEach(button => {
         button.addEventListener('click', async () => { 
             emotionButtons.forEach(btn => btn.classList.remove('selected'));
@@ -395,15 +393,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const selectedEmotion = button.dataset.emotion; 
             const feeling = button.dataset.feeling;
             
-            // LÓGICA PARA ENVIAR MENSAJE AL CHATBOT
-            if (chatbotIframe && chatbotIframe.contentWindow) {
-                const message = {
-                    type: 'startConversation',
-                    emotion: selectedEmotion
-                };
-                // El '*' indica que se puede enviar a cualquier origen, pero por seguridad
-                // es mejor usar el origen exacto del iframe si se conoce.
-                chatbotIframe.contentWindow.postMessage(message, '*');
+            // LÓGICA PARA ACTUALIZAR LA URL DEL IFRAME
+            if (chatbotIframe) {
+                const baseUrl = 'https://muna.auto.hostybee.com/webhook/9bedfe60-a6f1-4592-8d6f-51e7e309affc/chat';
+                // Se codifica la emoción para que sea segura en una URL y se añade como parámetro.
+                const newUrl = `${baseUrl}?startEmotion=${encodeURIComponent(selectedEmotion)}`;
+                
+                // Solo recargamos el iframe si la URL ha cambiado
+                if (chatbotIframe.src !== newUrl) {
+                    chatbotIframe.src = newUrl;
+                }
             }
     
             const webhookURL = 'https://muna.auto.hostybee.com/webhook/registrar-emocion';
@@ -432,50 +431,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
-
-    /**
-     * ===================================================================
-     * ¡ACCIÓN REQUERIDA EN HOSTYBEE!
-     * ===================================================================
-     * Para que el chatbot reciba y utilice la emoción, debes encontrar
-     * la sección de "Custom JS" o "JavaScript Personalizado" en Hostybee
-     * (NO en la sección de CSS) y pegar el siguiente código:
-     */
-    /*
-    window.addEventListener('message', function(event) {
-        // Opcional: por seguridad, puedes verificar que el mensaje viene de tu sitio web
-        // if (event.origin !== 'https://URL-DE-TU-SITIO.com') return;
-
-        if (event.data && event.data.type === 'startConversation') {
-            const userEmotion = event.data.emotion;
-
-            // La forma más efectiva de iniciar el flujo de Hostybee es
-            // enviar la emoción como si fuera el primer mensaje del usuario.
-            // Hostybee usa una función `send()` para esto.
-            if (typeof send === 'function') {
-                // Esto hará que el nodo "AI Agent" que tienes en la captura
-                // reciba la emoción en su campo {{ $json.chatInput }}.
-                send(`Hola, me siento ${userEmotion} hoy.`);
-            } else {
-                console.error("La función `send()` de Hostybee no fue encontrada. No se pudo iniciar el chat con la emoción.");
-                console.log("Emoción que se intentó enviar:", userEmotion);
-            }
-        }
-    });
-    */
-
-    // Lógica para el botón "Cambiar mi emoción"
-    if (changeEmotionBtn) {
-        changeEmotionBtn.addEventListener('click', () => {
-            postEmotionView.classList.add('hidden');
-            emotionSelectorContainer.classList.remove('hidden');
-            emotionButtons.forEach(btn => btn.classList.remove('selected'));
-        });
-    }
-
-    // --- FIN DE CAMBIOS ---
-
-
+    
     // --- NAVEGACIÓN A PÁGINA DE FAQ ---
     if (viewAllFaqsBtn) {
         viewAllFaqsBtn.addEventListener('click', () => {
