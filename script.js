@@ -395,12 +395,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const selectedEmotion = button.dataset.emotion; 
             const feeling = button.dataset.feeling;
             
-            // LÓGICA PARA ACTUALIZAR EL CHATBOT
-            if (chatbotIframe) {
-                const baseUrl = 'https://muna.auto.hostybee.com/webhook/9bedfe60-a6f1-4592-8d6f-51e7e309affc/chat';
-                // Se codifica la emoción para que sea segura en una URL y se añade como parámetro.
-                const newUrl = `${baseUrl}?startEmotion=${encodeURIComponent(selectedEmotion)}`;
-                chatbotIframe.src = newUrl;
+            // LÓGICA PARA ENVIAR MENSAJE AL CHATBOT
+            if (chatbotIframe && chatbotIframe.contentWindow) {
+                const message = {
+                    type: 'startConversation',
+                    emotion: selectedEmotion
+                };
+                // El '*' indica que se puede enviar a cualquier origen, pero por seguridad
+                // es mejor usar el origen exacto del iframe si se conoce.
+                chatbotIframe.contentWindow.postMessage(message, '*');
             }
     
             const webhookURL = 'https://muna.auto.hostybee.com/webhook/registrar-emocion';
@@ -429,6 +432,35 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+
+    /**
+     * ¡ACCIÓN REQUERIDA!
+     * * Para que el chatbot reciba la emoción, debes añadir el siguiente
+     * código en la sección de "Custom JS" o "JavaScript Personalizado"
+     * dentro de la configuración de tu chatbot en la plataforma Hostybee.
+     * * Este código escuchará el mensaje que le enviamos desde la página principal.
+     */
+    /*
+    window.addEventListener('message', function(event) {
+        // Opcional: añadir una comprobación de seguridad del origen
+        // if (event.origin !== 'URL_DE_TU_PAGINA') return;
+
+        if (event.data && event.data.type === 'startConversation') {
+            const userEmotion = event.data.emotion;
+            
+            // Aquí es donde usas la variable `userEmotion` en tu chatbot.
+            // Por ejemplo, podrías guardarla en una variable para usarla en el flujo
+            // o enviar un mensaje inicial al usuario.
+            // La sintaxis exacta dependerá de cómo Hostybee maneja las variables y acciones.
+            
+            // Ejemplo conceptual:
+            // hostybee.setVariable('emotion', userEmotion);
+            // hostybee.sendMessage(`Veo que te sientes ${userEmotion}. ¿Quieres hablar de ello?`, { from: 'bot' });
+
+            console.log('Emoción recibida desde la página principal:', userEmotion);
+        }
+    });
+    */
 
     // Lógica para el botón "Cambiar mi emoción"
     if (changeEmotionBtn) {
