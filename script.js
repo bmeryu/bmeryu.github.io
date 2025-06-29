@@ -109,14 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const userDashboard = document.getElementById('user-dashboard');
     const dashboardUsername = document.getElementById('dashboard-username');
     
-    // --- INICIO DE CAMBIOS: SELECCIÓN DE NUEVOS ELEMENTOS ---
     const emotionButtons = document.querySelectorAll('.emotion-btn');
-    const emotionSelectorContainer = document.getElementById('emotion-selector-container');
-    const postEmotionView = document.getElementById('post-emotion-view');
-    const emotionAckMessage = document.getElementById('emotion-ack-message');
-    const startChatBtn = document.getElementById('start-chat-btn');
-    const changeEmotionBtn = document.getElementById('change-emotion-btn');
-    // --- FIN DE CAMBIOS ---
     
     // Elementos del Dropdown de Perfil
     const profileButton = document.getElementById('profile-button');
@@ -136,12 +129,6 @@ document.addEventListener('DOMContentLoaded', () => {
         userDashboard.classList.remove('hidden');
         userDashboard.classList.add('flex');
         dashboardUsername.textContent = username || 'usuario';
-
-        // --- INICIO DE CAMBIOS: Asegurar que la vista correcta se muestra al entrar al dashboard ---
-        postEmotionView.classList.add('hidden');
-        emotionSelectorContainer.classList.remove('hidden');
-        emotionButtons.forEach(btn => btn.classList.remove('selected'));
-        // --- FIN DE CAMBIOS ---
 
         if (isNewUser) {
             setTimeout(() => {
@@ -175,8 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
         showConfirmationMessage('Has cerrado sesión. ¡Esperamos verte pronto!');
     };
 
-    // --- MANEJADORES DE ENVÍO DE FORMULARIOS (SIMULACIÓN CON WEBHOOKS) ---
-
+    // --- MANEJADORES DE ENVÍO DE FORMULARIOS ---
     if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -384,7 +370,7 @@ document.addEventListener('DOMContentLoaded', () => {
         chatbotCloseBtn.addEventListener('click', () => chatbotFloater.classList.add('is-minimized'));
     }
 
-    // --- MANEJO DE EMOCIONES (VERSIÓN FINAL) ---
+    // --- MANEJO DE EMOCIONES (VERSIÓN FINAL Y SIMPLIFICADA) ---
     emotionButtons.forEach(button => {
         button.addEventListener('click', async () => { 
             emotionButtons.forEach(btn => btn.classList.remove('selected'));
@@ -393,39 +379,31 @@ document.addEventListener('DOMContentLoaded', () => {
             const selectedEmotion = button.dataset.emotion; 
             const feeling = button.dataset.feeling;
             
-            // LÓGICA PARA ACTUALIZAR LA URL DEL IFRAME
-            if (chatbotIframe) {
-                const baseUrl = 'https://muna.auto.hostybee.com/webhook/9bedfe60-a6f1-4592-8d6f-51e7e309affc/chat';
-                // Se codifica la emoción para que sea segura en una URL y se añade como parámetro.
-                const newUrl = `${baseUrl}?startEmotion=${encodeURIComponent(selectedEmotion)}`;
-                
-                // Solo recargamos el iframe si la URL ha cambiado
-                if (chatbotIframe.src !== newUrl) {
-                    chatbotIframe.src = newUrl;
-                }
-            }
-    
-            const webhookURL = 'https://muna.auto.hostybee.com/webhook/registrar-emocion';
-            const emotionData = { email: loggedInUserEmail, emotion: selectedEmotion };
-    
-            // Mostrar mensaje de agradecimiento
             showConfirmationMessage(`Gracias por compartir que te sientes ${feeling}.`);
     
-            // Abrir el chatbot automáticamente después de un breve retraso
+            // Abrir el chatbot
+            openChatbot();
+
+            // Esperar un momento para que el iframe esté listo y luego enviar el mensaje
             setTimeout(() => {
-                openChatbot();
-            }, 1500); // 1.5 segundos de retraso para que el usuario lea el mensaje
-    
-            // Enviar datos al webhook en segundo plano
+                if (chatbotIframe && chatbotIframe.contentWindow) {
+                    const message = {
+                        type: 'startConversation',
+                        emotion: selectedEmotion
+                    };
+                    chatbotIframe.contentWindow.postMessage(message, '*');
+                }
+            }, 500); // 500ms de espera
+
+            // Registrar la emoción en segundo plano
+            const webhookURL = 'https://muna.auto.hostybee.com/webhook/registrar-emocion';
+            const emotionData = { email: loggedInUserEmail, emotion: selectedEmotion };
             try {
-                const response = await fetch(webhookURL, {
+                await fetch(webhookURL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(emotionData)
                 });
-                if (!response.ok) {
-                    console.warn('Hubo un problema al registrar tu emoción.');
-                }
             } catch (error) {
                 console.error('Error de red al registrar emoción:', error);
             }
@@ -502,8 +480,4 @@ document.addEventListener('DOMContentLoaded', () => {
                 filterButtons.forEach(btn => btn.classList.remove('active'));
                 button.classList.add('active');
                 currentCategory = button.dataset.category;
-                filterAndSearch();
-            });
-        });
-    }
-});
+                filterAndSearch
