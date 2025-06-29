@@ -391,7 +391,7 @@ document.addEventListener('DOMContentLoaded', () => {
         button.addEventListener('click', async () => { 
             emotionButtons.forEach(btn => btn.classList.remove('selected'));
             button.classList.add('selected');
-
+    
             const selectedEmotion = button.dataset.emotion; 
             const feeling = button.dataset.feeling;
             
@@ -402,21 +402,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 const newUrl = `${baseUrl}?startEmotion=${encodeURIComponent(selectedEmotion)}`;
                 chatbotIframe.src = newUrl;
             }
-
+    
             const webhookURL = 'https://muna.auto.hostybee.com/webhook/registrar-emocion';
             const emotionData = { email: loggedInUserEmail, emotion: selectedEmotion };
-
-            // 1. Transición de la UI
-            emotionSelectorContainer.classList.add('hidden');
-            emotionAckMessage.textContent = `Gracias por compartir que te sientes ${feeling}. Estoy aquí para ti. ¿Hablamos?`;
-            postEmotionView.classList.remove('hidden');
-
-            // 2. Asignar evento al botón para iniciar chat
-            if (startChatBtn) {
-                startChatBtn.onclick = openChatbot;
-            }
-
-            // 3. Enviar datos al webhook en segundo plano
+    
+            // Mostrar mensaje de agradecimiento
+            showConfirmationMessage(`Gracias por compartir que te sientes ${feeling}.`);
+    
+            // Abrir el chatbot automáticamente después de un breve retraso
+            setTimeout(() => {
+                openChatbot();
+            }, 1500); // 1.5 segundos de retraso para que el usuario lea el mensaje
+    
+            // Enviar datos al webhook en segundo plano
             try {
                 const response = await fetch(webhookURL, {
                     method: 'POST',
