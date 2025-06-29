@@ -13,6 +13,20 @@ document.addEventListener('DOMContentLoaded', () => {
             messageEl.addEventListener('transitionend', () => messageEl.remove());
         }, 3000);
     };
+
+    const setButtonLoadingState = (button, isLoading, loadingText = "Enviando...") => {
+        if (!button) return;
+        if (isLoading) {
+            button.dataset.originalHtml = button.innerHTML;
+            button.disabled = true;
+            button.innerHTML = `<span class="animate-spin h-5 w-5 mr-3 border-t-2 border-b-2 border-white rounded-full" style="display: inline-block;"></span><span>${loadingText}</span>`;
+        } else {
+            button.disabled = false;
+            if (button.dataset.originalHtml) {
+                button.innerHTML = button.dataset.originalHtml;
+            }
+        }
+    };
     
     // --- SELECCIÓN DE ELEMENTOS ---
     const mobileMenuButton = document.getElementById('mobile-menu-button');
@@ -115,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Menú móvil
     if (mobileMenuButton) mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
 
-    // Modales (corregido para usar selectores globales)
+    // Modales
     document.querySelectorAll('.open-modal-btn').forEach(button => {
         button.addEventListener('click', (e) => {
             e.preventDefault();
@@ -169,7 +183,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- FORMULARIOS ---
 
-    // UX MEJORADA PARA LOGIN
     if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -177,11 +190,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const password = document.getElementById('login-password').value;
             const errorMessage = document.getElementById('login-error-message');
             const submitButton = loginForm.querySelector('button[type="submit"]');
-            const originalButtonHTML = submitButton.innerHTML;
-
-            // 1. Mostrar estado de carga inmediatamente
-            submitButton.disabled = true;
-            submitButton.innerHTML = `<span class="animate-spin h-5 w-5 mr-3 border-t-2 border-b-2 border-white rounded-full"></span>Iniciando sesión...`;
+            
+            setButtonLoadingState(submitButton, true, "Iniciando sesión...");
             errorMessage.classList.add('hidden');
 
             const webhookURL = 'https://muna.auto.hostybee.com/webhook/login';
@@ -204,18 +214,117 @@ document.addEventListener('DOMContentLoaded', () => {
                 errorMessage.textContent = 'No se pudo conectar con el servidor.';
                 errorMessage.classList.remove('hidden');
             } finally {
-                // 2. Restaurar el botón al finalizar
-                submitButton.disabled = false;
-                submitButton.innerHTML = originalButtonHTML;
+                setButtonLoadingState(submitButton, false);
             }
         });
     }
     
-    if (registerForm) { /* ...código de registro sin cambios... */ }
-    if (onboardingForm) { /* ...código de onboarding sin cambios... */ }
-    // ...resto de formularios
+    if (registerForm) {
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            const submitButton = registerForm.querySelector('button[type="submit"]');
+            
+            setButtonLoadingState(submitButton, true, "Creando cuenta...");
 
-    // Manejo de emociones (versión final)
+            const webhookURL = 'https://muna.auto.hostybee.com/webhook/registro'; 
+            const formData = { email, password, registeredAt: new Date().toISOString() };
+    
+            try {
+                const response = await fetch(webhookURL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData),
+                });
+                const result = await response.json();
+                if (result.success === true) {
+                    closeModal(registerForm.closest('.modal-overlay'));
+                    updateUIForLogin(email, true);
+                } else {
+                    alert(result.message);
+                }
+            } catch (error) {
+                console.error('Error de red en registro:', error);
+                alert('No se pudo completar el registro por un error de red.');
+            } finally {
+                setButtonLoadingState(submitButton, false);
+            }
+        });
+    }
+
+    if (b2bForm) {
+        b2bForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const submitButton = b2bForm.querySelector('button[type="submit"]');
+            setButtonLoadingState(submitButton, true);
+
+            const institutionName = document.getElementById('b2b-institution').value;
+            const webhookURL = 'https://muna.auto.hostybee.com/webhook/solicitud-b2b';
+            const formData = {
+                name: document.getElementById('b2b-name').value,
+                email: document.getElementById('b2b-email').value,
+                institution: institutionName,
+                role: document.getElementById('b2b-role').value,
+                families: document.getElementById('b2b-families').value
+            };
+            try {
+                const response = await fetch(webhookURL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData),
+                });
+                if (response.ok) {
+                    closeModal(b2bForm.closest('.modal-overlay'));
+                    showConfirmationMessage(`¡Gracias! El kit para ${institutionName} se ha enviado a tu correo.`);
+                    b2bForm.reset();
+                } else {
+                    alert('Hubo un problema al enviar tu solicitud.');
+                }
+            } catch (error) {
+                console.error('Error de red en B2B:', error);
+                alert('No se pudo enviar tu solicitud por un error de red.');
+            } finally {
+                setButtonLoadingState(submitButton, false);
+            }
+        });
+    }
+
+    if (contactForm) {
+        contactForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const submitButton = contactForm.querySelector('button[type="submit"]');
+            setButtonLoadingState(submitButton, true);
+
+            const webhookURL = 'https://muna.auto.hostybee.com/webhook/solicitud-contacto';
+            const formData = {
+                name: contactForm.querySelector('#name').value,
+                email: contactForm.querySelector('#email').value,
+                message: contactForm.querySelector('#message').value
+            };
+    
+            try {
+                const response = await fetch(webhookURL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams(formData).toString(),
+                });
+                if (response.ok) {
+                    showConfirmationMessage('¡Gracias! Tu mensaje ha sido enviado.');
+                    contactForm.reset();
+                } else {
+                    alert('Hubo un problema al procesar tu mensaje en el servidor.');
+                }
+            } catch (error) {
+                console.error('Error de red en contacto:', error);
+                alert('No se pudo enviar el mensaje por un error de red.');
+            } finally {
+                setButtonLoadingState(submitButton, false);
+            }
+        });
+    }
+
+    // Manejo de emociones
     emotionButtons.forEach(button => {
         button.addEventListener('click', async () => { 
             emotionButtons.forEach(btn => btn.classList.remove('selected'));
@@ -224,10 +333,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const selectedEmotion = button.dataset.emotion; 
             const feeling = button.dataset.feeling;
             
-            if (chatbotIframe) {
-                const baseUrl = 'https://muna.auto.hostybee.com/webhook/9bedfe60-a6f1-4592-8d6f-51e7e309affc/chat';
-                const newUrl = `${baseUrl}?startEmotion=${encodeURIComponent(selectedEmotion)}`;
-                if (chatbotIframe.src !== newUrl) chatbotIframe.src = newUrl;
+            // LÓGICA PARA ENVIAR MENSAJE AL CHATBOT (MÉTODO postMessage)
+            if (chatbotIframe && chatbotIframe.contentWindow) {
+                const message = {
+                    type: 'startConversation',
+                    emotion: selectedEmotion
+                };
+                // Envía el "mensajero secreto" al iframe del chatbot
+                chatbotIframe.contentWindow.postMessage(message, '*');
             }
     
             const webhookURL = 'https://muna.auto.hostybee.com/webhook/registrar-emocion';
@@ -235,7 +348,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
             showConfirmationMessage(`Gracias por compartir que te sientes ${feeling}.`);
     
-            setTimeout(openChatbot, 1500);
+            setTimeout(openChatbot, 1500); // Abre el chat después de un momento
     
             try {
                 await fetch(webhookURL, {
@@ -250,10 +363,73 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     // Navegación y otros
-    if (viewAllFaqsBtn) { /* ...código sin cambios... */ }
-    if (backToMainBtn) { /* ...código sin cambios... */ }
-    document.querySelectorAll('.faq-question').forEach(button => { /* ...código sin cambios... */ });
+    if (viewAllFaqsBtn) {
+        viewAllFaqsBtn.addEventListener('click', () => {
+            mainContent.classList.add('hidden');
+            siteFooterMain.classList.add('hidden');
+            faqPage.classList.remove('hidden');
+            window.scrollTo(0, 0);
+        });
+    }
+    if (backToMainBtn) {
+        backToMainBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            showMainSiteView();
+        });
+    }
+    document.querySelectorAll('.faq-question').forEach(button => {
+        button.addEventListener('click', () => {
+            const answer = document.getElementById(button.getAttribute('aria-controls'));
+            const isExpanded = button.getAttribute('aria-expanded') === 'true';
+            button.setAttribute('aria-expanded', !isExpanded);
+            button.classList.toggle('active');
+            if (!isExpanded) {
+                answer.style.maxHeight = answer.scrollHeight + 'px';
+                answer.style.padding = '0 1.5rem 1.5rem 1.5rem';
+            } else {
+                answer.style.maxHeight = null;
+                answer.style.padding = '0 1.5rem';
+            }
+        });
+    });
+
     // Búsqueda del blog
     const searchInput = document.getElementById('blog-search-input');
-    if(searchInput){ /* ...código sin cambios... */ }
+    const filterButtons = document.querySelectorAll('.blog-filter-btn');
+    const articles = document.querySelectorAll('.blog-article-card');
+    const noResultsMessage = document.getElementById('no-results-message');
+    let currentCategory = 'todos';
+
+    function filterAndSearch() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        let articlesFound = false;
+
+        articles.forEach(article => {
+            const categoryMatch = currentCategory === 'todos' || article.dataset.category === currentCategory;
+            const searchMatch = searchTerm === '' || 
+                                article.dataset.keywords.toLowerCase().includes(searchTerm) ||
+                                article.querySelector('h3').textContent.toLowerCase().includes(searchTerm);
+
+            if (categoryMatch && searchMatch) {
+                article.style.display = 'flex';
+                articlesFound = true;
+            } else {
+                article.style.display = 'none';
+            }
+        });
+        
+        noResultsMessage.style.display = articlesFound ? 'none' : 'block';
+    }
+
+    if (searchInput) searchInput.addEventListener('input', filterAndSearch);
+    if (filterButtons.length) {
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                currentCategory = button.dataset.category;
+                filterAndSearch();
+            });
+        });
+    }
 });
