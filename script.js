@@ -137,11 +137,12 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 const message = {
                     type: 'startConversation',
-                    emotion: emotionToSendMessage
+                    emotion: emotionToSendMessage,
+                    focus: true // Se añade la instrucción de hacer focus
                 };
                 chatbotIframe.contentWindow.postMessage(message, '*');
                 emotionToSendMessage = null; // Borramos la grabación
-            }, 300); // 300ms de espera prudencial
+            }, 500); // Se aumenta el tiempo para más fiabilidad
         }
     };
 
@@ -344,7 +345,8 @@ document.addEventListener('DOMContentLoaded', () => {
             emotionButtons.forEach(btn => btn.classList.remove('selected'));
             button.classList.add('selected');
     
-            const selectedEmotion = button.dataset.emotion; 
+            // Se usa el atributo 'value' si existe, si no, se usa 'data-emotion' como respaldo.
+            const selectedEmotion = button.value || button.dataset.emotion; 
             const feeling = button.dataset.feeling;
             
             // Lógica de "Grabar": Guardamos la emoción para más tarde
