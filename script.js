@@ -1,7 +1,8 @@
+// El script se ejecuta solo cuando el DOM se ha cargado completamente.
 document.addEventListener('DOMContentLoaded', () => {
 
     // --- FUNCIONES AUXILIARES ---
-    const showConfirmationMessage = (message, duration = 3000) => {
+    const showConfirmationMessage = (message) => {
         const messageEl = document.createElement('div');
         messageEl.textContent = message;
         messageEl.className = 'ephemeral-message';
@@ -10,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             messageEl.classList.remove('show');
             messageEl.addEventListener('transitionend', () => messageEl.remove());
-        }, duration);
+        }, 3000);
     };
 
     const setButtonLoadingState = (button, isLoading, loadingText = "Enviando...") => {
@@ -21,11 +22,13 @@ document.addEventListener('DOMContentLoaded', () => {
             button.innerHTML = `<span class="animate-spin h-5 w-5 mr-3 border-t-2 border-b-2 border-white rounded-full" style="display: inline-block;"></span><span>${loadingText}</span>`;
         } else {
             button.disabled = false;
-            if (button.dataset.originalHtml) button.innerHTML = button.dataset.originalHtml;
+            if (button.dataset.originalHtml) {
+                button.innerHTML = button.dataset.originalHtml;
+            }
         }
     };
     
-    // --- SELECCIÓN DE ELEMENTOS (ÚNICA Y COMPLETA) ---
+    // --- SELECCIÓN DE ELEMENTOS ---
     const mobileMenuButton = document.getElementById('mobile-menu-button');
     const mobileMenu = document.getElementById('mobile-menu');
     const mainContent = document.getElementById('main-content');
@@ -44,6 +47,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const userDashboard = document.getElementById('user-dashboard');
     const dashboardUsername = document.getElementById('dashboard-username');
     const emotionButtons = document.querySelectorAll('.emotion-btn');
+    const emotionSelectorContainer = document.getElementById('emotion-selector-container');
+    const postEmotionView = document.getElementById('post-emotion-view');
+    const emotionAckMessage = document.getElementById('emotion-ack-message');
+    const startChatBtn = document.getElementById('start-chat-btn');
+    const changeEmotionBtn = document.getElementById('change-emotion-btn');
     const profileButton = document.getElementById('profile-button');
     const profileDropdown = document.getElementById('profile-dropdown');
     const loggedOutView = document.getElementById('logged-out-view');
@@ -55,7 +63,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatbotCloseBtn = document.getElementById('chatbot-close-btn');
 
     let loggedInUserEmail = '';
-    let emotionToSendMessage = null;
+    let emotionToSendMessage = null; // almacena la emoción elegida
+    let emotionToSendMessage = null; // Variable para "grabar" la emoción
 
     // --- LÓGICA DE VISUALIZACIÓN ---
     const showDashboard = (username, isNewUser) => {
@@ -66,7 +75,10 @@ document.addEventListener('DOMContentLoaded', () => {
         userDashboard.classList.remove('hidden');
         userDashboard.classList.add('flex');
         dashboardUsername.textContent = username || 'usuario';
+        postEmotionView.classList.add('hidden');
+        emotionSelectorContainer.classList.remove('hidden');
         emotionButtons.forEach(btn => btn.classList.remove('selected'));
+
         if (isNewUser) {
             setTimeout(() => openModal(document.getElementById('onboarding-modal')), 500);
         }
@@ -116,18 +128,39 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // --- LÓGICA DEL CHATBOT ---
     const openChatbot = () => {
-        if (chatbotFloater) chatbotFloater.classList.remove('is-minimized');
+        if (chatbotFloater) {
+            chatbotFloater.classList.remove('is-minimized');
+        }
 
-        if (emotionToSendMessage && chatbotIframe && chatbotIframe.contentWindow) {
-            setTimeout(() => {
-                const message = { type: 'startConversation', emotion: emotionToSendMessage };
+        // Lógica de "Reproducir": Se ejecuta DESPUÉS de abrir el chat.
+        
+if (emotionToSendMessage && chatbotIframe && chatbotIframe.contentWindow) {
+    const postEmotion = () => {
+        chatbotIframe.contentWindow.postMessage(
+            {
+                type: 'sendMessage',
+                text: `Hoy me siento ${emotionToSendMessage}`
+            },
+            '*'
+        );
+        emotionToSendMessage = null;
+    };
+    // si el iframe ya cargó, enviamos en 500 ms, si no, esperamos su carga
+    if (chatbotIframe.complete) {
+        setTimeout(postEmotion, 500);
+    } else {
+        chatbotIframe.addEventListener('load', () => setTimeout(postEmotion, 300));
+    }
+}
+;
                 chatbotIframe.contentWindow.postMessage(message, '*');
-                emotionToSendMessage = null;
-            }, 500);
+                emotionToSendMessage = null; // Borramos la grabación
+            }, 500); // Se aumenta el tiempo para más fiabilidad
         }
     };
 
     // --- INICIALIZACIÓN DE EVENTOS ---
+    
     if (mobileMenuButton) mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
 
     document.querySelectorAll('.open-modal-btn').forEach(button => {
@@ -177,6 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (chatbotCloseBtn) chatbotCloseBtn.addEventListener('click', () => chatbotFloater.classList.add('is-minimized'));
 
     // --- FORMULARIOS ---
+
     if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -187,6 +221,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             setButtonLoadingState(submitButton, true, "Iniciando sesión...");
             errorMessage.classList.add('hidden');
+
             const webhookURL = 'https://muna.auto.hostybee.com/webhook/login';
             try {
                 const response = await fetch(webhookURL, {
@@ -203,6 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     errorMessage.classList.remove('hidden');
                 }
             } catch (error) {
+                console.error('Error de conexión en login:', error);
                 errorMessage.textContent = 'No se pudo conectar con el servidor.';
                 errorMessage.classList.remove('hidden');
             } finally {
@@ -217,9 +253,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const email = document.getElementById('register-email').value;
             const password = document.getElementById('register-password').value;
             const submitButton = registerForm.querySelector('button[type="submit"]');
+            
             setButtonLoadingState(submitButton, true, "Creando cuenta...");
+
             const webhookURL = 'https://muna.auto.hostybee.com/webhook/registro'; 
             const formData = { email, password, registeredAt: new Date().toISOString() };
+    
             try {
                 const response = await fetch(webhookURL, {
                     method: 'POST',
@@ -234,6 +273,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     alert(result.message);
                 }
             } catch (error) {
+                console.error('Error de red en registro:', error);
                 alert('No se pudo completar el registro por un error de red.');
             } finally {
                 setButtonLoadingState(submitButton, false);
@@ -241,24 +281,132 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- MANEJO DE EMOCIONES ---
+    if (b2bForm) {
+        b2bForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const submitButton = b2bForm.querySelector('button[type="submit"]');
+            setButtonLoadingState(submitButton, true);
+
+            const institutionName = document.getElementById('b2b-institution').value;
+            const webhookURL = 'https://muna.auto.hostybee.com/webhook/solicitud-b2b';
+            const formData = {
+                name: document.getElementById('b2b-name').value,
+                email: document.getElementById('b2b-email').value,
+                institution: institutionName,
+                role: document.getElementById('b2b-role').value,
+                families: document.getElementById('b2b-families').value
+            };
+            try {
+                const response = await fetch(webhookURL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData),
+                });
+                if (response.ok) {
+                    closeModal(b2bForm.closest('.modal-overlay'));
+                    showConfirmationMessage(`¡Gracias! El kit para ${institutionName} se ha enviado a tu correo.`);
+                    b2bForm.reset();
+                } else {
+                    alert('Hubo un problema al enviar tu solicitud.');
+                }
+            } catch (error) {
+                console.error('Error de red en B2B:', error);
+                alert('No se pudo enviar tu solicitud por un error de red.');
+            } finally {
+                setButtonLoadingState(submitButton, false);
+            }
+        });
+    }
+
+    if (contactForm) {
+        contactForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const submitButton = contactForm.querySelector('button[type="submit"]');
+            setButtonLoadingState(submitButton, true);
+
+            const webhookURL = 'https://muna.auto.hostybee.com/webhook/solicitud-contacto';
+            const formData = {
+                name: contactForm.querySelector('#name').value,
+                email: contactForm.querySelector('#email').value,
+                message: contactForm.querySelector('#message').value
+            };
+    
+            try {
+                const response = await fetch(webhookURL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams(formData).toString(),
+                });
+                if (response.ok) {
+                    showConfirmationMessage('¡Gracias! Tu mensaje ha sido enviado.');
+                    contactForm.reset();
+                } else {
+                    alert('Hubo un problema al procesar tu mensaje en el servidor.');
+                }
+            } catch (error) {
+                console.error('Error de red en contacto:', error);
+                alert('No se pudo enviar el mensaje por un error de red.');
+            } finally {
+                setButtonLoadingState(submitButton, false);
+            }
+        });
+    }
+document.addEventListener('DOMContentLoaded', () => {
+
+    // --- FUNCIONES AUXILIARES ---
+    const showConfirmationMessage = (message, duration = 3000) => {
+        const messageEl = document.createElement('div');
+        messageEl.textContent = message;
+        messageEl.className = 'ephemeral-message';
+        document.body.appendChild(messageEl);
+        setTimeout(() => messageEl.classList.add('show'), 10);
+        setTimeout(() => {
+            messageEl.classList.remove('show');
+            messageEl.addEventListener('transitionend', () => messageEl.remove());
+        }, duration);
+    };
+
+    const setButtonLoadingState = (button, isLoading, loadingText = "Enviando...") => {
+        if (!button) return;
+        if (isLoading) {
+            button.dataset.originalHtml = button.innerHTML;
+            button.disabled = true;
+            button.innerHTML = `<span class="animate-spin h-5 w-5 mr-3 border-t-2 border-b-2 border-white rounded-full" style="display: inline-block;"></span><span>${loadingText}</span>`;
+        } else {
+            button.disabled = false;
+            if (button.dataset.originalHtml) button.innerHTML = button.dataset.originalHtml;
+        }
+    };
+    
+    // --- SELECTORES ---
+    // (Asegúrate de tener todos tus selectores aquí)
+    const emotionButtons = document.querySelectorAll('.emotion-btn');
+    const chatbotFloater = document.getElementById('chatbot-floater');
+    const chatbotBubble = document.getElementById('chatbot-bubble');
+    const chatbotCloseBtn = document.getElementById('chatbot-close-btn');
+    let loggedInUserEmail = ''; // Esta variable debería ser seteada en tu lógica de login
+
+    // --- LÓGICA DEL CHATBOT ---
+    const openChatbot = () => {
+        if (chatbotFloater) chatbotFloater.classList.remove('is-minimized');
+    };
+
+    if (chatbotBubble) chatbotBubble.addEventListener('click', openChatbot);
+    if (chatbotCloseBtn) chatbotCloseBtn.addEventListener('click', () => chatbotFloater.classList.add('is-minimized'));
+
+    // --- MANEJO DE EMOCIONES (VERSIÓN SIMPLIFICADA) ---
     emotionButtons.forEach(button => {
         button.addEventListener('click', async () => { 
             emotionButtons.forEach(btn => btn.classList.remove('selected'));
             button.classList.add('selected');
     
-            const selectedEmotion = button.value || button.dataset.emotion; 
+            const selectedEmotion = button.dataset.emotion;   // FIX
+            emotionToSendMessage = selectedEmotion;
             const feeling = button.dataset.feeling;
             
-            emotionToSendMessage = selectedEmotion;
-    
+            // 1. Registra la emoción en segundo plano (opcional)
             const webhookURL = 'https://muna.auto.hostybee.com/webhook/registrar-emocion';
             const emotionData = { email: loggedInUserEmail, emotion: selectedEmotion };
-    
-            showConfirmationMessage(`Gracias por compartir que te sientes ${feeling}.`);
-    
-            openChatbot();
-    
             try {
                 await fetch(webhookURL, {
                     method: 'POST',
@@ -268,10 +416,19 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (error) {
                 console.error('Error al registrar la emoción:', error);
             }
+            
+            // 2. Simplemente abre el chat. La conversación empezará dentro.
+            showConfirmationMessage(`Gracias por compartir que te sientes ${feeling}.`);
+            openChatbot();
         });
     });
+
+    // --- RESTO DE TU CÓDIGO ---
+    // (Aquí va toda la lógica que ya funciona para modales, login, formularios, etc.)
+});
+
     
-    // --- NAVEGACIÓN Y OTROS ---
+    // Navegación y otros
     if (viewAllFaqsBtn) {
         viewAllFaqsBtn.addEventListener('click', () => {
             mainContent.classList.add('hidden');
@@ -286,32 +443,52 @@ document.addEventListener('DOMContentLoaded', () => {
             showMainSiteView();
         });
     }
-    
-    const searchInput = document.getElementById('blog-search-input');
-    if (searchInput) {
-        const filterButtons = document.querySelectorAll('.blog-filter-btn');
-        const articles = document.querySelectorAll('.blog-article-card');
-        const noResultsMessage = document.getElementById('no-results-message');
-        let currentCategory = 'todos';
+    document.querySelectorAll('.faq-question').forEach(button => {
+        button.addEventListener('click', () => {
+            const answer = document.getElementById(button.getAttribute('aria-controls'));
+            const isExpanded = button.getAttribute('aria-expanded') === 'true';
+            button.setAttribute('aria-expanded', !isExpanded);
+            button.classList.toggle('active');
+            if (!isExpanded) {
+                answer.style.maxHeight = answer.scrollHeight + 'px';
+                answer.style.padding = '0 1.5rem 1.5rem 1.5rem';
+            } else {
+                answer.style.maxHeight = null;
+                answer.style.padding = '0 1.5rem';
+            }
+        });
+    });
 
-        function filterAndSearch() {
-            const searchTerm = searchInput.value.toLowerCase().trim();
-            let articlesFound = false;
-            articles.forEach(article => {
-                const categoryMatch = currentCategory === 'todos' || article.dataset.category === currentCategory;
-                const searchMatch = searchTerm === '' || 
-                                    article.dataset.keywords.toLowerCase().includes(searchTerm) ||
-                                    article.querySelector('h3').textContent.toLowerCase().includes(searchTerm);
-                if (categoryMatch && searchMatch) {
-                    article.style.display = 'flex';
-                    articlesFound = true;
-                } else {
-                    article.style.display = 'none';
-                }
-            });
-            noResultsMessage.style.display = articlesFound ? 'none' : 'block';
-        }
-        searchInput.addEventListener('input', filterAndSearch);
+    // Búsqueda del blog
+    const searchInput = document.getElementById('blog-search-input');
+    const filterButtons = document.querySelectorAll('.blog-filter-btn');
+    const articles = document.querySelectorAll('.blog-article-card');
+    const noResultsMessage = document.getElementById('no-results-message');
+    let currentCategory = 'todos';
+
+    function filterAndSearch() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        let articlesFound = false;
+
+        articles.forEach(article => {
+            const categoryMatch = currentCategory === 'todos' || article.dataset.category === currentCategory;
+            const searchMatch = searchTerm === '' || 
+                                article.dataset.keywords.toLowerCase().includes(searchTerm) ||
+                                article.querySelector('h3').textContent.toLowerCase().includes(searchTerm);
+
+            if (categoryMatch && searchMatch) {
+                article.style.display = 'flex';
+                articlesFound = true;
+            } else {
+                article.style.display = 'none';
+            }
+        });
+        
+        noResultsMessage.style.display = articlesFound ? 'none' : 'block';
+    }
+
+    if (searchInput) searchInput.addEventListener('input', filterAndSearch);
+    if (filterButtons.length) {
         filterButtons.forEach(button => {
             button.addEventListener('click', () => {
                 filterButtons.forEach(btn => btn.classList.remove('active'));
@@ -319,6 +496,39 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentCategory = button.dataset.category;
                 filterAndSearch();
             });
+        });
+    }
+});
+
+
+// ======== Patch: ensure profile dropdown and chatbot bubble work even if previous listeners failed ========
+document.addEventListener('DOMContentLoaded', () => {
+    const profileButtonPatched = document.getElementById('profile-button');
+    const profileDropdownPatched = document.getElementById('profile-dropdown');
+    if (profileButtonPatched && profileDropdownPatched) {
+        profileButtonPatched.addEventListener('click', (e) => {
+            e.stopPropagation();
+            profileDropdownPatched.classList.toggle('active');
+        });
+        document.addEventListener('click', (e) => {
+            if (!profileDropdownPatched.contains(e.target) && !profileButtonPatched.contains(e.target)) {
+                profileDropdownPatched.classList.remove('active');
+            }
+        });
+    }
+
+    const chatbotFloaterPatched = document.getElementById('chatbot-floater');
+    const chatbotBubblePatched = document.getElementById('chatbot-bubble');
+    const chatbotCloseBtnPatched = document.getElementById('chatbot-close-btn');
+    if (chatbotBubblePatched && chatbotFloaterPatched) {
+        chatbotBubblePatched.addEventListener('click', () => {
+            chatbotFloaterPatched.classList.remove('is-minimized');
+            if (typeof openChatbot === 'function') openChatbot();
+        });
+    }
+    if (chatbotCloseBtnPatched) {
+        chatbotCloseBtnPatched.addEventListener('click', () => {
+            chatbotFloaterPatched?.classList.add('is-minimized');
         });
     }
 });
