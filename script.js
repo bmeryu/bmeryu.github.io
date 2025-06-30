@@ -127,32 +127,36 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     
     // --- LÓGICA DEL CHATBOT ---
-    const openChatbot = () => {
-        if (chatbotFloater) {
-            chatbotFloater.classList.remove('is-minimized');
-        }
-
-        // Lógica de "Reproducir": Se ejecuta DESPUÉS de abrir el chat.
-        
-if (emotionToSendMessage && chatbotIframe && chatbotIframe.contentWindow) {
-    const postEmotion = () => {
-        chatbotIframe.contentWindow.postMessage(
-            {
-                type: 'sendMessage',
-                text: `Hoy me siento ${emotionToSendMessage}`
-            },
-            '*'
-        );
-        emotionToSendMessage = null;
-    };
-    // si el iframe ya cargó, enviamos en 500 ms, si no, esperamos su carga
-    if (chatbotIframe.complete) {
-        setTimeout(postEmotion, 500);
-    } else {
-        chatbotIframe.addEventListener('load', () => setTimeout(postEmotion, 300));
+    
+const openChatbot = () => {
+    if (chatbotFloater) {
+        chatbotFloater.classList.remove('is-minimized');
     }
-}
-;
+
+    // Enviar emoción como primer mensaje visible cuando exista
+    if (emotionToSendMessage && chatbotIframe && chatbotIframe.contentWindow) {
+
+        const sendEmotionMessage = () => {
+            chatbotIframe.contentWindow.postMessage(
+                {
+                    type: 'sendMessage',
+                    text: `Hoy me siento ${emotionToSendMessage}`
+                },
+                '*'
+            );
+            emotionToSendMessage = null; // limpiar variable
+        };
+
+        // Si el iframe ya está cargado
+        if (chatbotIframe.contentDocument?.readyState === 'complete') {
+            setTimeout(sendEmotionMessage, 300);
+        } else {
+            // Espera al evento load solo una vez
+            chatbotIframe.addEventListener('load', () => setTimeout(sendEmotionMessage, 300), { once: true });
+        }
+    }
+};
+
                 chatbotIframe.contentWindow.postMessage(message, '*');
                 emotionToSendMessage = null; // Borramos la grabación
             }, 500); // Se aumenta el tiempo para más fiabilidad
