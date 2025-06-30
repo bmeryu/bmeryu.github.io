@@ -1,301 +1,489 @@
-/* =====================================================================
- *  Muna IA – script.js   (versión limpia 2025-06-30)
- * ===================================================================== */
-
+// El script se ejecuta solo cuando el DOM se ha cargado completamente.
 document.addEventListener('DOMContentLoaded', () => {
 
-  /* ---------- 1. UTILIDADES BÁSICAS ---------- */
+    // --- FUNCIONES AUXILIARES ---
+    const showConfirmationMessage = (message) => {
+        const messageEl = document.createElement('div');
+        messageEl.textContent = message;
+        messageEl.className = 'ephemeral-message';
+        document.body.appendChild(messageEl);
+        setTimeout(() => messageEl.classList.add('show'), 10);
+        setTimeout(() => {
+            messageEl.classList.remove('show');
+            messageEl.addEventListener('transitionend', () => messageEl.remove());
+        }, 3000);
+    };
 
-  const showConfirmationMessage = (message, duration = 3000) => {
-    const el = document.createElement('div');
-    el.textContent = message;
-    el.className = 'ephemeral-message';
-    document.body.appendChild(el);
-    setTimeout(() => el.classList.add('show'), 20);
-    setTimeout(() => {
-      el.classList.remove('show');
-      el.addEventListener('transitionend', () => el.remove());
-    }, duration);
-  };
+    const setButtonLoadingState = (button, isLoading, loadingText = "Enviando...") => {
+        if (!button) return;
+        if (isLoading) {
+            button.dataset.originalHtml = button.innerHTML;
+            button.disabled = true;
+            button.innerHTML = `<span class="animate-spin h-5 w-5 mr-3 border-t-2 border-b-2 border-white rounded-full" style="display: inline-block;"></span><span>${loadingText}</span>`;
+        } else {
+            button.disabled = false;
+            if (button.dataset.originalHtml) {
+                button.innerHTML = button.dataset.originalHtml;
+            }
+        }
+    };
+    
+    // --- SELECCIÓN DE ELEMENTOS ---
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const mainContent = document.getElementById('main-content');
+    const faqPage = document.getElementById('faq-page');
+    const siteHeader = document.getElementById('site-header');
+    const siteFooterMain = document.getElementById('site-footer-main');
+    const viewAllFaqsBtn = document.getElementById('view-all-faqs-btn');
+    const backToMainBtn = document.getElementById('back-to-main-btn');
+    const chatbotIframe = document.querySelector('#chatbot-body iframe');
+    const loginForm = document.getElementById('login-form');
+    const registerForm = document.getElementById('register-form');
+    const onboardingForm = document.getElementById('onboarding-form');
+    const b2bForm = document.getElementById('b2b-form');
+    const paymentForm = document.getElementById('payment-form');
+    const contactForm = document.getElementById('contact-form');
+    const userDashboard = document.getElementById('user-dashboard');
+    const dashboardUsername = document.getElementById('dashboard-username');
+    const emotionButtons = document.querySelectorAll('.emotion-btn');
+    const emotionSelectorContainer = document.getElementById('emotion-selector-container');
+    const postEmotionView = document.getElementById('post-emotion-view');
+    const emotionAckMessage = document.getElementById('emotion-ack-message');
+    const startChatBtn = document.getElementById('start-chat-btn');
+    const changeEmotionBtn = document.getElementById('change-emotion-btn');
+    const profileButton = document.getElementById('profile-button');
+    const profileDropdown = document.getElementById('profile-dropdown');
+    const loggedOutView = document.getElementById('logged-out-view');
+    const loggedInView = document.getElementById('logged-in-view');
+    const profileEmail = document.getElementById('profile-email');
+    const logoutButton = document.getElementById('logout-button');
+    const chatbotFloater = document.getElementById('chatbot-floater');
+    const chatbotBubble = document.getElementById('chatbot-bubble');
+    const chatbotCloseBtn = document.getElementById('chatbot-close-btn');
 
-  const setButtonLoadingState = (btn, isLoading, text = 'Enviando…') => {
-    if (!btn) return;
-    if (isLoading) {
-      btn.dataset.originalHtml = btn.innerHTML;
-      btn.disabled = true;
-      btn.innerHTML =
-        `<span class="animate-spin h-5 w-5 mr-3 border-t-2 border-b-2 border-white rounded-full inline-block"></span><span>${text}</span>`;
-    } else {
-      btn.disabled = false;
-      if (btn.dataset.originalHtml) btn.innerHTML = btn.dataset.originalHtml;
-    }
-  };
+    let loggedInUserEmail = '';
+    let emotionToSendMessage = null; // almacena la emoción elegida
+    let emotionToSendMessage = null; // Variable para "grabar" la emoción
 
-  /* ---------- 2. SELECTORES DE ELEMENTOS ---------- */
+    // --- LÓGICA DE VISUALIZACIÓN ---
+    const showDashboard = (username, isNewUser) => {
+        siteHeader.classList.add('hidden');
+        mainContent.classList.add('hidden');
+        siteFooterMain.classList.add('hidden');
+        faqPage.classList.add('hidden');
+        userDashboard.classList.remove('hidden');
+        userDashboard.classList.add('flex');
+        dashboardUsername.textContent = username || 'usuario';
+        postEmotionView.classList.add('hidden');
+        emotionSelectorContainer.classList.remove('hidden');
+        emotionButtons.forEach(btn => btn.classList.remove('selected'));
 
-  const $ = (s, c = document) => c.querySelector(s);
-  const $$ = (s, c = document) => c.querySelectorAll(s);
+        if (isNewUser) {
+            setTimeout(() => openModal(document.getElementById('onboarding-modal')), 500);
+        }
+    };
 
-  // vistas generales
-  const siteHeader          = $('#site-header');
-  const mainContent         = $('#main-content');
-  const faqPage             = $('#faq-page');
-  const siteFooterMain      = $('#site-footer-main');
+    const showMainSiteView = () => {
+        siteHeader.classList.remove('hidden');
+        mainContent.classList.remove('hidden');
+        siteFooterMain.classList.remove('hidden');
+        userDashboard.classList.add('hidden');
+        userDashboard.classList.remove('flex');
+        faqPage.classList.add('hidden');
+    };
 
-  // dashboard & emociones
-  const userDashboard             = $('#user-dashboard');
-  const dashboardUsername         = $('#dashboard-username');
-  const emotionButtons            = $$('.emotion-btn');
-  const emotionSelectorContainer  = $('#emotion-selector-container');
-  const postEmotionView           = $('#post-emotion-view');
-  const emotionAckMessage         = $('#emotion-ack-message');
-  const startChatBtn              = $('#start-chat-btn');
-  const changeEmotionBtn          = $('#change-emotion-btn');
+    // --- LÓGICA DE AUTENTICACIÓN ---
+    const updateUIForLogin = (email, isNewUser) => {
+        loggedInUserEmail = email;
+        loggedOutView.classList.add('hidden');
+        loggedInView.classList.remove('hidden');
+        profileEmail.textContent = email;
+        showDashboard(email.split('@')[0], isNewUser);
+    };
 
-  // navegación / perfil
-  const mobileMenuButton  = $('#mobile-menu-button');
-  const mobileMenu        = $('#mobile-menu');
-  const viewAllFaqsBtn    = $('#view-all-faqs-btn');
-  const backToMainBtn     = $('#back-to-main-btn');
-  const profileButton     = $('#profile-button');
-  const profileDropdown   = $('#profile-dropdown');
-  const loggedOutView     = $('#logged-out-view');
-  const loggedInView      = $('#logged-in-view');
-  const profileEmail      = $('#profile-email');
-  const logoutButton      = $('#logout-button');
+    const updateUIForLogout = () => {
+        loggedInUserEmail = '';
+        loggedOutView.classList.remove('hidden');
+        loggedInView.classList.add('hidden');
+        showMainSiteView();
+        showConfirmationMessage('Has cerrado sesión. ¡Esperamos verte pronto!');
+    };
+    
+    // --- LÓGICA DE MODALES ---
+    const openModal = (modal) => {
+        if (!modal) return;
+        document.querySelectorAll('.modal-overlay.active').forEach(activeModal => closeModal(activeModal));
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    };
 
-  // chatbot flotante
-  const chatbotFloater    = $('#chatbot-floater');
-  const chatbotBubble     = $('#chatbot-bubble');
-  const chatbotCloseBtn   = $('#chatbot-close-btn');
-  const chatbotIframe     = $('#chatbot-body iframe');
+    const closeModal = (modal) => {
+        if (!modal) return;
+        modal.classList.remove('active');
+        if (!document.querySelector('.modal-overlay.active')) {
+            document.body.style.overflow = '';
+        }
+    };
+    
+    // --- LÓGICA DEL CHATBOT ---
+    const openChatbot = () => {
+        if (chatbotFloater) {
+            chatbotFloater.classList.remove('is-minimized');
+        }
 
-  // formularios
-  const loginForm     = $('#login-form');
-  const registerForm  = $('#register-form');
-  const onboardingForm= $('#onboarding-form');
-  const b2bForm       = $('#b2b-form');
-  const paymentForm   = $('#payment-form');
-  const contactForm   = $('#contact-form');
+        // Lógica de "Reproducir": Se ejecuta DESPUÉS de abrir el chat.
+        if (emotionToSendMessage && chatbotIframe && chatbotIframe.contentWindow) {
+            // Esperamos un instante para asegurar que el iframe está listo
+            setTimeout(() => {
+                const message = {
+                    type: 'startConversation',
+                    emotion: emotionToSendMessage,
+                    focus: true // Se añade la instrucción de hacer focus
+                };
+                chatbotIframe.contentWindow.postMessage(message, '*');
+                emotionToSendMessage = null; // Borramos la grabación
+            }, 500); // Se aumenta el tiempo para más fiabilidad
+        }
+    };
 
-  /* ---------- 3. ESTADO GLOBAL ---------- */
+    // --- INICIALIZACIÓN DE EVENTOS ---
+    
+    if (mobileMenuButton) mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
 
-  let loggedInUserEmail   = '';
-  let emotionToSendMessage = null;   // se setea al elegir emoción
-
-  /* ---------- 4. VISTAS Y MODALES ---------- */
-
-  const openModal = (el) => {
-    if (!el) return;
-    $$('.modal-overlay.active').forEach(m => closeModal(m));
-    el.classList.add('active');
-    document.body.style.overflow = 'hidden';
-  };
-
-  const closeModal = (el) => {
-    if (!el) return;
-    el.classList.remove('active');
-    if (!$('.modal-overlay.active')) document.body.style.overflow = '';
-  };
-
-  const showDashboard = (username, isNewUser) => {
-    siteHeader.classList.add('hidden');
-    mainContent.classList.add('hidden');
-    siteFooterMain.classList.add('hidden');
-    faqPage.classList.add('hidden');
-
-    userDashboard.classList.remove('hidden');
-    userDashboard.classList.add('flex');
-    dashboardUsername.textContent = username || 'Usuario';
-
-    postEmotionView.classList.add('hidden');
-    emotionSelectorContainer.classList.remove('hidden');
-    emotionButtons.forEach(b => b.classList.remove('selected'));
-
-    if (isNewUser) setTimeout(() => openModal($('#onboarding-modal')), 500);
-  };
-
-  const showMainSiteView = () => {
-    siteHeader.classList.remove('hidden');
-    mainContent.classList.remove('hidden');
-    siteFooterMain.classList.remove('hidden');
-    faqPage.classList.add('hidden');
-
-    userDashboard.classList.add('hidden');
-    userDashboard.classList.remove('flex');
-  };
-
-  const updateUIForLogin = (email, isNew) => {
-    loggedInUserEmail = email;
-    loggedOutView.classList.add('hidden');
-    loggedInView.classList.remove('hidden');
-    profileEmail.textContent = email;
-    showDashboard(email.split('@')[0], isNew);
-  };
-
-  const updateUIForLogout = () => {
-    loggedInUserEmail = '';
-    loggedOutView.classList.remove('hidden');
-    loggedInView.classList.add('hidden');
-    showMainSiteView();
-    showConfirmationMessage('Has cerrado sesión. ¡Esperamos verte pronto!');
-  };
-
-  /* ---------- 5. CHATBOT ---------- */
-
-  const openChatbot = () => {
-    if (!chatbotFloater) return;
-    chatbotFloater.classList.remove('is-minimized');
-
-    // Enviar emoción como metadata o primer mensaje
-    if (emotionToSendMessage && chatbotIframe?.contentWindow) {
-      setTimeout(() => {
-        chatbotIframe.contentWindow.postMessage(
-          { type: 'startConversation',
-            emotion: emotionToSendMessage,
-            focus: true
-          },
-          '*'
-        );
-        emotionToSendMessage = null;   // limpiar
-      }, 500);
-    }
-  };
-
-  /* ---------- 6. LISTENERS ---------- */
-
-  // menú móvil
-  if (mobileMenuButton) mobileMenuButton.addEventListener('click', () =>
-    mobileMenu.classList.toggle('hidden'));
-
-  // FAQ
-  if (viewAllFaqsBtn) viewAllFaqsBtn.addEventListener('click', () => {
-    mainContent.classList.add('hidden');
-    siteFooterMain.classList.add('hidden');
-    faqPage.classList.remove('hidden');
-    window.scrollTo(0, 0);
-  });
-  if (backToMainBtn) backToMainBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    showMainSiteView();
-  });
-
-  // perfil
-  if (profileButton) profileButton.addEventListener('click', (e) => {
-    e.stopPropagation();
-    profileDropdown.classList.toggle('active');
-  });
-  if (logoutButton) logoutButton.addEventListener('click', updateUIForLogout);
-  document.addEventListener('click', (e) => {
-    if (profileDropdown && !profileDropdown.contains(e.target) &&
-        !profileButton.contains(e.target)) {
-      profileDropdown.classList.remove('active');
-    }
-  });
-
-  // chatbot flotante
-  if (chatbotBubble) chatbotBubble.addEventListener('click', openChatbot);
-  if (chatbotCloseBtn) chatbotCloseBtn.addEventListener('click', () =>
-    chatbotFloater.classList.add('is-minimized'));
-  if (startChatBtn)   startChatBtn.addEventListener('click', openChatbot);
-
-  // ----- Emociones (¡CORREGIDO!) -----
-  emotionButtons.forEach(btn => {
-    btn.addEventListener('click', async () => {
-      // 1. Estilo visual
-      emotionButtons.forEach(b => b.classList.remove('selected'));
-      btn.classList.add('selected');
-
-      // 2. Capturar emoción correctamente
-      const selectedEmotion = btn.dataset.emotion;   // <— corregido
-      const feelingText     = btn.dataset.feeling;
-
-      // 3. Registrar la emoción (opcional)
-      try {
-        await fetch('https://muna.auto.hostybee.com/webhook/registrar-emocion', {
-          method : 'POST',
-          headers: { 'Content-Type':'application/json' },
-          body   : JSON.stringify({ email: loggedInUserEmail,
-                                   emotion: selectedEmotion })
+    document.querySelectorAll('.open-modal-btn').forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.preventDefault();
+            const modal = document.getElementById(button.dataset.modalTarget);
+            if (modal) openModal(modal);
         });
-      } catch (err) { console.error('registrar_emocion', err); }
-
-      // 4. Guardar para la sesión de chat y avisar al usuario
-      emotionToSendMessage = selectedEmotion;
-      showConfirmationMessage(`Gracias por compartir que te sientes ${feelingText}.`);
-      postEmotionView.classList.remove('hidden');
-      emotionSelectorContainer.classList.add('hidden');
     });
-  });
 
-  if (changeEmotionBtn) changeEmotionBtn.addEventListener('click', () => {
-    postEmotionView.classList.add('hidden');
-    emotionSelectorContainer.classList.remove('hidden');
-  });
+    document.querySelectorAll('.close-modal-btn').forEach(button => {
+        button.addEventListener('click', () => closeModal(button.closest('.modal-overlay')));
+    });
 
-  /* ---------- 7. FORMULARIOS (RESUMIDOS) ---------- */
+    document.querySelectorAll('.switch-modal-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            const currentModal = button.closest('.modal-overlay');
+            const targetModal = document.getElementById(button.dataset.modalTarget);
+            closeModal(currentModal);
+            if (targetModal) setTimeout(() => openModal(targetModal), 300);
+        });
+    });
 
-  // 7.1  Login
-  if (loginForm) loginForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email    = $('#login-email').value;
-    const password = $('#login-password').value;
-    const errorMsg = $('#login-error-message');
-    const submit   = $('button[type="submit"]', loginForm);
-
-    setButtonLoadingState(submit, true, 'Iniciando sesión…');
-    errorMsg.classList.add('hidden');
-
-    try {
-      const r = await fetch('https://muna.auto.hostybee.com/webhook/login', {
-        method :'POST', headers:{ 'Content-Type':'application/json' },
-        body   : JSON.stringify({ email, password })
-      });
-      const res = await r.json();
-      if (r.ok) {
-        closeModal(loginForm.closest('.modal-overlay'));
-        updateUIForLogin(email, false);
-      } else {
-        errorMsg.textContent = res.error || 'Email o contraseña incorrectos.';
-        errorMsg.classList.remove('hidden');
-      }
-    } catch (er) {
-      console.error('login:', er);
-      errorMsg.textContent = 'No se pudo conectar con el servidor.';
-      errorMsg.classList.remove('hidden');
-    } finally {
-      setButtonLoadingState(submit, false);
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) closeModal(overlay);
+        });
+    });
+    
+    if (profileButton) {
+        profileButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            profileDropdown.classList.toggle('active');
+        });
     }
-  });
+    if (logoutButton) logoutButton.addEventListener('click', () => {
+        profileDropdown.classList.remove('active');
+        updateUIForLogout();
+    });
+    document.addEventListener('click', (e) => {
+        if (profileDropdown && !profileDropdown.contains(e.target) && !profileButton.contains(e.target)) {
+            profileDropdown.classList.remove('active');
+        }
+    });
 
-  // 7.2  Registro
-  if (registerForm) registerForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email    = $('#register-email').value;
-    const password = $('#register-password').value;
-    const submit   = $('button[type="submit"]', registerForm);
+    if (chatbotBubble) chatbotBubble.addEventListener('click', openChatbot);
+    if (chatbotCloseBtn) chatbotCloseBtn.addEventListener('click', () => chatbotFloater.classList.add('is-minimized'));
 
-    setButtonLoadingState(submit, true, 'Creando cuenta…');
+    // --- FORMULARIOS ---
 
-    try {
-      const r = await fetch('https://muna.auto.hostybee.com/webhook/registro', {
-        method :'POST', headers:{ 'Content-Type':'application/json' },
-        body   : JSON.stringify({ email, password,
-                                 registeredAt: new Date().toISOString() })
-      });
-      const res = await r.json();
-      if (res.success) {
-        closeModal(registerForm.closest('.modal-overlay'));
-        updateUIForLogin(email, true);
-      } else alert(res.message);
-    } catch (er) {
-      console.error('registro:', er);
-      alert('No se pudo completar el registro.');
-    } finally { setButtonLoadingState(submit, false); }
-  });
+    if (loginForm) {
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const errorMessage = document.getElementById('login-error-message');
+            const submitButton = loginForm.querySelector('button[type="submit"]');
+            
+            setButtonLoadingState(submitButton, true, "Iniciando sesión...");
+            errorMessage.classList.add('hidden');
 
-  /* ----- (b2bForm, paymentForm, contactForm, FAQ toggle, búsqueda blog, etc.)
-          Se mantienen idénticos a tu versión previa; si necesitas
-          moverlos ponlos aquí debajo, asegurándote de no duplicar código. ----- */
+            const webhookURL = 'https://muna.auto.hostybee.com/webhook/login';
+            try {
+                const response = await fetch(webhookURL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password }),
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    closeModal(loginForm.closest('.modal-overlay'));
+                    updateUIForLogin(email, false);
+                } else {
+                    errorMessage.textContent = result.error || 'Email o contraseña incorrectos.';
+                    errorMessage.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Error de conexión en login:', error);
+                errorMessage.textContent = 'No se pudo conectar con el servidor.';
+                errorMessage.classList.remove('hidden');
+            } finally {
+                setButtonLoadingState(submitButton, false);
+            }
+        });
+    }
+    
+    if (registerForm) {
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            const submitButton = registerForm.querySelector('button[type="submit"]');
+            
+            setButtonLoadingState(submitButton, true, "Creando cuenta...");
 
+            const webhookURL = 'https://muna.auto.hostybee.com/webhook/registro'; 
+            const formData = { email, password, registeredAt: new Date().toISOString() };
+    
+            try {
+                const response = await fetch(webhookURL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData),
+                });
+                const result = await response.json();
+                if (result.success === true) {
+                    closeModal(registerForm.closest('.modal-overlay'));
+                    updateUIForLogin(email, true);
+                } else {
+                    alert(result.message);
+                }
+            } catch (error) {
+                console.error('Error de red en registro:', error);
+                alert('No se pudo completar el registro por un error de red.');
+            } finally {
+                setButtonLoadingState(submitButton, false);
+            }
+        });
+    }
+
+    if (b2bForm) {
+        b2bForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const submitButton = b2bForm.querySelector('button[type="submit"]');
+            setButtonLoadingState(submitButton, true);
+
+            const institutionName = document.getElementById('b2b-institution').value;
+            const webhookURL = 'https://muna.auto.hostybee.com/webhook/solicitud-b2b';
+            const formData = {
+                name: document.getElementById('b2b-name').value,
+                email: document.getElementById('b2b-email').value,
+                institution: institutionName,
+                role: document.getElementById('b2b-role').value,
+                families: document.getElementById('b2b-families').value
+            };
+            try {
+                const response = await fetch(webhookURL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData),
+                });
+                if (response.ok) {
+                    closeModal(b2bForm.closest('.modal-overlay'));
+                    showConfirmationMessage(`¡Gracias! El kit para ${institutionName} se ha enviado a tu correo.`);
+                    b2bForm.reset();
+                } else {
+                    alert('Hubo un problema al enviar tu solicitud.');
+                }
+            } catch (error) {
+                console.error('Error de red en B2B:', error);
+                alert('No se pudo enviar tu solicitud por un error de red.');
+            } finally {
+                setButtonLoadingState(submitButton, false);
+            }
+        });
+    }
+
+    if (contactForm) {
+        contactForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const submitButton = contactForm.querySelector('button[type="submit"]');
+            setButtonLoadingState(submitButton, true);
+
+            const webhookURL = 'https://muna.auto.hostybee.com/webhook/solicitud-contacto';
+            const formData = {
+                name: contactForm.querySelector('#name').value,
+                email: contactForm.querySelector('#email').value,
+                message: contactForm.querySelector('#message').value
+            };
+    
+            try {
+                const response = await fetch(webhookURL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams(formData).toString(),
+                });
+                if (response.ok) {
+                    showConfirmationMessage('¡Gracias! Tu mensaje ha sido enviado.');
+                    contactForm.reset();
+                } else {
+                    alert('Hubo un problema al procesar tu mensaje en el servidor.');
+                }
+            } catch (error) {
+                console.error('Error de red en contacto:', error);
+                alert('No se pudo enviar el mensaje por un error de red.');
+            } finally {
+                setButtonLoadingState(submitButton, false);
+            }
+        });
+    }
+document.addEventListener('DOMContentLoaded', () => {
+
+    // --- FUNCIONES AUXILIARES ---
+    const showConfirmationMessage = (message, duration = 3000) => {
+        const messageEl = document.createElement('div');
+        messageEl.textContent = message;
+        messageEl.className = 'ephemeral-message';
+        document.body.appendChild(messageEl);
+        setTimeout(() => messageEl.classList.add('show'), 10);
+        setTimeout(() => {
+            messageEl.classList.remove('show');
+            messageEl.addEventListener('transitionend', () => messageEl.remove());
+        }, duration);
+    };
+
+    const setButtonLoadingState = (button, isLoading, loadingText = "Enviando...") => {
+        if (!button) return;
+        if (isLoading) {
+            button.dataset.originalHtml = button.innerHTML;
+            button.disabled = true;
+            button.innerHTML = `<span class="animate-spin h-5 w-5 mr-3 border-t-2 border-b-2 border-white rounded-full" style="display: inline-block;"></span><span>${loadingText}</span>`;
+        } else {
+            button.disabled = false;
+            if (button.dataset.originalHtml) button.innerHTML = button.dataset.originalHtml;
+        }
+    };
+    
+    // --- SELECTORES ---
+    // (Asegúrate de tener todos tus selectores aquí)
+    const emotionButtons = document.querySelectorAll('.emotion-btn');
+    const chatbotFloater = document.getElementById('chatbot-floater');
+    const chatbotBubble = document.getElementById('chatbot-bubble');
+    const chatbotCloseBtn = document.getElementById('chatbot-close-btn');
+    let loggedInUserEmail = ''; // Esta variable debería ser seteada en tu lógica de login
+
+    // --- LÓGICA DEL CHATBOT ---
+    const openChatbot = () => {
+        if (chatbotFloater) chatbotFloater.classList.remove('is-minimized');
+    };
+
+    if (chatbotBubble) chatbotBubble.addEventListener('click', openChatbot);
+    if (chatbotCloseBtn) chatbotCloseBtn.addEventListener('click', () => chatbotFloater.classList.add('is-minimized'));
+
+    // --- MANEJO DE EMOCIONES (VERSIÓN SIMPLIFICADA) ---
+    emotionButtons.forEach(button => {
+        button.addEventListener('click', async () => { 
+            emotionButtons.forEach(btn => btn.classList.remove('selected'));
+            button.classList.add('selected');
+    
+            const selectedEmotion = button.dataset.emotion;   // FIX
+            emotionToSendMessage = selectedEmotion;
+            const feeling = button.dataset.feeling;
+            
+            // 1. Registra la emoción en segundo plano (opcional)
+            const webhookURL = 'https://muna.auto.hostybee.com/webhook/registrar-emocion';
+            const emotionData = { email: loggedInUserEmail, emotion: selectedEmotion };
+            try {
+                await fetch(webhookURL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(emotionData)
+                });
+            } catch (error) {
+                console.error('Error al registrar la emoción:', error);
+            }
+            
+            // 2. Simplemente abre el chat. La conversación empezará dentro.
+            showConfirmationMessage(`Gracias por compartir que te sientes ${feeling}.`);
+            openChatbot();
+        });
+    });
+
+    // --- RESTO DE TU CÓDIGO ---
+    // (Aquí va toda la lógica que ya funciona para modales, login, formularios, etc.)
+});
+
+    
+    // Navegación y otros
+    if (viewAllFaqsBtn) {
+        viewAllFaqsBtn.addEventListener('click', () => {
+            mainContent.classList.add('hidden');
+            siteFooterMain.classList.add('hidden');
+            faqPage.classList.remove('hidden');
+            window.scrollTo(0, 0);
+        });
+    }
+    if (backToMainBtn) {
+        backToMainBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            showMainSiteView();
+        });
+    }
+    document.querySelectorAll('.faq-question').forEach(button => {
+        button.addEventListener('click', () => {
+            const answer = document.getElementById(button.getAttribute('aria-controls'));
+            const isExpanded = button.getAttribute('aria-expanded') === 'true';
+            button.setAttribute('aria-expanded', !isExpanded);
+            button.classList.toggle('active');
+            if (!isExpanded) {
+                answer.style.maxHeight = answer.scrollHeight + 'px';
+                answer.style.padding = '0 1.5rem 1.5rem 1.5rem';
+            } else {
+                answer.style.maxHeight = null;
+                answer.style.padding = '0 1.5rem';
+            }
+        });
+    });
+
+    // Búsqueda del blog
+    const searchInput = document.getElementById('blog-search-input');
+    const filterButtons = document.querySelectorAll('.blog-filter-btn');
+    const articles = document.querySelectorAll('.blog-article-card');
+    const noResultsMessage = document.getElementById('no-results-message');
+    let currentCategory = 'todos';
+
+    function filterAndSearch() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        let articlesFound = false;
+
+        articles.forEach(article => {
+            const categoryMatch = currentCategory === 'todos' || article.dataset.category === currentCategory;
+            const searchMatch = searchTerm === '' || 
+                                article.dataset.keywords.toLowerCase().includes(searchTerm) ||
+                                article.querySelector('h3').textContent.toLowerCase().includes(searchTerm);
+
+            if (categoryMatch && searchMatch) {
+                article.style.display = 'flex';
+                articlesFound = true;
+            } else {
+                article.style.display = 'none';
+            }
+        });
+        
+        noResultsMessage.style.display = articlesFound ? 'none' : 'block';
+    }
+
+    if (searchInput) searchInput.addEventListener('input', filterAndSearch);
+    if (filterButtons.length) {
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                currentCategory = button.dataset.category;
+                filterAndSearch();
+            });
+        });
+    }
 });
