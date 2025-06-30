@@ -64,6 +64,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let loggedInUserEmail = '';
     let emotionToSendMessage = null; // almacena la emoción elegida
+
+    // --- FUNCIÓN CENTRAL DEL CHATBOT ---
+    const openChatbot = () => {
+        if (chatbotFloater) {
+            chatbotFloater.classList.remove('is-minimized');
+        }
+
+        if (emotionToSendMessage && chatbotIframe && chatbotIframe.contentWindow) {
+
+            const sendEmotionMessage = () => {
+                chatbotIframe.contentWindow.postMessage(
+                    {
+                        type: 'sendMessage',
+                        text: `Hoy me siento ${emotionToSendMessage}`
+                    },
+                    '*'
+                );
+                emotionToSendMessage = null;
+            };
+
+            // Si el iframe ya está cargado (readystate completa)
+            if (chatbotIframe.contentDocument?.readyState === 'complete') {
+                // Espera breve para que el motor interno del widget se inicialice
+                setTimeout(sendEmotionMessage, 300);
+            } else {
+                // Espera el evento load una sola vez
+                chatbotIframe.addEventListener('load', () => setTimeout(sendEmotionMessage, 300), { once: true });
+            }
+        }
+    };
     let emotionToSendMessage = null; // Variable para "grabar" la emoción
 
     // --- LÓGICA DE VISUALIZACIÓN ---
@@ -128,35 +158,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // --- LÓGICA DEL CHATBOT ---
     
-const openChatbot = () => {
-    if (chatbotFloater) {
-        chatbotFloater.classList.remove('is-minimized');
-    }
-
-    // Enviar emoción como primer mensaje visible cuando exista
-    if (emotionToSendMessage && chatbotIframe && chatbotIframe.contentWindow) {
-
-        const sendEmotionMessage = () => {
-            chatbotIframe.contentWindow.postMessage(
-                {
-                    type: 'sendMessage',
-                    text: `Hoy me siento ${emotionToSendMessage}`
-                },
-                '*'
-            );
-            emotionToSendMessage = null; // limpiar variable
-        };
-
-        // Si el iframe ya está cargado
-        if (chatbotIframe.contentDocument?.readyState === 'complete') {
-            setTimeout(sendEmotionMessage, 300);
-        } else {
-            // Espera al evento load solo una vez
-            chatbotIframe.addEventListener('load', () => setTimeout(sendEmotionMessage, 300), { once: true });
-        }
-    }
-};
-
                 chatbotIframe.contentWindow.postMessage(message, '*');
                 emotionToSendMessage = null; // Borramos la grabación
             }, 500); // Se aumenta el tiempo para más fiabilidad
@@ -391,9 +392,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let loggedInUserEmail = ''; // Esta variable debería ser seteada en tu lógica de login
 
     // --- LÓGICA DEL CHATBOT ---
-    const openChatbot = () => {
-        if (chatbotFloater) chatbotFloater.classList.remove('is-minimized');
-    };
+    
 
     if (chatbotBubble) chatbotBubble.addEventListener('click', openChatbot);
     if (chatbotCloseBtn) chatbotCloseBtn.addEventListener('click', () => chatbotFloater.classList.add('is-minimized'));
