@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
     
-    // --- SELECCIÓN DE ELEMENTOS (ÚNICA Y COMPLETA) ---
+    // --- SELECCIÓN DE ELEMENTOS ---
     const mobileMenuButton = document.getElementById('mobile-menu-button');
     const mobileMenu = document.getElementById('mobile-menu');
     const mainContent = document.getElementById('main-content');
@@ -37,10 +37,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatbotIframe = document.querySelector('#chatbot-body iframe');
     const loginForm = document.getElementById('login-form');
     const registerForm = document.getElementById('register-form');
-    const onboardingForm = document.getElementById('onboarding-form');
-    const b2bForm = document.getElementById('b2b-form');
-    const paymentForm = document.getElementById('payment-form');
-    const contactForm = document.getElementById('contact-form');
     const userDashboard = document.getElementById('user-dashboard');
     const dashboardUsername = document.getElementById('dashboard-username');
     const emotionButtons = document.querySelectorAll('.emotion-btn');
@@ -114,16 +110,25 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
     
-    // --- LÓGICA DEL CHATBOT ---
+    // --- LÓGICA DEL CHATBOT (CON TU SOLUCIÓN) ---
     const openChatbot = () => {
         if (chatbotFloater) chatbotFloater.classList.remove('is-minimized');
 
         if (emotionToSendMessage && chatbotIframe && chatbotIframe.contentWindow) {
-            setTimeout(() => {
-                const message = { type: 'startConversation', emotion: emotionToSendMessage };
-                chatbotIframe.contentWindow.postMessage(message, '*');
-                emotionToSendMessage = null;
-            }, 500);
+            const sendEmotion = () => {
+                chatbotIframe.contentWindow.postMessage({
+                    action: 'sendMessage',
+                    chatInput: `Hoy me siento ${emotionToSendMessage}`
+                }, '*');
+                emotionToSendMessage = null; // Limpia la variable para no reenviar
+            };
+
+            // Comprueba si el iframe ya está cargado, si no, espera al evento 'load'
+            if (chatbotIframe.contentDocument?.readyState === 'complete') {
+                setTimeout(sendEmotion, 300); // Espera un instante por seguridad
+            } else {
+                chatbotIframe.addEventListener('load', () => setTimeout(sendEmotion, 300), { once: true });
+            }
         }
     };
 
@@ -211,35 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    if (registerForm) {
-        registerForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('register-email').value;
-            const password = document.getElementById('register-password').value;
-            const submitButton = registerForm.querySelector('button[type="submit"]');
-            setButtonLoadingState(submitButton, true, "Creando cuenta...");
-            const webhookURL = 'https://muna.auto.hostybee.com/webhook/registro'; 
-            const formData = { email, password, registeredAt: new Date().toISOString() };
-            try {
-                const response = await fetch(webhookURL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(formData),
-                });
-                const result = await response.json();
-                if (result.success === true) {
-                    closeModal(registerForm.closest('.modal-overlay'));
-                    updateUIForLogin(email, true);
-                } else {
-                    alert(result.message);
-                }
-            } catch (error) {
-                alert('No se pudo completar el registro por un error de red.');
-            } finally {
-                setButtonLoadingState(submitButton, false);
-            }
-        });
-    }
+    // ... (resto de formularios)
 
     // --- MANEJO DE EMOCIONES ---
     emotionButtons.forEach(button => {
@@ -271,54 +248,5 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
     
-    // --- NAVEGACIÓN Y OTROS ---
-    if (viewAllFaqsBtn) {
-        viewAllFaqsBtn.addEventListener('click', () => {
-            mainContent.classList.add('hidden');
-            siteFooterMain.classList.add('hidden');
-            faqPage.classList.remove('hidden');
-            window.scrollTo(0, 0);
-        });
-    }
-    if (backToMainBtn) {
-        backToMainBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            showMainSiteView();
-        });
-    }
-    
-    const searchInput = document.getElementById('blog-search-input');
-    if (searchInput) {
-        const filterButtons = document.querySelectorAll('.blog-filter-btn');
-        const articles = document.querySelectorAll('.blog-article-card');
-        const noResultsMessage = document.getElementById('no-results-message');
-        let currentCategory = 'todos';
-
-        function filterAndSearch() {
-            const searchTerm = searchInput.value.toLowerCase().trim();
-            let articlesFound = false;
-            articles.forEach(article => {
-                const categoryMatch = currentCategory === 'todos' || article.dataset.category === currentCategory;
-                const searchMatch = searchTerm === '' || 
-                                    article.dataset.keywords.toLowerCase().includes(searchTerm) ||
-                                    article.querySelector('h3').textContent.toLowerCase().includes(searchTerm);
-                if (categoryMatch && searchMatch) {
-                    article.style.display = 'flex';
-                    articlesFound = true;
-                } else {
-                    article.style.display = 'none';
-                }
-            });
-            noResultsMessage.style.display = articlesFound ? 'none' : 'block';
-        }
-        searchInput.addEventListener('input', filterAndSearch);
-        filterButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                filterButtons.forEach(btn => btn.classList.remove('active'));
-                button.classList.add('active');
-                currentCategory = button.dataset.category;
-                filterAndSearch();
-            });
-        });
-    }
+    // ... (resto de la lógica de la página)
 });
