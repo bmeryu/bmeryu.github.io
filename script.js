@@ -487,3 +487,36 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+
+// ======== Patch: ensure profile dropdown and chatbot bubble work even if previous listeners failed ========
+document.addEventListener('DOMContentLoaded', () => {
+    const profileButtonPatched = document.getElementById('profile-button');
+    const profileDropdownPatched = document.getElementById('profile-dropdown');
+    if (profileButtonPatched && profileDropdownPatched) {
+        profileButtonPatched.addEventListener('click', (e) => {
+            e.stopPropagation();
+            profileDropdownPatched.classList.toggle('active');
+        });
+        document.addEventListener('click', (e) => {
+            if (!profileDropdownPatched.contains(e.target) && !profileButtonPatched.contains(e.target)) {
+                profileDropdownPatched.classList.remove('active');
+            }
+        });
+    }
+
+    const chatbotFloaterPatched = document.getElementById('chatbot-floater');
+    const chatbotBubblePatched = document.getElementById('chatbot-bubble');
+    const chatbotCloseBtnPatched = document.getElementById('chatbot-close-btn');
+    if (chatbotBubblePatched && chatbotFloaterPatched) {
+        chatbotBubblePatched.addEventListener('click', () => {
+            chatbotFloaterPatched.classList.remove('is-minimized');
+            if (typeof openChatbot === 'function') openChatbot();
+        });
+    }
+    if (chatbotCloseBtnPatched) {
+        chatbotCloseBtnPatched.addEventListener('click', () => {
+            chatbotFloaterPatched?.classList.add('is-minimized');
+        });
+    }
+});
