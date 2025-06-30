@@ -338,29 +338,61 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+document.addEventListener('DOMContentLoaded', () => {
 
-    // Manejo de emociones
+    // --- FUNCIONES AUXILIARES ---
+    const showConfirmationMessage = (message, duration = 3000) => {
+        const messageEl = document.createElement('div');
+        messageEl.textContent = message;
+        messageEl.className = 'ephemeral-message';
+        document.body.appendChild(messageEl);
+        setTimeout(() => messageEl.classList.add('show'), 10);
+        setTimeout(() => {
+            messageEl.classList.remove('show');
+            messageEl.addEventListener('transitionend', () => messageEl.remove());
+        }, duration);
+    };
+
+    const setButtonLoadingState = (button, isLoading, loadingText = "Enviando...") => {
+        if (!button) return;
+        if (isLoading) {
+            button.dataset.originalHtml = button.innerHTML;
+            button.disabled = true;
+            button.innerHTML = `<span class="animate-spin h-5 w-5 mr-3 border-t-2 border-b-2 border-white rounded-full" style="display: inline-block;"></span><span>${loadingText}</span>`;
+        } else {
+            button.disabled = false;
+            if (button.dataset.originalHtml) button.innerHTML = button.dataset.originalHtml;
+        }
+    };
+    
+    // --- SELECTORES ---
+    // (Asegúrate de tener todos tus selectores aquí)
+    const emotionButtons = document.querySelectorAll('.emotion-btn');
+    const chatbotFloater = document.getElementById('chatbot-floater');
+    const chatbotBubble = document.getElementById('chatbot-bubble');
+    const chatbotCloseBtn = document.getElementById('chatbot-close-btn');
+    let loggedInUserEmail = ''; // Esta variable debería ser seteada en tu lógica de login
+
+    // --- LÓGICA DEL CHATBOT ---
+    const openChatbot = () => {
+        if (chatbotFloater) chatbotFloater.classList.remove('is-minimized');
+    };
+
+    if (chatbotBubble) chatbotBubble.addEventListener('click', openChatbot);
+    if (chatbotCloseBtn) chatbotCloseBtn.addEventListener('click', () => chatbotFloater.classList.add('is-minimized'));
+
+    // --- MANEJO DE EMOCIONES (VERSIÓN SIMPLIFICADA) ---
     emotionButtons.forEach(button => {
         button.addEventListener('click', async () => { 
             emotionButtons.forEach(btn => btn.classList.remove('selected'));
             button.classList.add('selected');
     
-            // Se usa el atributo 'value' si existe, si no, se usa 'data-emotion' como respaldo.
-            const selectedEmotion = button.value || button.dataset.emotion; 
+            const selectedEmotion = button.value;
             const feeling = button.dataset.feeling;
             
-            // Lógica de "Grabar": Guardamos la emoción para más tarde
-            emotionToSendMessage = selectedEmotion;
-    
+            // 1. Registra la emoción en segundo plano (opcional)
             const webhookURL = 'https://muna.auto.hostybee.com/webhook/registrar-emocion';
             const emotionData = { email: loggedInUserEmail, emotion: selectedEmotion };
-    
-            showConfirmationMessage(`Gracias por compartir que te sientes ${feeling}.`);
-    
-            // Abrimos el chat inmediatamente
-            openChatbot();
-    
-            // Enviamos el registro de la emoción al servidor en segundo plano
             try {
                 await fetch(webhookURL, {
                     method: 'POST',
@@ -368,10 +400,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: JSON.stringify(emotionData)
                 });
             } catch (error) {
-                console.error('Error de red al registrar emoción:', error);
+                console.error('Error al registrar la emoción:', error);
             }
+            
+            // 2. Simplemente abre el chat. La conversación empezará dentro.
+            showConfirmationMessage(`Gracias por compartir que te sientes ${feeling}.`);
+            openChatbot();
         });
     });
+
+    // --- RESTO DE TU CÓDIGO ---
+    // (Aquí va toda la lógica que ya funciona para modales, login, formularios, etc.)
+});
+
     
     // Navegación y otros
     if (viewAllFaqsBtn) {
