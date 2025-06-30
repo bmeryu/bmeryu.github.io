@@ -247,7 +247,7 @@ document.addEventListener('DOMContentLoaded', () => {
             emotionButtons.forEach(btn => btn.classList.remove('selected'));
             button.classList.add('selected');
     
-            const selectedEmotion = button.value || button.dataset.emotion; 
+            const selectedEmotion = button.dataset.emotion || button.value; 
             const feeling = button.dataset.feeling;
             
             emotionToSendMessage = selectedEmotion;
