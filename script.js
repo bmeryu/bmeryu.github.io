@@ -83,13 +83,14 @@ document.addEventListener('DOMContentLoaded', () => {
         faqPage.classList.add('hidden');
     };
 
-    // --- LÓGICA DE AUTENTICACIÓN ---
+    // --- LÓGICA DE AUTENTICACIÓN (ACTUALIZADA) ---
     const updateUIForLogin = (email) => { // Simplificada: ya no necesita 'isNewUser'
         loggedInUserEmail = email;
         loggedOutView.classList.add('hidden');
         loggedInView.classList.remove('hidden');
         profileEmail.textContent = email;
         // Siempre va directo al dashboard
+        closeModal(document.querySelector('.modal-overlay.active')); // Cierra cualquier modal activo
         showDashboard(email.split('@')[0]);
     };
 
@@ -124,11 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (emotionToSendMessage && chatbotIframe && chatbotIframe.contentWindow) {
             setTimeout(() => {
-                const message = {
-                    type: 'startConversation',
-                    emotion: emotionToSendMessage,
-                    focus: true
-                };
+                const message = { type: 'startConversation', emotion: emotionToSendMessage, focus: true };
                 chatbotIframe.contentWindow.postMessage(message, '*');
                 emotionToSendMessage = null;
             }, 500);
@@ -205,8 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: JSON.stringify({ email, password }),
                 });
                 const result = await response.json();
-                if (result.success === true) { // Asumiendo que el login devuelve {success: true}
-                    closeModal(loginForm.closest('.modal-overlay'));
+                if (result.success === true) {
                     updateUIForLogin(email);
                 } else {
                     errorMessage.textContent = result.message || 'Email o contraseña incorrectos.';
@@ -222,6 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
+    // El formulario de registro ahora maneja también los datos de onboarding
     if (registerForm) {
         registerForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -250,7 +247,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 const result = await response.json();
                 if (result.success === true) {
-                    closeModal(registerForm.closest('.modal-overlay'));
                     updateUIForLogin(formData.email);
                 } else {
                     alert(result.message);
@@ -265,7 +261,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (b2bForm) {
-        // Lógica del formulario B2B (sin cambios)
         b2bForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const submitButton = b2bForm.querySelector('button[type="submit"]');
@@ -302,7 +297,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (contactForm) {
-        // Lógica del formulario de contacto (sin cambios)
         contactForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const submitButton = contactForm.querySelector('button[type="submit"]');
