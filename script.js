@@ -2,17 +2,17 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     // --- FUNCIONES AUXILIARES ---
-const showConfirmationMessage = (message) => {
-    const messageEl = document.createElement('div');
-    messageEl.textContent = message;
-    messageEl.className = 'ephemeral-message';
-    document.body.appendChild(messageEl);
-    setTimeout(() => messageEl.classList.add('show'), 10);
-    setTimeout(() => {
-        messageEl.classList.remove('show');
-        messageEl.addEventListener('transitionend', () => messageEl.remove());
-    }, 3000);
-};
+    const showConfirmationMessage = (message) => {
+        const messageEl = document.createElement('div');
+        messageEl.textContent = message;
+        messageEl.className = 'ephemeral-message';
+        document.body.appendChild(messageEl);
+        setTimeout(() => messageEl.classList.add('show'), 10);
+        setTimeout(() => {
+            messageEl.classList.remove('show');
+            messageEl.addEventListener('transitionend', () => messageEl.remove());
+        }, 3000);
+    };
 
     const setButtonLoadingState = (button, isLoading, loadingText = "Enviando...") => {
         if (!button) return;
@@ -40,18 +40,13 @@ const showConfirmationMessage = (message) => {
     const chatbotIframe = document.querySelector('#chatbot-body iframe');
     const loginForm = document.getElementById('login-form');
     const registerForm = document.getElementById('register-form');
-    const onboardingForm = document.getElementById('onboarding-form');
     const b2bForm = document.getElementById('b2b-form');
-    const paymentForm = document.getElementById('payment-form');
     const contactForm = document.getElementById('contact-form');
     const userDashboard = document.getElementById('user-dashboard');
     const dashboardUsername = document.getElementById('dashboard-username');
     const emotionButtons = document.querySelectorAll('.emotion-btn');
     const emotionSelectorContainer = document.getElementById('emotion-selector-container');
     const postEmotionView = document.getElementById('post-emotion-view');
-    const emotionAckMessage = document.getElementById('emotion-ack-message');
-    const startChatBtn = document.getElementById('start-chat-btn');
-    const changeEmotionBtn = document.getElementById('change-emotion-btn');
     const profileButton = document.getElementById('profile-button');
     const profileDropdown = document.getElementById('profile-dropdown');
     const loggedOutView = document.getElementById('logged-out-view');
@@ -63,10 +58,10 @@ const showConfirmationMessage = (message) => {
     const chatbotCloseBtn = document.getElementById('chatbot-close-btn');
 
     let loggedInUserEmail = '';
-    let emotionToSendMessage = null; // Variable para "grabar" la emoción
+    let emotionToSendMessage = null;
 
     // --- LÓGICA DE VISUALIZACIÓN ---
-    const showDashboard = (username, isNewUser) => {
+    const showDashboard = (username) => {
         siteHeader.classList.add('hidden');
         mainContent.classList.add('hidden');
         siteFooterMain.classList.add('hidden');
@@ -77,10 +72,6 @@ const showConfirmationMessage = (message) => {
         postEmotionView.classList.add('hidden');
         emotionSelectorContainer.classList.remove('hidden');
         emotionButtons.forEach(btn => btn.classList.remove('selected'));
-
-        if (isNewUser) {
-            setTimeout(() => openModal(document.getElementById('onboarding-modal')), 500);
-        }
     };
 
     const showMainSiteView = () => {
@@ -93,22 +84,15 @@ const showConfirmationMessage = (message) => {
     };
 
     // --- LÓGICA DE AUTENTICACIÓN ---
-   const updateUIForLogin = (email, isNewUser) => {
-    loggedInUserEmail = email;
-    loggedOutView.classList.add('hidden');
-    loggedInView.classList.remove('hidden');
-    profileEmail.textContent = email;
+    const updateUIForLogin = (email) => { // Simplificada: ya no necesita 'isNewUser'
+        loggedInUserEmail = email;
+        loggedOutView.classList.add('hidden');
+        loggedInView.classList.remove('hidden');
+        profileEmail.textContent = email;
+        // Siempre va directo al dashboard
+        showDashboard(email.split('@')[0]);
+    };
 
-    // Lógica corregida:
-    if (isNewUser) {
-        // Si es nuevo, solo abre el modal de bienvenida.
-        closeModal(document.getElementById('register-modal')); // Asegura que el modal de registro se cierre
-        setTimeout(() => openModal(document.getElementById('onboarding-modal')), 300);
-    } else {
-        // Si es un usuario existente, va directo al dashboard.
-        showDashboard(email.split('@')[0], false);
-    }
-};
     const updateUIForLogout = () => {
         loggedInUserEmail = '';
         loggedOutView.classList.remove('hidden');
@@ -138,24 +122,20 @@ const showConfirmationMessage = (message) => {
         if (chatbotFloater) {
             chatbotFloater.classList.remove('is-minimized');
         }
-
-        // Lógica de "Reproducir": Se ejecuta DESPUÉS de abrir el chat.
         if (emotionToSendMessage && chatbotIframe && chatbotIframe.contentWindow) {
-            // Esperamos un instante para asegurar que el iframe está listo
             setTimeout(() => {
                 const message = {
                     type: 'startConversation',
                     emotion: emotionToSendMessage,
-                    focus: true // Se añade la instrucción de hacer focus
+                    focus: true
                 };
                 chatbotIframe.contentWindow.postMessage(message, '*');
-                emotionToSendMessage = null; // Borramos la grabación
-            }, 500); // Se aumenta el tiempo para más fiabilidad
+                emotionToSendMessage = null;
+            }, 500);
         }
     };
 
     // --- INICIALIZACIÓN DE EVENTOS ---
-    
     if (mobileMenuButton) mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
 
     document.querySelectorAll('.open-modal-btn').forEach(button => {
@@ -225,11 +205,11 @@ const showConfirmationMessage = (message) => {
                     body: JSON.stringify({ email, password }),
                 });
                 const result = await response.json();
-                if (response.ok) {
+                if (result.success === true) { // Asumiendo que el login devuelve {success: true}
                     closeModal(loginForm.closest('.modal-overlay'));
-                    updateUIForLogin(email, false);
+                    updateUIForLogin(email);
                 } else {
-                    errorMessage.textContent = result.error || 'Email o contraseña incorrectos.';
+                    errorMessage.textContent = result.message || 'Email o contraseña incorrectos.';
                     errorMessage.classList.remove('hidden');
                 }
             } catch (error) {
@@ -245,14 +225,22 @@ const showConfirmationMessage = (message) => {
     if (registerForm) {
         registerForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const email = document.getElementById('register-email').value;
-            const password = document.getElementById('register-password').value;
             const submitButton = registerForm.querySelector('button[type="submit"]');
-            
             setButtonLoadingState(submitButton, true, "Creando cuenta...");
-
+    
             const webhookURL = 'https://muna.auto.hostybee.com/webhook-test/registro'; 
-            const formData = { email, password, registeredAt: new Date().toISOString() };
+            
+            // Recolecta TODOS los datos del formulario unificado
+            const formData = {
+                email: document.getElementById('register-email').value,
+                password: document.getElementById('register-password').value,
+                // Asume que los campos de onboarding están ahora dentro del register-form
+                caregiverName: document.getElementById('caregiver-name')?.value,
+                childName: document.getElementById('child-name')?.value,
+                childAge: document.getElementById('child-age')?.value,
+                interests: Array.from(document.querySelectorAll('input[name="interest-topic"]:checked')).map(el => el.value).join(', '),
+                registeredAt: new Date().toISOString()
+            };
     
             try {
                 const response = await fetch(webhookURL, {
@@ -263,7 +251,7 @@ const showConfirmationMessage = (message) => {
                 const result = await response.json();
                 if (result.success === true) {
                     closeModal(registerForm.closest('.modal-overlay'));
-                    updateUIForLogin(email, true);
+                    updateUIForLogin(formData.email);
                 } else {
                     alert(result.message);
                 }
@@ -276,13 +264,12 @@ const showConfirmationMessage = (message) => {
         });
     }
 
-    
     if (b2bForm) {
+        // Lógica del formulario B2B (sin cambios)
         b2bForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const submitButton = b2bForm.querySelector('button[type="submit"]');
             setButtonLoadingState(submitButton, true);
-
             const institutionName = document.getElementById('b2b-institution').value;
             const webhookURL = 'https://muna.auto.hostybee.com/webhook-test/solicitud-b2b';
             const formData = {
@@ -315,18 +302,17 @@ const showConfirmationMessage = (message) => {
     }
 
     if (contactForm) {
+        // Lógica del formulario de contacto (sin cambios)
         contactForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const submitButton = contactForm.querySelector('button[type="submit"]');
             setButtonLoadingState(submitButton, true);
-
             const webhookURL = 'https://muna.auto.hostybee.com/webhook-test/solicitud-contacto';
             const formData = {
                 name: contactForm.querySelector('#name').value,
                 email: contactForm.querySelector('#email').value,
                 message: contactForm.querySelector('#message').value
             };
-    
             try {
                 const response = await fetch(webhookURL, {
                     method: 'POST',
@@ -347,57 +333,6 @@ const showConfirmationMessage = (message) => {
             }
         });
     }
-    // --- MANEJO DEL FORMULARIO DE ONBOARDING (BIENVENIDA) ---
-
-// Primero, asegúrate de tener esta línea para seleccionar el botón de omitir
-const skipOnboardingBtn = document.getElementById('skip-onboarding-btn');
-
-// Cuando el usuario envía el formulario de bienvenida
-if (onboardingForm) {
-    onboardingForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const submitButton = onboardingForm.querySelector('button[type="submit"]');
-        setButtonLoadingState(submitButton, true, "Guardando...");
-
-        // --- INICIO DE LA LÓGICA A AÑADIR ---
-
-        const webhookURL = 'https://muna.auto.hostybee.com/webhook-test/onboarding';
-
-        // Recolecta los datos del formulario
-        const onboardingData = {
-            email: loggedInUserEmail, // Email para saber a quién actualizar
-            caregiverName: document.getElementById('caregiver-name').value,
-            childName: document.getElementById('child-name').value,
-            childAge: document.getElementById('child-age').value,
-            interests: Array.from(document.querySelectorAll('input[name="interest-topic"]:checked')).map(el => el.value).join(', ')
-        };
-
-        // Envía los datos a n8n en segundo plano
-        try {
-            await fetch(webhookURL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(onboardingData)
-            });
-        } catch (error) {
-            console.error('Error al enviar datos de onboarding:', error);
-        }
-
-        // --- FIN DE LA LÓGICA A AÑADIR ---
-
-        setButtonLoadingState(submitButton, false);
-        closeModal(onboardingForm.closest('.modal-overlay'));
-        showDashboard(loggedInUserEmail.split('@')[0], false);
-    });
-}
-
-// Cuando el usuario hace clic en "Omitir por ahora"
-if (skipOnboardingBtn) {
-    skipOnboardingBtn.addEventListener('click', () => {
-        closeModal(document.getElementById('onboarding-modal'));
-        showDashboard(loggedInUserEmail.split('@')[0], false);
-    });
-}
 
     // Manejo de emociones
     emotionButtons.forEach(button => {
@@ -405,11 +340,9 @@ if (skipOnboardingBtn) {
             emotionButtons.forEach(btn => btn.classList.remove('selected'));
             button.classList.add('selected');
     
-            // Se usa el atributo 'value' si existe, si no, se usa 'data-emotion' como respaldo.
             const selectedEmotion = button.value || button.dataset.emotion; 
             const feeling = button.dataset.feeling;
             
-            // Lógica de "Grabar": Guardamos la emoción para más tarde
             emotionToSendMessage = selectedEmotion;
     
             const webhookURL = 'https://muna.auto.hostybee.com/webhook-test/registrar-emocion';
@@ -417,10 +350,8 @@ if (skipOnboardingBtn) {
     
             showConfirmationMessage(`Gracias por compartir que te sientes ${feeling}.`);
     
-            // Abrimos el chat inmediatamente
             openChatbot();
     
-            // Enviamos el registro de la emoción al servidor en segundo plano
             try {
                 await fetch(webhookURL, {
                     method: 'POST',
@@ -433,7 +364,7 @@ if (skipOnboardingBtn) {
         });
     });
     
-    // Navegación y otros
+    // Navegación y otros (FAQ, Blog)
     if (viewAllFaqsBtn) {
         viewAllFaqsBtn.addEventListener('click', () => {
             mainContent.classList.add('hidden');
@@ -464,7 +395,6 @@ if (skipOnboardingBtn) {
         });
     });
 
-    // Búsqueda del blog
     const searchInput = document.getElementById('blog-search-input');
     const filterButtons = document.querySelectorAll('.blog-filter-btn');
     const articles = document.querySelectorAll('.blog-article-card');
