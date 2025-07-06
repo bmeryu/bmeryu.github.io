@@ -391,7 +391,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const feeling = button.dataset.feeling;
             
             // 1. Registra la emoción en segundo plano (opcional)
-            const webhookURL = 'https://muna.auto.hostybee.com/webhook/registrar-emocion';
+            const webhookURL = 'https://muna.auto.hostybee.com/webhook-test/registrar-emocion';
             const emotionData = { email: loggedInUserEmail, emotion: selectedEmotion };
             try {
                 await fetch(webhookURL, {
