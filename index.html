@@ -10,15 +10,13 @@
             theme: {
                 extend: {
                     colors: {
-                        // Paleta de colores actual
-                        'muna-primary': '#8A7ADF', // Un lavanda-azul suave y calmante
-                        'muna-secondary': '#6AB09B', // Un verde-azulado sereno y natural
-                        'muna-bg': '#F8F3EC', // Un fondo crema muy suave y cálido
-                        'muna-text': '#3C3C3C', // Un gris oscuro para mejor legibilidad
-                        'muna-accent': '#FF9A8D', // Un coral suave y vibrante para acentos
+                        'muna-primary': '#8A7ADF',
+                        'muna-secondary': '#6AB09B',
+                        'muna-bg': '#F8F3EC',
+                        'muna-text': '#3C3C3C',
+                        'muna-accent': '#FF9A8D',
                     },
                     fontFamily: {
-                        // Usando Inter como fuente predeterminada, que es amigable y legible
                         'inter': ['Inter', 'sans-serif'],
                     }
                 }
@@ -116,23 +114,20 @@
                 </p>
                 <div class="flex flex-col items-center gap-3">
     
-    <button 
-        data-modal-target="register-modal" 
-        class="
-            open-modal-btn
-            text-white text-xl font-bold         py-4 px-10                           bg-gradient-to-r from-muna-accent to-muna-primary  rounded-full                         shadow-lg                            transform                            transition-all duration-300 ease-in-out  hover:scale-105 hover:shadow-2xl hover:-translate-y-1  ">
-        <i class="fas fa-sparkles mr-3"></i> <span>¡Comenzar Ahora!</span>      </button>
+                    <button data-modal-target="register-modal" class="open-modal-btn text-white text-xl font-bold py-4 px-10 bg-gradient-to-r from-muna-accent to-muna-primary rounded-full shadow-lg transform transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-2xl hover:-translate-y-1">
+                        <i class="fas fa-sparkles mr-3"></i> <span>¡Comenzar Ahora!</span>
+                    </button>
 
-    <p class="text-sm text-muna-text mt-2">
-        30 días de Premium gratis. ¡Sin compromiso!
-    </p>
+                    <p class="text-sm text-muna-text mt-2">
+                        30 días de Premium gratis. ¡Sin compromiso!
+                    </p>
 
-</div>
+                </div>
                 <div class="mt-6">
-    <p class="text-sm text-gray-600">
-        <i class="fas fa-shield-alt text-muna-secondary mr-2"></i>Tus conversaciones son 100% privadas y nunca se guardan.
-    </p>
-</div>
+                    <p class="text-sm text-gray-600">
+                        <i class="fas fa-shield-alt text-muna-secondary mr-2"></i>Tus conversaciones son 100% privadas y nunca se guardan.
+                    </p>
+                </div>
             </div>
         </section>
 
@@ -559,12 +554,14 @@
         </main>
     </div>
 
+    <!-- MODAL DE REGISTRO UNIFICADO -->
     <div id="register-modal" class="modal-overlay">
-        <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-content" style="max-width: 600px;">
             <button class="modal-close-btn close-modal-btn">&times;</button>
-            <h3 class="text-3xl font-bold text-center text-muna-primary mb-6">Crea tu cuenta en Muna IA</h3>
-            <p class="text-lg text-center text-muna-text mb-6">Comienza tu viaje hacia una crianza más consciente.</p>
+            <h3 class="text-3xl font-bold text-center text-muna-primary mb-4">Crea tu cuenta en Muna IA</h3>
+            <p class="text-lg text-center text-muna-text mb-6">Un solo paso para comenzar tu viaje hacia una crianza más consciente.</p>
             <form id="register-form" class="space-y-5">
+                
                 <div>
                     <label for="register-email" class="block text-muna-text text-lg font-medium mb-2">Email</label>
                     <input type="email" id="register-email" name="email" class="w-full p-3 rounded-lg bg-muna-bg text-muna-text focus:outline-none focus:ring-2 focus:ring-muna-accent" placeholder="tu@email.com" required>
@@ -573,11 +570,50 @@
                     <label for="register-password" class="block text-muna-text text-lg font-medium mb-2">Contraseña</label>
                     <input type="password" id="register-password" name="password" class="w-full p-3 rounded-lg bg-muna-bg text-muna-text focus:outline-none focus:ring-2 focus:ring-muna-accent" placeholder="Crea tu contraseña" required>
                 </div>
-                <div class="text-center text-xs text-gray-500 my-4">
-                <p><i class="fas fa-lock mr-1"></i>Recordatorio: Nunca guardamos el historial de tus conversaciones. Tu espacio es 100% privado.</p>
+
+                <hr class="my-6 border-gray-200">
+
+                <h4 class="text-2xl font-bold text-center text-muna-secondary pt-2">¡Casi listo! Cuéntanos un poco de ti</h4>
+
+                <div>
+                    <label for="caregiver-name" class="block text-muna-text text-lg font-medium mb-2">Tu nombre (mamá, papá, cuidador/a)</label>
+                    <input type="text" id="caregiver-name" name="caregiver-name" class="w-full p-3 rounded-lg bg-muna-bg text-muna-text focus:outline-none focus:ring-2 focus:ring-muna-accent" placeholder="Ej: María">
                 </div>
-                <button type="submit" class="btn-accent w-full mt-6">
-                </button>
+                <div>
+                    <label for="child-name" class="block text-muna-text text-lg font-medium mb-2">Nombre de tu niño/a (opcional)</label>
+                    <input type="text" id="child-name" name="child-name" class="w-full p-3 rounded-lg bg-muna-bg text-muna-text focus:outline-none focus:ring-2 focus:ring-muna-accent" placeholder="Ej: Sofía">
+                </div>
+                <div>
+                    <label for="child-age" class="block text-muna-text text-lg font-medium mb-2">Edad de tu niño/a (años, opcional)</label>
+                    <input type="number" id="child-age" name="child-age" min="0" max="18" class="w-full p-3 rounded-lg bg-muna-bg text-muna-text focus:outline-none focus:ring-2 focus:ring-muna-accent" placeholder="Ej: 3">
+                </div>
+
+                <div class="bg-muna-bg p-6 rounded-lg shadow-inner mt-6">
+                    <h4 class="font-bold text-muna-primary text-xl mb-4 text-center">Temas de Interés</h4>
+                    <p class="text-sm text-muna-text mb-4 text-center">Selecciona los temas que más te resuenan para personalizar tu experiencia:</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-base">
+                       <label class="flex items-start p-3 bg-white rounded-lg shadow-sm">
+                            <input type="checkbox" name="interest-topic" value="gestion_emocional_infantil" class="form-checkbox text-muna-accent rounded mt-1">
+                            <span class="ml-3">Gestión Emocional Infantil (pataletas, miedos, celos)</span>
+                        </label>
+                        <label class="flex items-start p-3 bg-white rounded-lg shadow-sm">
+                            <input type="checkbox" name="interest-topic" value="limites_disciplina" class="form-checkbox text-muna-accent rounded mt-1">
+                            <span class="ml-3">Límites y Disciplina Positiva</span>
+                        </label>
+                        <label class="flex items-start p-3 bg-white rounded-lg shadow-sm">
+                            <input type="checkbox" name="interest-topic" value="autocuidado_cuidador" class="form-checkbox text-muna-accent rounded mt-1">
+                            <span class="ml-3">Autocuidado del Cuidador (culpa, estrés)</span>
+                        </label>
+                         <label class="flex items-start p-3 bg-white rounded-lg shadow-sm">
+                            <input type="checkbox" name="interest-topic" value="comunicacion_vinculo" class="form-checkbox text-muna-accent rounded mt-1">
+                            <span class="ml-3">Comunicación y Vínculo Afectivo</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="text-center text-xs text-gray-500 my-4">
+                    <p><i class="fas fa-lock mr-1"></i>Recordatorio: Nunca guardamos el historial de tus conversaciones.</p>
+                </div>
                 <button type="submit" class="btn-accent w-full mt-6">
                     <span>Crear Cuenta Gratis</span>
                     <i class="fas fa-user-plus ml-3"></i>
@@ -616,55 +652,7 @@
         </div>
     </div>
     
-    <div id="onboarding-modal" class="modal-overlay">
-        <div class="modal-content">
-            <h3 class="text-3xl font-bold text-center text-muna-primary mb-4">¡Bienvenido/a a Muna IA!</h3>
-            <p class="text-lg text-center text-muna-text mb-6">Ayúdanos a conocerte mejor para personalizar tu experiencia.</p>
-            
-            <form id="onboarding-form" class="space-y-5">
-                <div>
-    <label for="caregiver-name" class="block text-muna-text text-lg font-medium mb-2">Tu nombre (mamá, papá, cuidador/a)</label>
-    <input type="text" id="caregiver-name" name="caregiver-name" class="w-full p-3 rounded-lg bg-muna-bg text-muna-text focus:outline-none focus:ring-2 focus:ring-muna-accent" placeholder="Ej: María">
-</div>
-                <div>
-                    <label for="child-name" class="block text-muna-text text-lg font-medium mb-2">Nombre de tu niño/a (opcional)</label>
-                    <input type="text" id="child-name" name="child-name" class="w-full p-3 rounded-lg bg-muna-bg text-muna-text focus:outline-none focus:ring-2 focus:ring-muna-accent" placeholder="Ej: Sofía">
-                </div>
-                <div>
-                    <label for="child-age" class="block text-muna-text text-lg font-medium mb-2">Edad de tu niño/a (años, opcional)</label>
-                    <input type="number" id="child-age" name="child-age" min="0" max="18" class="w-full p-3 rounded-lg bg-muna-bg text-muna-text focus:outline-none focus:ring-2 focus:ring-muna-accent" placeholder="Ej: 3">
-                </div>
-
-                <div class="bg-muna-bg p-6 rounded-lg shadow-inner mt-6">
-                    <h4 class="font-bold text-muna-primary text-xl mb-4 text-center">Temas de Interés</h4>
-                    <p class="text-sm text-muna-text mb-4 text-center">Selecciona los temas que más te resuenan para personalizar tu experiencia:</p>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-base">
-                       <label class="flex items-start p-3 bg-white rounded-lg shadow-sm">
-                            <input type="checkbox" name="interest-topic" value="gestion_emocional_infantil" class="form-checkbox text-muna-accent rounded mt-1">
-                            <span class="ml-3">Gestión Emocional Infantil (pataletas, miedos, celos)</span>
-                        </label>
-                        <label class="flex items-start p-3 bg-white rounded-lg shadow-sm">
-                            <input type="checkbox" name="interest-topic" value="limites_disciplina" class="form-checkbox text-muna-accent rounded mt-1">
-                            <span class="ml-3">Límites y Disciplina Positiva</span>
-                        </label>
-                        <label class="flex items-start p-3 bg-white rounded-lg shadow-sm">
-                            <input type="checkbox" name="interest-topic" value="autocuidado_cuidador" class="form-checkbox text-muna-accent rounded mt-1">
-                            <span class="ml-3">Autocuidado del Cuidador (culpa, estrés)</span>
-                        </label>
-                         <label class="flex items-start p-3 bg-white rounded-lg shadow-sm">
-                            <input type="checkbox" name="interest-topic" value="comunicacion_vinculo" class="form-checkbox text-muna-accent rounded mt-1">
-                            <span class="ml-3">Comunicación y Vínculo Afectivo</span>
-                        </label>
-                    </div>
-                </div>
-
-                <div class="flex justify-end items-center gap-4 mt-6">
-                    <button type="button" id="skip-onboarding-btn" class="text-muna-secondary hover:underline">Omitir por ahora</button>
-                    <button type="submit" class="btn-primary">Guardar y continuar</button>
-                </div>
-            </form>
-        </div>
-    </div>
+    <!-- El modal de onboarding se ha eliminado -->
     
     <div id="b2b-modal" class="modal-overlay">
         <div class="modal-content" style="max-width: 600px;">
@@ -674,23 +662,23 @@
             <form id="b2b-form" class="space-y-4">
                 <div>
                     <label for="b2b-name" class="block text-muna-text font-medium mb-1">Nombre Completo</label>
-                    <input type="text" id="b2b-name" class="w-full p-3 rounded-lg bg-muna-bg text-muna-text focus:outline-none focus:ring-2 focus:ring-muna-accent" required>
+                    <input type="text" id="b2b-name" class="w-full p-3 rounded-lg bg-muna-bg text-muna-text" required>
                 </div>
                 <div>
                     <label for="b2b-email" class="block text-muna-text font-medium mb-1">Email Corporativo</label>
-                    <input type="email" id="b2b-email" class="w-full p-3 rounded-lg bg-muna-bg text-muna-text focus:outline-none focus:ring-2 focus:ring-muna-accent" required>
+                    <input type="email" id="b2b-email" class="w-full p-3 rounded-lg bg-muna-bg text-muna-text" required>
                 </div>
                  <div>
                     <label for="b2b-institution" class="block text-muna-text font-medium mb-1">Nombre de la Institución</label>
-                    <input type="text" id="b2b-institution" class="w-full p-3 rounded-lg bg-muna-bg text-muna-text focus:outline-none focus:ring-2 focus:ring-muna-accent" required>
+                    <input type="text" id="b2b-institution" class="w-full p-3 rounded-lg bg-muna-bg text-muna-text" required>
                 </div>
                  <div>
                     <label for="b2b-role" class="block text-muna-text font-medium mb-1">Tu Cargo</label>
-                    <input type="text" id="b2b-role" class="w-full p-3 rounded-lg bg-muna-bg text-muna-text focus:outline-none focus:ring-2 focus:ring-muna-accent" required>
+                    <input type="text" id="b2b-role" class="w-full p-3 rounded-lg bg-muna-bg text-muna-text" required>
                 </div>
                  <div>
                     <label for="b2b-families" class="block text-muna-text font-medium mb-1">Número Aproximado de Familias</label>
-                    <input type="number" id="b2b-families" min="1" class="w-full p-3 rounded-lg bg-muna-bg text-muna-text focus:outline-none focus:ring-2 focus:ring-muna-accent" required>
+                    <input type="number" id="b2b-families" min="1" class="w-full p-3 rounded-lg bg-muna-bg text-muna-text" required>
                 </div>
                 <button type="submit" class="btn-accent w-full mt-6">
                     <span>Descargar Kit Ahora</span>
@@ -791,7 +779,7 @@
             <p class="mb-4">Todo el contenido del servicio, incluyendo el diseño, texto, gráficos, logos, y el software (excluyendo el contenido generado por el usuario), es propiedad de Muna IA o de sus licenciantes y está protegido por las leyes de propiedad intelectual. No puedes copiar, modificar o distribuir nuestro contenido sin nuestro permiso explícito.</p>
 
             <h4 class="text-2xl font-semibold">6. Limitación de Responsabilidad</h4>
-            <p class="mb-4">Muna IA se proporciona "tal cual" y no garantizamos que el servicio sea ininterrumpido o libre de errores. En la medida máxima permitida por la ley, Muna IA не será responsable de ningún daño directo, indirecto, incidental o consecuente que resulte del uso o la incapacidad de usar nuestro servicio.</p>
+            <p class="mb-4">Muna IA se proporciona "tal cual" y no garantizamos que el servicio sea ininterrumpido o libre de errores. En la medida máxima permitida por la ley, Muna IA no será responsable de ningún daño directo, indirecto, incidental o consecuente que resulte del uso o la incapacidad de usar nuestro servicio.</p>
 
             <h4 class="text-2xl font-semibold">7. Modificación de los Términos</h4>
             <p class="mb-4">Nos reservamos el derecho de modificar estos términos en cualquier momento. Te notificaremos de los cambios importantes. El uso continuado del servicio después de dichos cambios constituirá tu aceptación de los nuevos términos.</p>
@@ -878,6 +866,6 @@
         </div>
     </footer>
 
-    <script src="script.js?v=1.1"></script>
+    <script src="script.js?v=1.3"></script>
 </body>
 </html>
