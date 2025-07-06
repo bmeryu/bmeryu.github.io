@@ -243,7 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             setButtonLoadingState(submitButton, true, "Creando cuenta...");
 
-            const webhookURL = 'https://muna.auto.hostybee.com/webhook/registro'; 
+            const webhookURL = 'https://muna.auto.hostybee.com/webhook-test/registro'; 
             const formData = { email, password, registeredAt: new Date().toISOString() };
     
             try {
