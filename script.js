@@ -353,7 +353,7 @@ const showConfirmationMessage = (message) => {
 const skipOnboardingBtn = document.getElementById('skip-onboarding-btn');
 
 // Cuando el usuario envía el formulario de bienvenida
-iif (onboardingForm) {
+if (onboardingForm) {
     onboardingForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const submitButton = onboardingForm.querySelector('button[type="submit"]');
