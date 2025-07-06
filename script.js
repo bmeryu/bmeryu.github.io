@@ -353,14 +353,39 @@ const showConfirmationMessage = (message) => {
 const skipOnboardingBtn = document.getElementById('skip-onboarding-btn');
 
 // Cuando el usuario envía el formulario de bienvenida
-if (onboardingForm) {
-    onboardingForm.addEventListener('submit', (e) => {
-        e.preventDefault(); // Previene que la página se recargue
+iif (onboardingForm) {
+    onboardingForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const submitButton = onboardingForm.querySelector('button[type="submit"]');
+        setButtonLoadingState(submitButton, true, "Guardando...");
 
-        // (Opcional) Aquí puedes añadir tu lógica para enviar
-        // el nombre de la madre, hijo, etc., a otro webhook de n8n.
+        // --- INICIO DE LA LÓGICA A AÑADIR ---
 
-        // Lo más importante: cerrar el modal y mostrar el dashboard
+        const webhookURL = 'https://muna.auto.hostybee.com/webhook/onboarding';
+
+        // Recolecta los datos del formulario
+        const onboardingData = {
+            email: loggedInUserEmail, // Email para saber a quién actualizar
+            caregiverName: document.getElementById('caregiver-name').value,
+            childName: document.getElementById('child-name').value,
+            childAge: document.getElementById('child-age').value,
+            interests: Array.from(document.querySelectorAll('input[name="interest-topic"]:checked')).map(el => el.value).join(', ')
+        };
+
+        // Envía los datos a n8n en segundo plano
+        try {
+            await fetch(webhookURL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(onboardingData)
+            });
+        } catch (error) {
+            console.error('Error al enviar datos de onboarding:', error);
+        }
+
+        // --- FIN DE LA LÓGICA A AÑADIR ---
+
+        setButtonLoadingState(submitButton, false);
         closeModal(onboardingForm.closest('.modal-overlay'));
         showDashboard(loggedInUserEmail.split('@')[0], false);
     });
