@@ -93,14 +93,22 @@ const showConfirmationMessage = (message) => {
     };
 
     // --- LÓGICA DE AUTENTICACIÓN ---
-    const updateUIForLogin = (email, isNewUser) => {
-        loggedInUserEmail = email;
-        loggedOutView.classList.add('hidden');
-        loggedInView.classList.remove('hidden');
-        profileEmail.textContent = email;
-        showDashboard(email.split('@')[0], isNewUser);
-    };
+   const updateUIForLogin = (email, isNewUser) => {
+    loggedInUserEmail = email;
+    loggedOutView.classList.add('hidden');
+    loggedInView.classList.remove('hidden');
+    profileEmail.textContent = email;
 
+    // Lógica corregida:
+    if (isNewUser) {
+        // Si es nuevo, solo abre el modal de bienvenida.
+        closeModal(document.getElementById('register-modal')); // Asegura que el modal de registro se cierre
+        setTimeout(() => openModal(document.getElementById('onboarding-modal')), 300);
+    } else {
+        // Si es un usuario existente, va directo al dashboard.
+        showDashboard(email.split('@')[0], false);
+    }
+};
     const updateUIForLogout = () => {
         loggedInUserEmail = '';
         loggedOutView.classList.remove('hidden');
