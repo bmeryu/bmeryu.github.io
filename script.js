@@ -361,7 +361,7 @@ if (onboardingForm) {
 
         // --- INICIO DE LA LÓGICA A AÑADIR ---
 
-        const webhookURL = 'https://muna.auto.hostybee.com/webhook/onboarding';
+        const webhookURL = 'https://muna.auto.hostybee.com/webhook-test/onboarding';
 
         // Recolecta los datos del formulario
         const onboardingData = {
