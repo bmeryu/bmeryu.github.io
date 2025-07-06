@@ -2,17 +2,17 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     // --- FUNCIONES AUXILIARES ---
-    const showConfirmationMessage = (message) => {
-        const messageEl = document.createElement('div');
-        messageEl.textContent = message;
-        messageEl.className = 'ephemeral-message';
-        document.body.appendChild(messageEl);
-        setTimeout(() => messageEl.classList.add('show'), 10);
-        setTimeout(() => {
-            messageEl.classList.remove('show');
-            messageEl.addEventListener('transitionend', () => messageEl.remove());
-        }, 3000);
-    };
+const showConfirmationMessage = (message) => {
+    const messageEl = document.createElement('div');
+    messageEl.textContent = message;
+    messageEl.className = 'ephemeral-message';
+    document.body.appendChild(messageEl);
+    setTimeout(() => messageEl.classList.add('show'), 10);
+    setTimeout(() => {
+        messageEl.classList.remove('show');
+        messageEl.addEventListener('transitionend', () => messageEl.remove());
+    }, 3000);
+};
 
     const setButtonLoadingState = (button, isLoading, loadingText = "Enviando...") => {
         if (!button) return;
@@ -93,14 +93,22 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // --- LÓGICA DE AUTENTICACIÓN ---
-    const updateUIForLogin = (email, isNewUser) => {
-        loggedInUserEmail = email;
-        loggedOutView.classList.add('hidden');
-        loggedInView.classList.remove('hidden');
-        profileEmail.textContent = email;
-        showDashboard(email.split('@')[0], isNewUser);
-    };
+   const updateUIForLogin = (email, isNewUser) => {
+    loggedInUserEmail = email;
+    loggedOutView.classList.add('hidden');
+    loggedInView.classList.remove('hidden');
+    profileEmail.textContent = email;
 
+    // Lógica corregida:
+    if (isNewUser) {
+        // Si es nuevo, solo abre el modal de bienvenida.
+        closeModal(document.getElementById('register-modal')); // Asegura que el modal de registro se cierre
+        setTimeout(() => openModal(document.getElementById('onboarding-modal')), 300);
+    } else {
+        // Si es un usuario existente, va directo al dashboard.
+        showDashboard(email.split('@')[0], false);
+    }
+};
     const updateUIForLogout = () => {
         loggedInUserEmail = '';
         loggedOutView.classList.remove('hidden');
@@ -209,7 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
             setButtonLoadingState(submitButton, true, "Iniciando sesión...");
             errorMessage.classList.add('hidden');
 
-            const webhookURL = 'https://muna.auto.hostybee.com/webhook/login';
+            const webhookURL = 'https://muna.auto.hostybee.com/webhook-test/login';
             try {
                 const response = await fetch(webhookURL, {
                     method: 'POST',
@@ -268,6 +276,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    
     if (b2bForm) {
         b2bForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -275,7 +284,7 @@ document.addEventListener('DOMContentLoaded', () => {
             setButtonLoadingState(submitButton, true);
 
             const institutionName = document.getElementById('b2b-institution').value;
-            const webhookURL = 'https://muna.auto.hostybee.com/webhook/solicitud-b2b';
+            const webhookURL = 'https://muna.auto.hostybee.com/webhook-test/solicitud-b2b';
             const formData = {
                 name: document.getElementById('b2b-name').value,
                 email: document.getElementById('b2b-email').value,
@@ -311,7 +320,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const submitButton = contactForm.querySelector('button[type="submit"]');
             setButtonLoadingState(submitButton, true);
 
-            const webhookURL = 'https://muna.auto.hostybee.com/webhook/solicitud-contacto';
+            const webhookURL = 'https://muna.auto.hostybee.com/webhook-test/solicitud-contacto';
             const formData = {
                 name: contactForm.querySelector('#name').value,
                 email: contactForm.querySelector('#email').value,
@@ -338,61 +347,55 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-document.addEventListener('DOMContentLoaded', () => {
+    // --- MANEJO DEL FORMULARIO DE ONBOARDING (BIENVENIDA) ---
 
-    // --- FUNCIONES AUXILIARES ---
-    const showConfirmationMessage = (message, duration = 3000) => {
-        const messageEl = document.createElement('div');
-        messageEl.textContent = message;
-        messageEl.className = 'ephemeral-message';
-        document.body.appendChild(messageEl);
-        setTimeout(() => messageEl.classList.add('show'), 10);
-        setTimeout(() => {
-            messageEl.classList.remove('show');
-            messageEl.addEventListener('transitionend', () => messageEl.remove());
-        }, duration);
-    };
+// Primero, asegúrate de tener esta línea para seleccionar el botón de omitir
+const skipOnboardingBtn = document.getElementById('skip-onboarding-btn');
 
-    const setButtonLoadingState = (button, isLoading, loadingText = "Enviando...") => {
-        if (!button) return;
-        if (isLoading) {
-            button.dataset.originalHtml = button.innerHTML;
-            button.disabled = true;
-            button.innerHTML = `<span class="animate-spin h-5 w-5 mr-3 border-t-2 border-b-2 border-white rounded-full" style="display: inline-block;"></span><span>${loadingText}</span>`;
-        } else {
-            button.disabled = false;
-            if (button.dataset.originalHtml) button.innerHTML = button.dataset.originalHtml;
-        }
-    };
-    
-    // --- SELECTORES ---
-    // (Asegúrate de tener todos tus selectores aquí)
-    const emotionButtons = document.querySelectorAll('.emotion-btn');
-    const chatbotFloater = document.getElementById('chatbot-floater');
-    const chatbotBubble = document.getElementById('chatbot-bubble');
-    const chatbotCloseBtn = document.getElementById('chatbot-close-btn');
-    let loggedInUserEmail = ''; // Esta variable debería ser seteada en tu lógica de login
+// Cuando el usuario envía el formulario de bienvenida
+if (onboardingForm) {
+    onboardingForm.addEventListener('submit', (e) => {
+        e.preventDefault(); // Previene que la página se recargue
 
-    // --- LÓGICA DEL CHATBOT ---
-    const openChatbot = () => {
-        if (chatbotFloater) chatbotFloater.classList.remove('is-minimized');
-    };
+        // (Opcional) Aquí puedes añadir tu lógica para enviar
+        // el nombre de la madre, hijo, etc., a otro webhook de n8n.
 
-    if (chatbotBubble) chatbotBubble.addEventListener('click', openChatbot);
-    if (chatbotCloseBtn) chatbotCloseBtn.addEventListener('click', () => chatbotFloater.classList.add('is-minimized'));
+        // Lo más importante: cerrar el modal y mostrar el dashboard
+        closeModal(onboardingForm.closest('.modal-overlay'));
+        showDashboard(loggedInUserEmail.split('@')[0], false);
+    });
+}
 
-    // --- MANEJO DE EMOCIONES (VERSIÓN SIMPLIFICADA) ---
+// Cuando el usuario hace clic en "Omitir por ahora"
+if (skipOnboardingBtn) {
+    skipOnboardingBtn.addEventListener('click', () => {
+        closeModal(document.getElementById('onboarding-modal'));
+        showDashboard(loggedInUserEmail.split('@')[0], false);
+    });
+}
+
+    // Manejo de emociones
     emotionButtons.forEach(button => {
         button.addEventListener('click', async () => { 
             emotionButtons.forEach(btn => btn.classList.remove('selected'));
             button.classList.add('selected');
     
-            const selectedEmotion = button.value;
+            // Se usa el atributo 'value' si existe, si no, se usa 'data-emotion' como respaldo.
+            const selectedEmotion = button.value || button.dataset.emotion; 
             const feeling = button.dataset.feeling;
             
-            // 1. Registra la emoción en segundo plano (opcional)
-            const webhookURL = 'https://muna.auto.hostybee.com/webhook/registrar-emocion';
+            // Lógica de "Grabar": Guardamos la emoción para más tarde
+            emotionToSendMessage = selectedEmotion;
+    
+            const webhookURL = 'https://muna.auto.hostybee.com/webhook-test/registrar-emocion';
             const emotionData = { email: loggedInUserEmail, emotion: selectedEmotion };
+    
+            showConfirmationMessage(`Gracias por compartir que te sientes ${feeling}.`);
+    
+            // Abrimos el chat inmediatamente
+            openChatbot();
+    
+            // Enviamos el registro de la emoción al servidor en segundo plano
             try {
                 await fetch(webhookURL, {
                     method: 'POST',
@@ -400,19 +403,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: JSON.stringify(emotionData)
                 });
             } catch (error) {
-                console.error('Error al registrar la emoción:', error);
+                console.error('Error de red al registrar emoción:', error);
             }
-            
-            // 2. Simplemente abre el chat. La conversación empezará dentro.
-            showConfirmationMessage(`Gracias por compartir que te sientes ${feeling}.`);
-            openChatbot();
         });
     });
-
-    // --- RESTO DE TU CÓDIGO ---
-    // (Aquí va toda la lógica que ya funciona para modales, login, formularios, etc.)
-});
-
     
     // Navegación y otros
     if (viewAllFaqsBtn) {
