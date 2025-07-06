@@ -276,6 +276,7 @@ const showConfirmationMessage = (message) => {
         });
     }
 
+    
     if (b2bForm) {
         b2bForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -346,6 +347,32 @@ const showConfirmationMessage = (message) => {
             }
         });
     }
+    // --- MANEJO DEL FORMULARIO DE ONBOARDING (BIENVENIDA) ---
+
+// Primero, asegúrate de tener esta línea para seleccionar el botón de omitir
+const skipOnboardingBtn = document.getElementById('skip-onboarding-btn');
+
+// Cuando el usuario envía el formulario de bienvenida
+if (onboardingForm) {
+    onboardingForm.addEventListener('submit', (e) => {
+        e.preventDefault(); // Previene que la página se recargue
+
+        // (Opcional) Aquí puedes añadir tu lógica para enviar
+        // el nombre de la madre, hijo, etc., a otro webhook de n8n.
+
+        // Lo más importante: cerrar el modal y mostrar el dashboard
+        closeModal(onboardingForm.closest('.modal-overlay'));
+        showDashboard(loggedInUserEmail.split('@')[0], false);
+    });
+}
+
+// Cuando el usuario hace clic en "Omitir por ahora"
+if (skipOnboardingBtn) {
+    skipOnboardingBtn.addEventListener('click', () => {
+        closeModal(document.getElementById('onboarding-modal'));
+        showDashboard(loggedInUserEmail.split('@')[0], false);
+    });
+}
 
     // Manejo de emociones
     emotionButtons.forEach(button => {
