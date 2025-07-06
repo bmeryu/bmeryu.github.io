@@ -2,7 +2,7 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     // --- FUNCIONES AUXILIARES ---
-    const showConfirmationMessage = (message) => {
+const showConfirmationMessage = (message) => {
     const messageEl = document.createElement('div');
     messageEl.textContent = message;
     messageEl.className = 'ephemeral-message';
