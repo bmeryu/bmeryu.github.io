@@ -313,7 +313,30 @@ const showConfirmationMessage = (message) => {
             }
         });
     }
+ if (paymentForm) {
+        paymentForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const planName = document.getElementById('payment-plan-name').textContent;
+            closeModal(document.getElementById('payment-modal'));
+            showConfirmationMessage(`¡Felicidades! Has mejorado al ${planName}.`);
+            // In a real app, you would redirect to a payment gateway like Mercado Pago here.
+        });
+    }
 
+   if(onboardingForm) {
+        onboardingForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // 1. Recolectar los nuevos datos del formulario.
+            const caregiverName = document.getElementById('caregiver-name').value;
+            const childName = document.getElementById('child-name').value;
+            const childAge = document.getElementById('child-age').value;
+            const selectedInterests = Array.from(document.querySelectorAll('input[name="interest-topic"]:checked')).map(checkbox => checkbox.value);
+
+            // 2. Definir la URL de tu NUEVO webhook (el de actualización).
+            // !!! REEMPLAZA ESTA URL POR LA TUYA !!!
+            const webhookURL = 'https://muna.auto.hostybee.com/webhook-test/actualizar-perfil'; 
+            
     if (contactForm) {
         contactForm.addEventListener('submit', async (e) => {
             e.preventDefault();
