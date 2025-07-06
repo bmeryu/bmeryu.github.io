@@ -3,16 +3,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- FUNCIONES AUXILIARES ---
     const showConfirmationMessage = (message) => {
-        const messageEl = document.createElement('div');
-        messageEl.textContent = message;
-        messageEl.className = 'ephemeral-message';
-        document.body.appendChild(messageEl);
-        setTimeout(() => messageEl.classList.add('show'), 10);
-        setTimeout(() => {
-            messageEl.classList.remove('show');
-            messageEl.addEventListener('transitionend', () => messageEl.remove());
-        }, 3000);
-    };
+    const messageEl = document.createElement('div');
+    messageEl.textContent = message;
+    messageEl.className = 'ephemeral-message';
+    document.body.appendChild(messageEl);
+    setTimeout(() => messageEl.classList.add('show'), 10);
+    setTimeout(() => {
+        messageEl.classList.remove('show');
+        messageEl.addEventListener('transitionend', () => messageEl.remove());
+    }, 3000);
+};
 
     const setButtonLoadingState = (button, isLoading, loadingText = "Enviando...") => {
         if (!button) return;
