@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- CONFIGURACIÓN CENTRALIZADA DE WEBHOOKS ---
     // Gestiona todas tus URLs de n8n desde un solo lugar.
-    // Simplemente cambia la URL aquí si necesitas actualizar un webhook.
     const N8N_WEBHOOKS = {
         login: 'https://muna.auto.hostybee.com/webhook-test/login',
         register: 'https://muna.auto.hostybee.com/webhook-test/registro',
@@ -404,13 +403,21 @@ document.addEventListener('DOMContentLoaded', () => {
             const selectedEmotion = button.dataset.emotion;
             const feeling = button.dataset.feeling;
             
-            emotionToSendMessage = selectedEmotion; // Grabar emoción para el chat
+            emotionToSendMessage = selectedEmotion;
 
             showEphemeralMessage(`Gracias por compartir que te sientes ${feeling}.`);
             openChatbot();
 
-            // Enviar el registro de la emoción al servidor en segundo plano
-            const result = await trackEvent('logEmotion', { emotion: selectedEmotion });
+            // --- CORRECCIÓN ---
+            // Añadimos explícitamente el email al paquete de datos que se envía.
+            // La función trackEvent también lo añade, pero ser explícitos aquí es más seguro.
+            const emotionData = {
+                emotion: selectedEmotion,
+                email: loggedInUserEmail 
+            };
+
+            const result = await trackEvent('logEmotion', emotionData);
+            
             if (!result.success) {
                 console.error('Fallo al registrar la emoción en n8n:', result.error);
             }
