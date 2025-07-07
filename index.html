@@ -10,15 +10,13 @@
             theme: {
                 extend: {
                     colors: {
-                        // Paleta de colores actual
-                        'muna-primary': '#8A7ADF', // Un lavanda-azul suave y calmante
-                        'muna-secondary': '#6AB09B', // Un verde-azulado sereno y natural
-                        'muna-bg': '#F8F3EC', // Un fondo crema muy suave y cálido
-                        'muna-text': '#3C3C3C', // Un gris oscuro para mejor legibilidad
-                        'muna-accent': '#FF9A8D', // Un coral suave y vibrante para acentos
+                        'muna-primary': '#8A7ADF',
+                        'muna-secondary': '#6AB09B',
+                        'muna-bg': '#F8F3EC',
+                        'muna-text': '#3C3C3C',
+                        'muna-accent': '#FF9A8D',
                     },
                     fontFamily: {
-                        // Usando Inter como fuente predeterminada, que es amigable y legible
                         'inter': ['Inter', 'sans-serif'],
                     }
                 }
@@ -34,8 +32,9 @@
 
     <header id="site-header" class="fixed w-full z-50 bg-muna-bg shadow-md">
         <nav class="container mx-auto px-4 py-3 flex items-center justify-between">
-            <a href="#inicio" class="flex-shrink-0 flex items-center space-x-2">
-                <svg width="48" height="48" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <a href="#inicio" class="flex-shrink-0 flex items-center space-x-2" aria-label="Página de inicio de Muna IA">
+                <svg width="48" height="48" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="logoTitle">
+                    <title id="logoTitle">Logo de Muna IA</title>
                     <path d="M50 0C22.386 0 0 22.386 0 50C0 77.614 22.386 100 50 100C77.614 100 100 77.614 100 50C100 22.386 77.614 0 50 0ZM50 10C72.091 10 90 27.909 90 50C90 72.091 72.091 90 50 90C27.909 90 10 72.091 10 50C10 27.909 27.909 10 50 10Z" fill="#F8F3EC"/>
                     <path d="M50 25C41.716 25 35 31.716 35 40C35 48.284 41.716 55 50 55C58.284 55 65 48.284 65 40C65 31.716 58.284 25 50 25Z" fill="#FF9A8D"/>
                     <path d="M50 55C41.716 55 35 61.716 35 70C35 78.284 41.716 85 50 85C58.284 85 65 78.284 65 70C65 61.716 58.284 55 50 55ZM50 60C54.418 60 58 63.582 58 68C58 72.418 54.418 76 50 76C45.582 76 42 72.418 42 68C42 63.582 45.582 60 50 60Z" fill="#6AB09B"/>
@@ -53,7 +52,7 @@
             </nav>
 
             <div class="relative">
-                <button id="profile-button" class="bg-muna-primary text-white w-10 h-10 rounded-full flex items-center justify-center shadow-md hover:bg-muna-accent transition-colors">
+                <button id="profile-button" class="bg-muna-primary text-white w-10 h-10 rounded-full flex items-center justify-center shadow-md hover:bg-muna-accent transition-colors" aria-label="Menú de perfil de usuario">
                     <i class="fas fa-user"></i>
                 </button>
                 <div id="profile-dropdown" class="profile-dropdown">
@@ -88,7 +87,7 @@
                 </div>
             </div>
 
-            <button id="mobile-menu-button" class="lg:hidden text-muna-primary focus:outline-none ml-4">
+            <button id="mobile-menu-button" class="lg:hidden text-muna-primary focus:outline-none ml-4" aria-label="Abrir menú de navegación móvil">
                 <i class="fas fa-bars text-2xl"></i>
             </button>
         </nav>
@@ -273,45 +272,45 @@
 
                 <div id="blog-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     <div class="blog-article-card flex flex-col bg-white rounded-2xl shadow-md overflow-hidden" data-category="pataletas" data-keywords="pataletas,berrinche,rabieta,llanto,gritos,frustración,enojo,crisis,público,calma,conectar">
-                        <a href="#" class="block overflow-hidden"><img src="https://placehold.co/600x400/FF9A8D/3C3C3C?text=Empatía" alt="Niño y madre abrazados" class="w-full h-48 object-cover"></a>
+                        <a href="#" class="block overflow-hidden"><img src="https://placehold.co/600x400/FF9A8D/3C3C3C?text=Empatía" alt="Ilustración sobre la empatía en la crianza" class="w-full h-48 object-cover"></a>
                         <div class="p-4 flex flex-col flex-grow">
                             <div class="mb-2"><span class="inline-block bg-muna-accent text-white text-xs font-semibold px-2 py-1 rounded-full uppercase">Pataletas</span></div>
                             <h3 class="text-lg font-bold text-muna-primary mb-2 flex-grow"><a href="#" class="hover:text-muna-accent transition-colors">¿Pataletas en público? Claves para la calma</a></h3>
                             <div class="mt-auto pt-3 border-t border-gray-100 flex items-center text-xs text-gray-500">
-                                <img src="https://placehold.co/32x32/8A7ADF/FFFFFF?text=E" alt="Avatar" class="w-6 h-6 rounded-full mr-2">
+                                <img src="https://placehold.co/32x32/8A7ADF/FFFFFF?text=E" alt="Avatar de la Dra. Elena R." class="w-6 h-6 rounded-full mr-2">
                                 <span>Dr. Elena R. &bull; 6 min</span>
                             </div>
                         </div>
                     </div>
                     <div class="blog-article-card flex flex-col bg-white rounded-2xl shadow-md overflow-hidden" data-category="sueno" data-keywords="sueño,dormir,siesta,descanso,acostar,noche,despertar,rutina,solo">
-                        <a href="#" class="block overflow-hidden"><img src="https://placehold.co/600x400/8A7ADF/FFFFFF?text=Sueño" alt="Luna y estrellas" class="w-full h-48 object-cover"></a>
+                        <a href="#" class="block overflow-hidden"><img src="https://placehold.co/600x400/8A7ADF/FFFFFF?text=Sueño" alt="Ilustración sobre el sueño infantil con luna y estrellas" class="w-full h-48 object-cover"></a>
                         <div class="p-4 flex flex-col flex-grow">
                             <div class="mb-2"><span class="inline-block bg-muna-primary text-white text-xs font-semibold px-2 py-1 rounded-full uppercase">Sueño</span></div>
                             <h3 class="text-lg font-bold text-muna-primary mb-2 flex-grow"><a href="#" class="hover:text-muna-accent transition-colors">Mi hijo no duerme solo: 5 pasos para una transición suave</a></h3>
                              <div class="mt-auto pt-3 border-t border-gray-100 flex items-center text-xs text-gray-500">
-                                <img src="https://placehold.co/32x32/6AB09B/FFFFFF?text=A" alt="Avatar" class="w-6 h-6 rounded-full mr-2">
+                                <img src="https://placehold.co/32x32/6AB09B/FFFFFF?text=A" alt="Avatar de Ana B." class="w-6 h-6 rounded-full mr-2">
                                 <span>Ana B. &bull; 7 min</span>
                             </div>
                         </div>
                     </div>
                     <div class="blog-article-card flex flex-col bg-white rounded-2xl shadow-md overflow-hidden" data-category="autocuidado" data-keywords="autocuidado,culpa,estrés,cansancio,bienestar,paciencia,agotamiento,mamá,maternidad,compasiva">
-                        <a href="#" class="block overflow-hidden"><img src="https://placehold.co/600x400/6AB09B/FFFFFF?text=Bienestar" alt="Mujer sonriendo tranquilamente" class="w-full h-48 object-cover"></a>
+                        <a href="#" class="block overflow-hidden"><img src="https://placehold.co/600x400/6AB09B/FFFFFF?text=Bienestar" alt="Ilustración sobre el bienestar y autocuidado de la madre" class="w-full h-48 object-cover"></a>
                         <div class="p-4 flex flex-col flex-grow">
                             <div class="mb-2"><span class="inline-block bg-muna-secondary text-white text-xs font-semibold px-2 py-1 rounded-full uppercase">Autocuidado</span></div>
                             <h3 class="text-lg font-bold text-muna-primary mb-2 flex-grow"><a href="#" class="hover:text-muna-accent transition-colors">Maternidad y culpa: 3 pasos para ser más compasiva</a></h3>
                             <div class="mt-auto pt-3 border-t border-gray-100 flex items-center text-xs text-gray-500">
-                                <img src="https://placehold.co/32x32/FF9A8D/FFFFFF?text=M" alt="Avatar" class="w-6 h-6 rounded-full mr-2">
+                                <img src="https://placehold.co/32x32/FF9A8D/FFFFFF?text=M" alt="Avatar del Equipo Muna" class="w-6 h-6 rounded-full mr-2">
                                 <span>Equipo Muna &bull; 5 min</span>
                             </div>
                         </div>
                     </div>
                     <div class="blog-article-card flex flex-col bg-white rounded-2xl shadow-md overflow-hidden" data-category="alimentacion" data-keywords="alimentacion,comida,comer,apetito,nutrición,vegetales,negarse,selectivo,picky eater">
-                        <a href="#" class="block overflow-hidden"><img src="https://placehold.co/600x400/F4A261/FFFFFF?text=Comida" alt="Plato con vegetales sonrientes" class="w-full h-48 object-cover"></a>
+                        <a href="#" class="block overflow-hidden"><img src="https://placehold.co/600x400/F4A261/FFFFFF?text=Comida" alt="Ilustración sobre alimentación infantil con vegetales" class="w-full h-48 object-cover"></a>
                         <div class="p-4 flex flex-col flex-grow">
                             <div class="mb-2"><span class="inline-block" style="background-color: #F4A261; color: white;" text-xs font-semibold px-2 py-1 rounded-full uppercase">Alimentación</span></div>
                             <h3 class="text-lg font-bold text-muna-primary mb-2 flex-grow"><a href="#" class="hover:text-muna-accent transition-colors">"No quiero": Estrategias si tu hijo no quiere comer</a></h3>
                              <div class="mt-auto pt-3 border-t border-gray-100 flex items-center text-xs text-gray-500">
-                                <img src="https://placehold.co/32x32/8A7ADF/FFFFFF?text=E" alt="Avatar" class="w-6 h-6 rounded-full mr-2">
+                                <img src="https://placehold.co/32x32/8A7ADF/FFFFFF?text=E" alt="Avatar de la Dra. Elena R." class="w-6 h-6 rounded-full mr-2">
                                 <span>Dr. Elena R. &bull; 5 min</span>
                             </div>
                         </div>
@@ -443,16 +442,16 @@
 
                         <h3 class="text-2xl font-semibold mb-6">Síguenos en Redes Sociales</h3>
                         <div class="flex space-x-6">
-                            <a href="#" target="_blank" class="text-white hover:text-muna-primary transition-colors text-4xl">
+                            <a href="#" target="_blank" class="text-white hover:text-muna-primary transition-colors text-4xl" aria-label="Visita nuestra página de Facebook">
                                 <i class="fab fa-facebook-square"></i>
                             </a>
-                            <a href="#" target="_blank" class="text-white hover:text-muna-primary transition-colors text-4xl">
+                            <a href="#" target="_blank" class="text-white hover:text-muna-primary transition-colors text-4xl" aria-label="Visita nuestro perfil de Instagram">
                                 <i class="fab fa-instagram-square"></i>
                             </a>
-                            <a href="#" target="_blank" class="text-white hover:text-muna-primary transition-colors text-4xl">
+                            <a href="#" target="_blank" class="text-white hover:text-muna-primary transition-colors text-4xl" aria-label="Visita nuestro perfil de Twitter">
                                 <i class="fab fa-twitter-square"></i>
                             </a>
-                            <a href="#" target="_blank" class="text-white hover:text-muna-primary transition-colors text-4xl">
+                            <a href="#" target="_blank" class="text-white hover:text-muna-primary transition-colors text-4xl" aria-label="Visita nuestro perfil de LinkedIn">
                                 <i class="fab fa-linkedin"></i>
                             </a>
                         </div>
@@ -561,13 +560,14 @@
 
     <div id="register-modal" class="modal-overlay">
         <div class="modal-content" style="max-width: 500px;">
-            <button class="modal-close-btn close-modal-btn">&times;</button>
+            <button class="modal-close-btn close-modal-btn" aria-label="Cerrar modal">&times;</button>
             <h3 class="text-3xl font-bold text-center text-muna-primary mb-6">Crea tu cuenta en Muna IA</h3>
             <p class="text-lg text-center text-muna-text mb-6">Comienza tu viaje hacia una crianza más consciente.</p>
-            <form id="register-form" class="space-y-5">
+            <form id="register-form" class="space-y-5" novalidate>
                 <div>
                     <label for="register-email" class="block text-muna-text text-lg font-medium mb-2">Email</label>
                     <input type="email" id="register-email" name="email" class="w-full p-3 rounded-lg bg-muna-bg text-muna-text focus:outline-none focus:ring-2 focus:ring-muna-accent" placeholder="tu@email.com" required>
+                    <span id="register-email-error" class="text-red-500 text-sm mt-1 hidden"></span>
                 </div>
                 <div>
                     <label for="register-password" class="block text-muna-text text-lg font-medium mb-2">Contraseña</label>
@@ -589,16 +589,17 @@
     
     <div id="login-modal" class="modal-overlay">
         <div class="modal-content" style="max-width: 500px;">
-            <button class="modal-close-btn close-modal-btn">&times;</button>
+            <button class="modal-close-btn close-modal-btn" aria-label="Cerrar modal">&times;</button>
             <h3 class="text-3xl font-bold text-center text-muna-primary mb-6">¡Hola de nuevo!</h3>
             <p class="text-lg text-center text-muna-text mb-6">Inicia sesión para continuar.</p>
-            <form id="login-form" class="space-y-5">
+            <form id="login-form" class="space-y-5" novalidate>
                 <div id="login-error-message" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative" role="alert">
                     <span class="block sm:inline">Correo o contraseña incorrectos.</span>
                 </div>
                 <div>
                     <label for="login-email" class="block text-muna-text text-lg font-medium mb-2">Email</label>
                     <input type="email" id="login-email" name="email" class="w-full p-3 rounded-lg bg-muna-bg text-muna-text focus:outline-none focus:ring-2 focus:ring-muna-accent" placeholder="tu@email.com" required>
+                    <span id="login-email-error" class="text-red-500 text-sm mt-1 hidden"></span>
                 </div>
                 <div>
                     <label for="login-password" class="block text-muna-text text-lg font-medium mb-2">Contraseña</label>
@@ -665,7 +666,7 @@
     </div>
     <div id="b2b-modal" class="modal-overlay">
         <div class="modal-content" style="max-width: 600px;">
-            <button class="modal-close-btn close-modal-btn">&times;</button>
+            <button class="modal-close-btn close-modal-btn" aria-label="Cerrar modal">&times;</button>
             <h3 class="text-3xl font-bold text-center text-muna-primary mb-4">Kit de Información para Instituciones</h3>
             <p class="text-lg text-center text-muna-text mb-6">Déjanos tus datos y recibe al instante nuestro kit con información detallada, casos de estudio y modelos de licenciamiento para Muna IA.</p>
             <form id="b2b-form" class="space-y-4">
@@ -699,7 +700,7 @@
     
     <div id="payment-modal" class="modal-overlay">
         <div class="modal-content" style="max-width: 500px;">
-            <button class="modal-close-btn close-modal-btn">&times;</button>
+            <button class="modal-close-btn close-modal-btn" aria-label="Cerrar modal">&times;</button>
             <h3 class="text-3xl font-bold text-center text-muna-primary mb-4">Confirmar Compra</h3>
             <p class="text-lg text-center text-muna-text mb-6">Estás a un paso de mejorar tu experiencia.</p>
             <div class="bg-muna-bg p-6 rounded-lg shadow-inner text-center">
@@ -718,7 +719,7 @@
     
     <div id="privacy-policy-modal" class="modal-overlay">
         <div class="modal-content">
-            <button class="modal-close-btn close-modal-btn">&times;</button>
+            <button class="modal-close-btn close-modal-btn" aria-label="Cerrar modal">&times;</button>
             <h3 class="text-3xl font-bold text-center mb-6">Política de Privacidad de Muna IA</h3>
             <p class="mb-4">Última actualización: 8 de Junio de 2025</p>
             
@@ -765,7 +766,7 @@
     
     <div id="terms-of-service-modal" class="modal-overlay">
         <div class="modal-content">
-            <button class="modal-close-btn close-modal-btn">&times;</button>
+            <button class="modal-close-btn close-modal-btn" aria-label="Cerrar modal">&times;</button>
             <h3 class="text-3xl font-bold text-center mb-6">Términos de Servicio de Muna IA</h3>
              <p class="mb-4">Última actualización: 8 de Junio de 2025</p>
 
@@ -846,14 +847,14 @@
     </section>
 
 <div id="chatbot-floater" class="is-minimized">
-    <button id="chatbot-bubble" class="flex items-center justify-center">
+    <button id="chatbot-bubble" class="flex items-center justify-center" aria-label="Abrir chat con Muna IA">
         <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
     </button>
 
     <div id="chatbot-window">
         <div id="chatbot-header">
             <h3>Muna IA: Disponible para ti aquí</h3>
-            <button id="chatbot-close-btn">
+            <button id="chatbot-close-btn" aria-label="Minimizar chat">
                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
             </button>
         </div>
@@ -863,7 +864,7 @@
     </div>
 </div>
 
-<footer id="site-footer-main" class="bg-muna-primary py-8 text-white text-center text-lg">
+    <footer id="site-footer-main" class="bg-muna-primary py-8 text-white text-center text-lg">
         <div class="container mx-auto px-4">
             <p>&copy; 2024-2025 Muna IA. Todos los derechos reservados.</p>
             <div class="flex flex-col sm:flex-row justify-center space-x-0 sm:space-x-6 mt-4">
@@ -874,7 +875,7 @@
             <p class="mt-2">Hecho con <i class="fas fa-heart text-muna-accent"></i> para familias de Latinoamérica.</p>
         </div>
     </footer>
-   <script src="script.js?v=1.2"></script>
 
-    </body>
+    <script src="script.js"></script>
+</body>
 </html>
