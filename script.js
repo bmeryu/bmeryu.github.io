@@ -2,7 +2,6 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     // --- CONFIGURACIÓN CENTRALIZADA DE WEBHOOKS ---
-    // Gestiona todas tus URLs de n8n desde un solo lugar.
     const N8N_WEBHOOKS = {
         login: 'https://muna.auto.hostybee.com/webhook-test/login',
         register: 'https://muna.auto.hostybee.com/webhook-test/registro',
@@ -14,9 +13,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- VARIABLES GLOBALES Y ESTADO ---
     let loggedInUserEmail = '';
-    let emotionToSendMessage = null; // Variable para "grabar" la emoción para el chat
+    let emotionToSendMessage = null;
 
     // --- FUNCIONES AUXILIARES ---
+
+    /**
+     * MEJORA: Nueva función para validar el formato de un email.
+     * @param {string} email - El email a validar.
+     * @returns {boolean} - True si el email es válido.
+     */
+    const isValidEmail = (email) => {
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return regex.test(email);
+    };
 
     /**
      * Muestra un mensaje de confirmación temporal en la pantalla.
@@ -60,18 +69,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /**
      * Función centralizada para enviar eventos de seguimiento a n8n.
-     * @param {string} eventName - El nombre del evento (debe coincidir con una clave en N8N_WEBHOOKS).
-     * @param {object} data - Los datos a enviar en el cuerpo de la solicitud.
-     * @returns {Promise<object|null>} - El resultado de la operación.
+     * @param {string} eventName - El nombre del evento.
+     * @param {object} data - Los datos a enviar.
+     * @returns {Promise<object>} - El resultado de la operación.
      */
     const trackEvent = async (eventName, data) => {
         const webhookURL = N8N_WEBHOOKS[eventName];
         if (!webhookURL) {
-            console.error(`Webhook para el evento "${eventName}" no encontrado.`);
+            // MEJORA: Limpieza de la consola. Se eliminan console.error para producción.
             return { success: false, error: `Configuración de webhook faltante para ${eventName}.` };
         }
 
-        // Enriquece los datos con información común para un mejor seguimiento.
         const eventData = {
             ...data,
             event_name: eventName,
@@ -91,14 +99,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await response.json();
 
             if (!response.ok) {
-                console.error(`Error al enviar el evento "${eventName}" a n8n:`, result);
                 return { success: false, error: result.message || `Error del servidor (HTTP ${response.status})` };
             }
             
             return { success: true, data: result };
 
         } catch (error) {
-            console.error(`Error de red al enviar el evento "${eventName}":`, error);
             return { success: false, error: 'Error de red o el servidor no está accesible.' };
         }
     };
@@ -131,6 +137,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatbotBubble = document.getElementById('chatbot-bubble');
     const chatbotCloseBtn = document.getElementById('chatbot-close-btn');
     const skipOnboardingBtn = document.getElementById('skip-onboarding-btn');
+    const registerEmailInput = document.getElementById('register-email');
+    const registerEmailError = document.getElementById('register-email-error');
+    const loginEmailInput = document.getElementById('login-email');
+    const loginEmailError = document.getElementById('login-email-error');
+
 
     // --- LÓGICA DE VISUALIZACIÓN Y NAVEGACIÓN ---
     const showDashboard = (username, isNewUser) => {
@@ -262,6 +273,35 @@ document.addEventListener('DOMContentLoaded', () => {
     if (chatbotBubble) chatbotBubble.addEventListener('click', openChatbot);
     if (chatbotCloseBtn) chatbotCloseBtn.addEventListener('click', () => chatbotFloater.classList.add('is-minimized'));
 
+    /**
+     * MEJORA: Validación de email en tiempo real para el formulario de registro.
+     */
+    if (registerEmailInput) {
+        registerEmailInput.addEventListener('input', () => {
+            if (!isValidEmail(registerEmailInput.value)) {
+                registerEmailError.textContent = 'Por favor, introduce un email válido.';
+                registerEmailError.classList.remove('hidden');
+            } else {
+                registerEmailError.classList.add('hidden');
+            }
+        });
+    }
+
+    /**
+     * MEJORA: Validación de email en tiempo real para el formulario de login.
+     */
+    if (loginEmailInput) {
+        loginEmailInput.addEventListener('input', () => {
+            if (!isValidEmail(loginEmailInput.value)) {
+                loginEmailError.textContent = 'Por favor, introduce un email válido.';
+                loginEmailError.classList.remove('hidden');
+            } else {
+                loginEmailError.classList.add('hidden');
+            }
+        });
+    }
+
+
     // --- GESTIÓN DE FORMULARIOS ---
 
     if (loginForm) {
@@ -272,6 +312,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const errorMessage = document.getElementById('login-error-message');
             const submitButton = loginForm.querySelector('button[type="submit"]');
 
+            if (!isValidEmail(email)) {
+                showEphemeralMessage('El formato del email no es válido.', true);
+                return;
+            }
+
             setButtonLoadingState(submitButton, true, "Iniciando sesión...");
             errorMessage.classList.add('hidden');
 
@@ -280,7 +325,7 @@ document.addEventListener('DOMContentLoaded', () => {
             setButtonLoadingState(submitButton, false);
 
             if (result.success) {
-                updateUIForLogin(email, false); // Asumimos que un login es de un usuario existente
+                updateUIForLogin(email, false);
             } else {
                 errorMessage.textContent = result.error || 'Email o contraseña incorrectos.';
                 errorMessage.classList.remove('hidden');
@@ -295,6 +340,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const password = document.getElementById('register-password').value;
             const submitButton = registerForm.querySelector('button[type="submit"]');
 
+            if (!isValidEmail(email)) {
+                showEphemeralMessage('El formato del email no es válido.', true);
+                return;
+            }
+
             setButtonLoadingState(submitButton, true, "Creando cuenta...");
 
             const result = await trackEvent('register', { email, password });
@@ -302,7 +352,7 @@ document.addEventListener('DOMContentLoaded', () => {
             setButtonLoadingState(submitButton, false);
 
             if (result.success) {
-                updateUIForLogin(email, true); // El registro es siempre de un nuevo usuario
+                updateUIForLogin(email, true);
             } else {
                 showEphemeralMessage(result.error || 'No se pudo completar el registro.', true);
             }
@@ -408,9 +458,6 @@ document.addEventListener('DOMContentLoaded', () => {
             showEphemeralMessage(`Gracias por compartir que te sientes ${feeling}.`);
             openChatbot();
 
-            // --- CORRECCIÓN ---
-            // Añadimos explícitamente el email al paquete de datos que se envía.
-            // La función trackEvent también lo añade, pero ser explícitos aquí es más seguro.
             const emotionData = {
                 emotion: selectedEmotion,
                 email: loggedInUserEmail 
@@ -419,7 +466,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await trackEvent('logEmotion', emotionData);
             
             if (!result.success) {
-                console.error('Fallo al registrar la emoción en n8n:', result.error);
+                // En un entorno de producción real, podrías enviar este error
+                // a un servicio de monitoreo en lugar de a la consola.
             }
         });
     });
