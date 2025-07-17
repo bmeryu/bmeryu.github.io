@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- CONFIGURACIÓN CENTRALIZADA DE WEBHOOKS ---
     const N8N_WEBHOOKS = {
         login: 'https://muna.auto.hostybee.com/webhook/login',
-        register: 'https://muna.auto.hostybee.com/webhook/registro',
+        register: 'https://muna.auto.hostybee.com/webhook-test/registro',
         updateProfile: 'https://muna.auto.hostybee.com/webhook/actualizar-perfil',
         b2bRequest: 'https://muna.auto.hostybee.com/webhook/solicitud-b2b',
         contactRequest: 'https://muna.auto.hostybee.com/webhook/solicitud-contacto',
