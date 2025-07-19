@@ -1,58 +1,19 @@
 // El script se ejecuta solo cuando el DOM se ha cargado completamente.
 document.addEventListener('DOMContentLoaded', () => {
 
-    // --- CONFIGURACIÓN CENTRALIZADA DE WEBHOOKS ---
-    const N8N_WEBHOOKS = {
-        login: 'https://muna.auto.hostybee.com/webhook/login',
-        register: 'https://muna.auto.hostybee.com/webhook-test/registro',
-        updateProfile: 'https://muna.auto.hostybee.com/webhook/actualizar-perfil',
-        b2bRequest: 'https://muna.auto.hostybee.com/webhook/solicitud-b2b',
-        contactRequest: 'https://muna.auto.hostybee.com/webhook/solicitud-contacto',
-        logEmotion: 'https://muna.auto.hostybee.com/webhook/registrar-emocion'
-    };
-
-    // --- VARIABLES GLOBALES Y ESTADO ---
-    let loggedInUserEmail = '';
-    let emotionToSendMessage = null;
-
     // --- FUNCIONES AUXILIARES ---
+const showConfirmationMessage = (message) => {
+    const messageEl = document.createElement('div');
+    messageEl.textContent = message;
+    messageEl.className = 'ephemeral-message';
+    document.body.appendChild(messageEl);
+    setTimeout(() => messageEl.classList.add('show'), 10);
+    setTimeout(() => {
+        messageEl.classList.remove('show');
+        messageEl.addEventListener('transitionend', () => messageEl.remove());
+    }, 3000);
+};
 
-    /**
-     * MEJORA: Nueva función para validar el formato de un email.
-     * @param {string} email - El email a validar.
-     * @returns {boolean} - True si el email es válido.
-     */
-    const isValidEmail = (email) => {
-        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return regex.test(email);
-    };
-
-    /**
-     * Muestra un mensaje de confirmación temporal en la pantalla.
-     * @param {string} message - El mensaje a mostrar.
-     * @param {boolean} isError - Si el mensaje es de error.
-     */
-    const showEphemeralMessage = (message, isError = false) => {
-        const messageEl = document.createElement('div');
-        messageEl.textContent = message;
-        messageEl.className = 'ephemeral-message';
-        if (isError) {
-            messageEl.style.backgroundColor = '#EF4444'; // Un color rojo para errores
-        }
-        document.body.appendChild(messageEl);
-        setTimeout(() => messageEl.classList.add('show'), 10);
-        setTimeout(() => {
-            messageEl.classList.remove('show');
-            messageEl.addEventListener('transitionend', () => messageEl.remove());
-        }, 4000);
-    };
-
-    /**
-     * Controla el estado de carga de un botón, mostrando un spinner.
-     * @param {HTMLElement} button - El botón a modificar.
-     * @param {boolean} isLoading - Si está en estado de carga.
-     * @param {string} loadingText - El texto a mostrar durante la carga.
-     */
     const setButtonLoadingState = (button, isLoading, loadingText = "Enviando...") => {
         if (!button) return;
         if (isLoading) {
@@ -66,50 +27,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     };
-
-    /**
-     * Función centralizada para enviar eventos de seguimiento a n8n.
-     * @param {string} eventName - El nombre del evento.
-     * @param {object} data - Los datos a enviar.
-     * @returns {Promise<object>} - El resultado de la operación.
-     */
-    const trackEvent = async (eventName, data) => {
-        const webhookURL = N8N_WEBHOOKS[eventName];
-        if (!webhookURL) {
-            // MEJORA: Limpieza de la consola. Se eliminan console.error para producción.
-            return { success: false, error: `Configuración de webhook faltante para ${eventName}.` };
-        }
-
-        const eventData = {
-            ...data,
-            event_name: eventName,
-            timestamp_utc: new Date().toISOString(),
-            user_email: loggedInUserEmail || 'anonymous',
-            page_url: window.location.href,
-            user_agent: navigator.userAgent
-        };
-
-        try {
-            const response = await fetch(webhookURL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(eventData),
-            });
-
-            const result = await response.json();
-
-            if (!response.ok) {
-                return { success: false, error: result.message || `Error del servidor (HTTP ${response.status})` };
-            }
-            
-            return { success: true, data: result };
-
-        } catch (error) {
-            return { success: false, error: 'Error de red o el servidor no está accesible.' };
-        }
-    };
-
-    // --- SELECCIÓN DE ELEMENTOS DEL DOM ---
+    
+    // --- SELECCIÓN DE ELEMENTOS ---
     const mobileMenuButton = document.getElementById('mobile-menu-button');
     const mobileMenu = document.getElementById('mobile-menu');
     const mainContent = document.getElementById('main-content');
@@ -123,10 +42,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const registerForm = document.getElementById('register-form');
     const onboardingForm = document.getElementById('onboarding-form');
     const b2bForm = document.getElementById('b2b-form');
+    const paymentForm = document.getElementById('payment-form');
     const contactForm = document.getElementById('contact-form');
     const userDashboard = document.getElementById('user-dashboard');
     const dashboardUsername = document.getElementById('dashboard-username');
     const emotionButtons = document.querySelectorAll('.emotion-btn');
+    const emotionSelectorContainer = document.getElementById('emotion-selector-container');
+    const postEmotionView = document.getElementById('post-emotion-view');
+    const emotionAckMessage = document.getElementById('emotion-ack-message');
+    const startChatBtn = document.getElementById('start-chat-btn');
+    const changeEmotionBtn = document.getElementById('change-emotion-btn');
     const profileButton = document.getElementById('profile-button');
     const profileDropdown = document.getElementById('profile-dropdown');
     const loggedOutView = document.getElementById('logged-out-view');
@@ -136,14 +61,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatbotFloater = document.getElementById('chatbot-floater');
     const chatbotBubble = document.getElementById('chatbot-bubble');
     const chatbotCloseBtn = document.getElementById('chatbot-close-btn');
-    const skipOnboardingBtn = document.getElementById('skip-onboarding-btn');
-    const registerEmailInput = document.getElementById('register-email');
-    const registerEmailError = document.getElementById('register-email-error');
-    const loginEmailInput = document.getElementById('login-email');
-    const loginEmailError = document.getElementById('login-email-error');
 
+    let loggedInUserEmail = '';
+    let emotionToSendMessage = null; // Variable para "grabar" la emoción
 
-    // --- LÓGICA DE VISUALIZACIÓN Y NAVEGACIÓN ---
+    // --- LÓGICA DE VISUALIZACIÓN ---
     const showDashboard = (username, isNewUser) => {
         siteHeader.classList.add('hidden');
         mainContent.classList.add('hidden');
@@ -152,6 +74,9 @@ document.addEventListener('DOMContentLoaded', () => {
         userDashboard.classList.remove('hidden');
         userDashboard.classList.add('flex');
         dashboardUsername.textContent = username || 'usuario';
+        postEmotionView.classList.add('hidden');
+        emotionSelectorContainer.classList.remove('hidden');
+        emotionButtons.forEach(btn => btn.classList.remove('selected'));
 
         if (isNewUser) {
             setTimeout(() => openModal(document.getElementById('onboarding-modal')), 500);
@@ -168,26 +93,30 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // --- LÓGICA DE AUTENTICACIÓN ---
-    const updateUIForLogin = (email, isNewUser) => {
-        loggedInUserEmail = email;
-        loggedOutView.classList.add('hidden');
-        loggedInView.classList.remove('hidden');
-        profileEmail.textContent = email;
+   const updateUIForLogin = (email, isNewUser) => {
+    loggedInUserEmail = email;
+    loggedOutView.classList.add('hidden');
+    loggedInView.classList.remove('hidden');
+    profileEmail.textContent = email;
 
-        closeModal(document.getElementById('login-modal'));
-        closeModal(document.getElementById('register-modal'));
-
-        showDashboard(email.split('@')[0], isNewUser);
-    };
-
+    // Lógica corregida:
+    if (isNewUser) {
+        // Si es nuevo, solo abre el modal de bienvenida.
+        closeModal(document.getElementById('register-modal')); // Asegura que el modal de registro se cierre
+        setTimeout(() => openModal(document.getElementById('onboarding-modal')), 300);
+    } else {
+        // Si es un usuario existente, va directo al dashboard.
+        showDashboard(email.split('@')[0], false);
+    }
+};
     const updateUIForLogout = () => {
         loggedInUserEmail = '';
         loggedOutView.classList.remove('hidden');
         loggedInView.classList.add('hidden');
         showMainSiteView();
-        showEphemeralMessage('Has cerrado sesión. ¡Esperamos verte pronto!');
+        showConfirmationMessage('Has cerrado sesión. ¡Esperamos verte pronto!');
     };
-
+    
     // --- LÓGICA DE MODALES ---
     const openModal = (modal) => {
         if (!modal) return;
@@ -203,33 +132,37 @@ document.addEventListener('DOMContentLoaded', () => {
             document.body.style.overflow = '';
         }
     };
-
+    
     // --- LÓGICA DEL CHATBOT ---
     const openChatbot = () => {
-        if (chatbotFloater) chatbotFloater.classList.remove('is-minimized');
+        if (chatbotFloater) {
+            chatbotFloater.classList.remove('is-minimized');
+        }
 
+        // Lógica de "Reproducir": Se ejecuta DESPUÉS de abrir el chat.
         if (emotionToSendMessage && chatbotIframe && chatbotIframe.contentWindow) {
+            // Esperamos un instante para asegurar que el iframe está listo
             setTimeout(() => {
                 const message = {
                     type: 'startConversation',
                     emotion: emotionToSendMessage,
-                    focus: true
+                    focus: true // Se añade la instrucción de hacer focus
                 };
                 chatbotIframe.contentWindow.postMessage(message, '*');
-                emotionToSendMessage = null; // Limpiar después de enviar
-            }, 500);
+                emotionToSendMessage = null; // Borramos la grabación
+            }, 500); // Se aumenta el tiempo para más fiabilidad
         }
     };
 
-    // --- MANEJO DE EVENTOS ---
-
+    // --- INICIALIZACIÓN DE EVENTOS ---
+    
     if (mobileMenuButton) mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
 
     document.querySelectorAll('.open-modal-btn').forEach(button => {
         button.addEventListener('click', (e) => {
             e.preventDefault();
             const modal = document.getElementById(button.dataset.modalTarget);
-            openModal(modal);
+            if (modal) openModal(modal);
         });
     });
 
@@ -242,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const currentModal = button.closest('.modal-overlay');
             const targetModal = document.getElementById(button.dataset.modalTarget);
             closeModal(currentModal);
-            setTimeout(() => openModal(targetModal), 300);
+            if (targetModal) setTimeout(() => openModal(targetModal), 300);
         });
     });
 
@@ -251,19 +184,17 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.target === overlay) closeModal(overlay);
         });
     });
-
+    
     if (profileButton) {
         profileButton.addEventListener('click', (e) => {
             e.stopPropagation();
             profileDropdown.classList.toggle('active');
         });
     }
-
     if (logoutButton) logoutButton.addEventListener('click', () => {
         profileDropdown.classList.remove('active');
         updateUIForLogout();
     });
-
     document.addEventListener('click', (e) => {
         if (profileDropdown && !profileDropdown.contains(e.target) && !profileButton.contains(e.target)) {
             profileDropdown.classList.remove('active');
@@ -273,36 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (chatbotBubble) chatbotBubble.addEventListener('click', openChatbot);
     if (chatbotCloseBtn) chatbotCloseBtn.addEventListener('click', () => chatbotFloater.classList.add('is-minimized'));
 
-    /**
-     * MEJORA: Validación de email en tiempo real para el formulario de registro.
-     */
-    if (registerEmailInput) {
-        registerEmailInput.addEventListener('input', () => {
-            if (!isValidEmail(registerEmailInput.value)) {
-                registerEmailError.textContent = 'Por favor, introduce un email válido.';
-                registerEmailError.classList.remove('hidden');
-            } else {
-                registerEmailError.classList.add('hidden');
-            }
-        });
-    }
-
-    /**
-     * MEJORA: Validación de email en tiempo real para el formulario de login.
-     */
-    if (loginEmailInput) {
-        loginEmailInput.addEventListener('input', () => {
-            if (!isValidEmail(loginEmailInput.value)) {
-                loginEmailError.textContent = 'Por favor, introduce un email válido.';
-                loginEmailError.classList.remove('hidden');
-            } else {
-                loginEmailError.classList.add('hidden');
-            }
-        });
-    }
-
-
-    // --- GESTIÓN DE FORMULARIOS ---
+    // --- FORMULARIOS ---
 
     if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
@@ -311,168 +213,225 @@ document.addEventListener('DOMContentLoaded', () => {
             const password = document.getElementById('login-password').value;
             const errorMessage = document.getElementById('login-error-message');
             const submitButton = loginForm.querySelector('button[type="submit"]');
-
-            if (!isValidEmail(email)) {
-                showEphemeralMessage('El formato del email no es válido.', true);
-                return;
-            }
-
+            
             setButtonLoadingState(submitButton, true, "Iniciando sesión...");
             errorMessage.classList.add('hidden');
 
-            const result = await trackEvent('login', { email, password });
-
-            setButtonLoadingState(submitButton, false);
-
-            if (result.success) {
-                updateUIForLogin(email, false);
-            } else {
-                errorMessage.textContent = result.error || 'Email o contraseña incorrectos.';
+            const webhookURL = 'https://muna.auto.hostybee.com/webhook-test/login';
+            try {
+                const response = await fetch(webhookURL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password }),
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    closeModal(loginForm.closest('.modal-overlay'));
+                    updateUIForLogin(email, false);
+                } else {
+                    errorMessage.textContent = result.error || 'Email o contraseña incorrectos.';
+                    errorMessage.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Error de conexión en login:', error);
+                errorMessage.textContent = 'No se pudo conectar con el servidor.';
                 errorMessage.classList.remove('hidden');
+            } finally {
+                setButtonLoadingState(submitButton, false);
             }
         });
     }
-
+    
     if (registerForm) {
         registerForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('register-email').value;
             const password = document.getElementById('register-password').value;
             const submitButton = registerForm.querySelector('button[type="submit"]');
-
-            if (!isValidEmail(email)) {
-                showEphemeralMessage('El formato del email no es válido.', true);
-                return;
-            }
-
+            
             setButtonLoadingState(submitButton, true, "Creando cuenta...");
 
-            const result = await trackEvent('register', { email, password });
-
-            setButtonLoadingState(submitButton, false);
-
-            if (result.success) {
-                updateUIForLogin(email, true);
-            } else {
-                showEphemeralMessage(result.error || 'No se pudo completar el registro.', true);
-            }
-        });
-    }
-
-    if (onboardingForm) {
-        onboardingForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const submitButton = onboardingForm.querySelector('button[type="submit"]');
-            setButtonLoadingState(submitButton, true, "Guardando...");
-
-            const caregiverName = document.getElementById('caregiver-name').value;
-            const profileData = {
-                email: loggedInUserEmail,
-                caregiverName: caregiverName,
-                childName: document.getElementById('child-name').value,
-                childAge: document.getElementById('child-age').value,
-                interests: Array.from(document.querySelectorAll('input[name="interest-topic"]:checked')).map(cb => cb.value)
-            };
-
-            const result = await trackEvent('updateProfile', profileData);
-
-            setButtonLoadingState(submitButton, false);
-
-            if (result.success) {
-                closeModal(onboardingForm.closest('.modal-overlay'));
-                showDashboard(caregiverName || loggedInUserEmail.split('@')[0], false);
-                showEphemeralMessage('¡Tu perfil ha sido actualizado!');
-            } else {
-                showEphemeralMessage(result.error || 'No se pudo actualizar tu perfil.', true);
-            }
-        });
-    }
+            const webhookURL = 'https://muna.auto.hostybee.com/webhook-test/registro'; 
+            const formData = { email, password, registeredAt: new Date().toISOString() };
     
-    if (skipOnboardingBtn) {
-        skipOnboardingBtn.addEventListener('click', () => {
-            closeModal(document.getElementById('onboarding-modal'));
-            showDashboard(loggedInUserEmail.split('@')[0], false);
+            try {
+                const response = await fetch(webhookURL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData),
+                });
+                const result = await response.json();
+                if (result.success === true) {
+                    closeModal(registerForm.closest('.modal-overlay'));
+                    updateUIForLogin(email, true);
+                } else {
+                    alert(result.message);
+                }
+            } catch (error) {
+                console.error('Error de red en registro:', error);
+                alert('No se pudo completar el registro por un error de red.');
+            } finally {
+                setButtonLoadingState(submitButton, false);
+            }
         });
     }
 
+    
     if (b2bForm) {
         b2bForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const submitButton = b2bForm.querySelector('button[type="submit"]');
             setButtonLoadingState(submitButton, true);
 
+            const institutionName = document.getElementById('b2b-institution').value;
+            const webhookURL = 'https://muna.auto.hostybee.com/webhook-test/solicitud-b2b';
             const formData = {
                 name: document.getElementById('b2b-name').value,
                 email: document.getElementById('b2b-email').value,
-                institution: document.getElementById('b2b-institution').value,
+                institution: institutionName,
                 role: document.getElementById('b2b-role').value,
                 families: document.getElementById('b2b-families').value
             };
-
-            const result = await trackEvent('b2bRequest', formData);
-            
-            setButtonLoadingState(submitButton, false);
-
-            if (result.success) {
-                closeModal(b2bForm.closest('.modal-overlay'));
-                showEphemeralMessage(`¡Gracias! El kit para ${formData.institution} se ha enviado a tu correo.`);
-                b2bForm.reset();
-            } else {
-                showEphemeralMessage(result.error || 'Hubo un problema al enviar tu solicitud.', true);
+            try {
+                const response = await fetch(webhookURL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData),
+                });
+                if (response.ok) {
+                    closeModal(b2bForm.closest('.modal-overlay'));
+                    showConfirmationMessage(`¡Gracias! El kit para ${institutionName} se ha enviado a tu correo.`);
+                    b2bForm.reset();
+                } else {
+                    alert('Hubo un problema al enviar tu solicitud.');
+                }
+            } catch (error) {
+                console.error('Error de red en B2B:', error);
+                alert('No se pudo enviar tu solicitud por un error de red.');
+            } finally {
+                setButtonLoadingState(submitButton, false);
             }
         });
     }
+ if (paymentForm) {
+        paymentForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const planName = document.getElementById('payment-plan-name').textContent;
+            closeModal(document.getElementById('payment-modal'));
+            showConfirmationMessage(`¡Felicidades! Has mejorado al ${planName}.`);
+            // In a real app, you would redirect to a payment gateway like Mercado Pago here.
+        });
+    }
 
+   if(onboardingForm) {
+        onboardingForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // 1. Recolectar los nuevos datos del formulario.
+            const caregiverName = document.getElementById('caregiver-name').value;
+            const childName = document.getElementById('child-name').value;
+            const childAge = document.getElementById('child-age').value;
+            const selectedInterests = Array.from(document.querySelectorAll('input[name="interest-topic"]:checked')).map(checkbox => checkbox.value);
+
+            // 2. Definir la URL de tu NUEVO webhook (el de actualización).
+            // !!! REEMPLAZA ESTA URL POR LA TUYA !!!
+            const webhookURL = 'https://muna.auto.hostybee.com/webhook-test/actualizar-perfil'; 
+            
     if (contactForm) {
         contactForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const submitButton = contactForm.querySelector('button[type="submit"]');
             setButtonLoadingState(submitButton, true);
 
+            const webhookURL = 'https://muna.auto.hostybee.com/webhook-test/solicitud-contacto';
             const formData = {
                 name: contactForm.querySelector('#name').value,
                 email: contactForm.querySelector('#email').value,
                 message: contactForm.querySelector('#message').value
             };
-
-            const result = await trackEvent('contactRequest', formData);
-
-            setButtonLoadingState(submitButton, false);
-
-            if (result.success) {
-                showEphemeralMessage('¡Gracias! Tu mensaje ha sido enviado.');
-                contactForm.reset();
-            } else {
-                showEphemeralMessage(result.error || 'No se pudo enviar el mensaje.', true);
+    
+            try {
+                const response = await fetch(webhookURL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams(formData).toString(),
+                });
+                if (response.ok) {
+                    showConfirmationMessage('¡Gracias! Tu mensaje ha sido enviado.');
+                    contactForm.reset();
+                } else {
+                    alert('Hubo un problema al procesar tu mensaje en el servidor.');
+                }
+            } catch (error) {
+                console.error('Error de red en contacto:', error);
+                alert('No se pudo enviar el mensaje por un error de red.');
+            } finally {
+                setButtonLoadingState(submitButton, false);
             }
         });
     }
+    // --- MANEJO DEL FORMULARIO DE ONBOARDING (BIENVENIDA) ---
 
+// Primero, asegúrate de tener esta línea para seleccionar el botón de omitir
+const skipOnboardingBtn = document.getElementById('skip-onboarding-btn');
+
+// Cuando el usuario envía el formulario de bienvenida
+if (onboardingForm) {
+    onboardingForm.addEventListener('submit', (e) => {
+        e.preventDefault(); // Previene que la página se recargue
+
+        // (Opcional) Aquí puedes añadir tu lógica para enviar
+        // el nombre de la madre, hijo, etc., a otro webhook de n8n.
+
+        // Lo más importante: cerrar el modal y mostrar el dashboard
+        closeModal(onboardingForm.closest('.modal-overlay'));
+        showDashboard(loggedInUserEmail.split('@')[0], false);
+    });
+}
+
+// Cuando el usuario hace clic en "Omitir por ahora"
+if (skipOnboardingBtn) {
+    skipOnboardingBtn.addEventListener('click', () => {
+        closeModal(document.getElementById('onboarding-modal'));
+        showDashboard(loggedInUserEmail.split('@')[0], false);
+    });
+}
+
+    // Manejo de emociones
     emotionButtons.forEach(button => {
-        button.addEventListener('click', async () => {
-            const selectedEmotion = button.dataset.emotion;
+        button.addEventListener('click', async () => { 
+            emotionButtons.forEach(btn => btn.classList.remove('selected'));
+            button.classList.add('selected');
+    
+            // Se usa el atributo 'value' si existe, si no, se usa 'data-emotion' como respaldo.
+            const selectedEmotion = button.value || button.dataset.emotion; 
             const feeling = button.dataset.feeling;
             
+            // Lógica de "Grabar": Guardamos la emoción para más tarde
             emotionToSendMessage = selectedEmotion;
-
-            showEphemeralMessage(`Gracias por compartir que te sientes ${feeling}.`);
+    
+            const webhookURL = 'https://muna.auto.hostybee.com/webhook-test/registrar-emocion';
+            const emotionData = { email: loggedInUserEmail, emotion: selectedEmotion };
+    
+            showConfirmationMessage(`Gracias por compartir que te sientes ${feeling}.`);
+    
+            // Abrimos el chat inmediatamente
             openChatbot();
-
-            const emotionData = {
-                emotion: selectedEmotion,
-                email: loggedInUserEmail 
-            };
-
-            const result = await trackEvent('logEmotion', emotionData);
-            
-            if (!result.success) {
-                // En un entorno de producción real, podrías enviar este error
-                // a un servicio de monitoreo en lugar de a la consola.
+    
+            // Enviamos el registro de la emoción al servidor en segundo plano
+            try {
+                await fetch(webhookURL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(emotionData)
+                });
+            } catch (error) {
+                console.error('Error de red al registrar emoción:', error);
             }
         });
     });
-
-    // --- NAVEGACIÓN Y OTROS ---
+    
+    // Navegación y otros
     if (viewAllFaqsBtn) {
         viewAllFaqsBtn.addEventListener('click', () => {
             mainContent.classList.add('hidden');
@@ -503,7 +462,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // --- BÚSQUEDA DEL BLOG ---
+    // Búsqueda del blog
     const searchInput = document.getElementById('blog-search-input');
     const filterButtons = document.querySelectorAll('.blog-filter-btn');
     const articles = document.querySelectorAll('.blog-article-card');
@@ -516,9 +475,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         articles.forEach(article => {
             const categoryMatch = currentCategory === 'todos' || article.dataset.category === currentCategory;
-            const searchMatch = searchTerm === '' ||
-                article.dataset.keywords.toLowerCase().includes(searchTerm) ||
-                article.querySelector('h3').textContent.toLowerCase().includes(searchTerm);
+            const searchMatch = searchTerm === '' || 
+                                article.dataset.keywords.toLowerCase().includes(searchTerm) ||
+                                article.querySelector('h3').textContent.toLowerCase().includes(searchTerm);
 
             if (categoryMatch && searchMatch) {
                 article.style.display = 'flex';
@@ -527,7 +486,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 article.style.display = 'none';
             }
         });
-
+        
         noResultsMessage.style.display = articlesFound ? 'none' : 'block';
     }
 
