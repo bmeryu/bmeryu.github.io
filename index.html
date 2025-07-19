@@ -277,78 +277,103 @@
             </div>
         </section>
         
-        <section id="blog" class="section-padding bg-muna-bg">
+        <!-- INICIO DE LA NUEVA SECCIÓN DE BLOG POTENCIADA -->
+        <section id="blog" class="section-padding bg-white">
             <div class="container mx-auto px-4">
-                <h2 class="text-4xl font-bold text-center text-muna-secondary mb-4">Encuentra respuestas en Nuestro Blog</h2>
-                <p class="text-lg text-center text-muna-text mb-12 max-w-3xl mx-auto">
-                    Sabemos que buscas respuestas. Aquí encontrarás guías y consejos sobre los temas que más te importan, desde cómo manejar pataletas hasta rutinas de sueño.
-                </p>
-
-                <div class="flex flex-col md:flex-row gap-4 justify-center items-center mb-10">
-                    <div class="relative w-full md:w-1/2 lg:w-1/3">
-                        <input type="search" id="blog-search-input" placeholder="Buscar temas: sueño, pataletas, límites..." class="w-full pl-10 pr-4 py-3 rounded-full border-2 border-gray-200 focus:border-muna-primary focus:ring-muna-primary transition">
-                        <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                    </div>
-                    <div id="blog-filters" class="flex flex-wrap gap-2 justify-center">
-                        <button class="blog-filter-btn active" data-category="todos">Todos</button>
-                        <button class="blog-filter-btn" data-category="sueno">Sueño</button>
-                        <button class="blog-filter-btn" data-category="pataletas">Pataletas</button>
-                        <button class="blog-filter-btn" data-category="alimentacion">Alimentación</button>
-                        <button class="blog-filter-btn" data-category="autocuidado">Autocuidado</button>
-                    </div>
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl font-bold text-muna-secondary mb-4">Encuentra respuestas en Nuestro Blog</h2>
+                    <p class="text-lg text-muna-text max-w-3xl mx-auto">
+                        Sabemos que buscas respuestas. Aquí encontrarás guías y consejos sobre los temas que más te importan, desde cómo manejar pataletas hasta rutinas de sueño.
+                    </p>
                 </div>
 
-                <div id="blog-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    <div class="blog-article-card flex flex-col bg-white rounded-2xl shadow-md overflow-hidden" data-category="pataletas" data-keywords="pataletas,berrinche,rabieta,llanto,gritos,frustración,enojo,crisis,público,calma,conectar">
-                        <a href="#" class="block overflow-hidden"><img src="https://placehold.co/600x400/FF9A8D/3C3C3C?text=Empatía" alt="Ilustración sobre la empatía en la crianza" class="w-full h-48 object-cover"></a>
-                        <div class="p-4 flex flex-col flex-grow">
-                            <div class="mb-2"><span class="inline-block bg-muna-accent text-white text-xs font-semibold px-2 py-1 rounded-full uppercase">Pataletas</span></div>
-                            <h3 class="text-lg font-bold text-muna-primary mb-2 flex-grow"><a href="#" class="hover:text-muna-accent transition-colors">¿Pataletas en público? Claves para la calma</a></h3>
-                            <div class="mt-auto pt-3 border-t border-gray-100 flex items-center text-xs text-gray-500">
-                                <img src="https://placehold.co/32x32/8A7ADF/FFFFFF?text=E" alt="Avatar de la Dra. Elena R." class="w-6 h-6 rounded-full mr-2">
-                                <span>Dr. Elena R. &bull; 6 min</span>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+                    <!-- Columna Principal de Artículos -->
+                    <div class="lg:col-span-2">
+                        <!-- Artículo Destacado (versión para esta sección) -->
+                        <article class="mb-12 group">
+                            <a href="#" class="block overflow-hidden rounded-2xl shadow-lg">
+                                <img src="https://placehold.co/800x500/8A7ADF/FFFFFF?text=Artículo+Destacado" alt="Artículo destacado" class="w-full h-auto object-cover transition-transform duration-300 group-hover:scale-105">
+                            </a>
+                            <div class="mt-6">
+                                <div class="flex items-center gap-4 text-sm text-gray-500 mb-2">
+                                    <span class="inline-block bg-muna-accent/20 text-muna-accent font-semibold px-3 py-1 rounded-full">Autocuidado</span>
+                                    <span>Equipo Muna &bull; 5 min de lectura</span>
+                                </div>
+                                <h3 class="text-3xl font-bold text-muna-primary mb-3 group-hover:text-muna-accent transition-colors"><a href="#">Maternidad y Culpa: 3 Pasos para ser más Compasiva Contigo Misma</a></h3>
+                                <p class="text-muna-text text-lg">La culpa es una compañera frecuente en la maternidad, pero no tiene por qué serlo. Descubre estrategias prácticas para navegar este sentimiento complejo y encontrar más alegría en tu día a día.</p>
                             </div>
+                        </article>
+
+                        <!-- Grid de Artículos Secundarios -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <article class="blog-article-card flex flex-col bg-white rounded-2xl shadow-md overflow-hidden transition-shadow duration-300 hover:shadow-xl" data-category="pataletas" data-keywords="pataletas,berrinche,rabieta,llanto,gritos,frustración,enojo,crisis,público,calma,conectar">
+                                <a href="#" class="block overflow-hidden"><img src="https://placehold.co/600x400/FF9A8D/3C3C3C?text=Empatía" alt="Ilustración sobre la empatía en la crianza" class="w-full h-48 object-cover"></a>
+                                <div class="p-6 flex flex-col flex-grow">
+                                    <div class="mb-2"><span class="inline-block bg-muna-accent text-white text-xs font-semibold px-2 py-1 rounded-full uppercase">Pataletas</span></div>
+                                    <h4 class="text-xl font-bold text-muna-primary mb-2 flex-grow"><a href="#" class="hover:text-muna-accent transition-colors">¿Pataletas en público? Claves para la calma</a></h4>
+                                    <div class="mt-auto pt-3 border-t border-gray-100 flex items-center text-xs text-gray-500">
+                                        <img src="https://placehold.co/32x32/8A7ADF/FFFFFF?text=E" alt="Avatar de la Dra. Elena R." class="w-6 h-6 rounded-full mr-2">
+                                        <span>Dr. Elena R. &bull; 6 min</span>
+                                    </div>
+                                </div>
+                            </article>
+                            <article class="blog-article-card flex flex-col bg-white rounded-2xl shadow-md overflow-hidden transition-shadow duration-300 hover:shadow-xl" data-category="sueno" data-keywords="sueño,dormir,siesta,descanso,acostar,noche,despertar,rutina,solo">
+                                <a href="#" class="block overflow-hidden"><img src="https://placehold.co/600x400/8A7ADF/FFFFFF?text=Sueño" alt="Ilustración sobre el sueño infantil con luna y estrellas" class="w-full h-48 object-cover"></a>
+                                <div class="p-6 flex flex-col flex-grow">
+                                    <div class="mb-2"><span class="inline-block bg-muna-primary text-white text-xs font-semibold px-2 py-1 rounded-full uppercase">Sueño</span></div>
+                                    <h4 class="text-xl font-bold text-muna-primary mb-2 flex-grow"><a href="#" class="hover:text-muna-accent transition-colors">Mi hijo no duerme solo: 5 pasos para una transición suave</a></h4>
+                                     <div class="mt-auto pt-3 border-t border-gray-100 flex items-center text-xs text-gray-500">
+                                        <img src="https://placehold.co/32x32/6AB09B/FFFFFF?text=A" alt="Avatar de Ana B." class="w-6 h-6 rounded-full mr-2">
+                                        <span>Ana B. &bull; 7 min</span>
+                                    </div>
+                                </div>
+                            </article>
                         </div>
                     </div>
-                    <div class="blog-article-card flex flex-col bg-white rounded-2xl shadow-md overflow-hidden" data-category="sueno" data-keywords="sueño,dormir,siesta,descanso,acostar,noche,despertar,rutina,solo">
-                        <a href="#" class="block overflow-hidden"><img src="https://placehold.co/600x400/8A7ADF/FFFFFF?text=Sueño" alt="Ilustración sobre el sueño infantil con luna y estrellas" class="w-full h-48 object-cover"></a>
-                        <div class="p-4 flex flex-col flex-grow">
-                            <div class="mb-2"><span class="inline-block bg-muna-primary text-white text-xs font-semibold px-2 py-1 rounded-full uppercase">Sueño</span></div>
-                            <h3 class="text-lg font-bold text-muna-primary mb-2 flex-grow"><a href="#" class="hover:text-muna-accent transition-colors">Mi hijo no duerme solo: 5 pasos para una transición suave</a></h3>
-                             <div class="mt-auto pt-3 border-t border-gray-100 flex items-center text-xs text-gray-500">
-                                <img src="https://placehold.co/32x32/6AB09B/FFFFFF?text=A" alt="Avatar de Ana B." class="w-6 h-6 rounded-full mr-2">
-                                <span>Ana B. &bull; 7 min</span>
+
+                    <!-- Barra Lateral (Sidebar) -->
+                    <aside class="lg:col-span-1">
+                        <div class="sticky top-28 bg-muna-bg p-8 rounded-2xl shadow-inner">
+                            <div class="mb-8">
+                                <h4 class="sidebar-title">Buscar</h4>
+                                <div class="relative">
+                                    <input type="search" id="blog-search-input" placeholder="Buscar temas..." class="w-full pl-10 pr-4 py-3 rounded-full border-2 border-gray-200 focus:border-muna-primary transition">
+                                    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                </div>
+                            </div>
+                            <div class="mb-8">
+                                <h4 class="sidebar-title">Categorías</h4>
+                                <div id="blog-filters" class="flex flex-wrap gap-2">
+                                    <button class="blog-filter-btn active" data-category="todos">Todos</button>
+                                    <button class="blog-filter-btn" data-category="sueno">Sueño</button>
+                                    <button class="blog-filter-btn" data-category="pataletas">Pataletas</button>
+                                    <button class="blog-filter-btn" data-category="alimentacion">Alimentación</button>
+                                    <button class="blog-filter-btn" data-category="autocuidado">Autocuidado</button>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="sidebar-title">Más Populares</h4>
+                                <div class="space-y-4">
+                                    <a href="#" class="popular-post-link">
+                                        <p class="font-semibold text-muna-primary">Mi hijo no duerme solo: 5 pasos para una transición suave</p>
+                                        <span class="text-sm text-gray-500">7 min de lectura</span>
+                                    </a>
+                                    <a href="#" class="popular-post-link">
+                                        <p class="font-semibold text-muna-primary">"No quiero": Estrategias si tu hijo no quiere comer</p>
+                                        <span class="text-sm text-gray-500">5 min de lectura</span>
+                                    </a>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="blog-article-card flex flex-col bg-white rounded-2xl shadow-md overflow-hidden" data-category="autocuidado" data-keywords="autocuidado,culpa,estrés,cansancio,bienestar,paciencia,agotamiento,mamá,maternidad,compasiva">
-                        <a href="#" class="block overflow-hidden"><img src="https://placehold.co/600x400/6AB09B/FFFFFF?text=Bienestar" alt="Ilustración sobre el bienestar y autocuidado de la madre" class="w-full h-48 object-cover"></a>
-                        <div class="p-4 flex flex-col flex-grow">
-                            <div class="mb-2"><span class="inline-block bg-muna-secondary text-white text-xs font-semibold px-2 py-1 rounded-full uppercase">Autocuidado</span></div>
-                            <h3 class="text-lg font-bold text-muna-primary mb-2 flex-grow"><a href="#" class="hover:text-muna-accent transition-colors">Maternidad y culpa: 3 pasos para ser más compasiva</a></h3>
-                            <div class="mt-auto pt-3 border-t border-gray-100 flex items-center text-xs text-gray-500">
-                                <img src="https://placehold.co/32x32/FF9A8D/FFFFFF?text=M" alt="Avatar del Equipo Muna" class="w-6 h-6 rounded-full mr-2">
-                                <span>Equipo Muna &bull; 5 min</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="blog-article-card flex flex-col bg-white rounded-2xl shadow-md overflow-hidden" data-category="alimentacion" data-keywords="alimentacion,comida,comer,apetito,nutrición,vegetales,negarse,selectivo,picky eater">
-                        <a href="#" class="block overflow-hidden"><img src="https://placehold.co/600x400/F4A261/FFFFFF?text=Comida" alt="Ilustración sobre alimentación infantil con vegetales" class="w-full h-48 object-cover"></a>
-                        <div class="p-4 flex flex-col flex-grow">
-                            <div class="mb-2"><span class="inline-block" style="background-color: #F4A261; color: white;" text-xs font-semibold px-2 py-1 rounded-full uppercase">Alimentación</span></div>
-                            <h3 class="text-lg font-bold text-muna-primary mb-2 flex-grow"><a href="#" class="hover:text-muna-accent transition-colors">"No quiero": Estrategias si tu hijo no quiere comer</a></h3>
-                             <div class="mt-auto pt-3 border-t border-gray-100 flex items-center text-xs text-gray-500">
-                                <img src="https://placehold.co/32x32/8A7ADF/FFFFFF?text=E" alt="Avatar de la Dra. Elena R." class="w-6 h-6 rounded-full mr-2">
-                                <span>Dr. Elena R. &bull; 5 min</span>
-                            </div>
-                        </div>
-                    </div>
+                    </aside>
                 </div>
                 <div id="no-results-message" class="hidden text-center py-10">
                     <p class="text-lg text-muna-text">No se encontraron artículos. Intenta con otra búsqueda.</p>
                 </div>
             </div>
         </section>
+        <!-- FIN DE LA NUEVA SECCIÓN DE BLOG -->
 
 
         <section id="faq" class="section-padding bg-muna-secondary">
