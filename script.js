@@ -217,7 +217,7 @@ const showConfirmationMessage = (message) => {
             setButtonLoadingState(submitButton, true, "Iniciando sesión...");
             errorMessage.classList.add('hidden');
 
-            const webhookURL = 'https://muna.auto.hostybee.com/webhook-test/login';
+            const webhookURL = 'https://muna.auto.hostybee.com/webhook/login';
             try {
                 const response = await fetch(webhookURL, {
                     method: 'POST',
@@ -251,7 +251,7 @@ const showConfirmationMessage = (message) => {
             
             setButtonLoadingState(submitButton, true, "Creando cuenta...");
 
-            const webhookURL = 'https://muna.auto.hostybee.com/webhook-test/registro'; 
+            const webhookURL = 'https://muna.auto.hostybee.com/webhook/registro'; 
             const formData = { email, password, registeredAt: new Date().toISOString() };
     
             try {
@@ -284,7 +284,7 @@ const showConfirmationMessage = (message) => {
             setButtonLoadingState(submitButton, true);
 
             const institutionName = document.getElementById('b2b-institution').value;
-            const webhookURL = 'https://muna.auto.hostybee.com/webhook-test/solicitud-b2b';
+            const webhookURL = 'https://muna.auto.hostybee.com/webhook/solicitud-b2b';
             const formData = {
                 name: document.getElementById('b2b-name').value,
                 email: document.getElementById('b2b-email').value,
@@ -335,7 +335,7 @@ const showConfirmationMessage = (message) => {
 
             // 2. Definir la URL de tu NUEVO webhook (el de actualización).
             // !!! REEMPLAZA ESTA URL POR LA TUYA !!!
-            const webhookURL = 'https://muna.auto.hostybee.com/webhook-test/actualizar-perfil'; 
+            const webhookURL = 'https://muna.auto.hostybee.com/webhook/actualizar-perfil'; 
             
     if (contactForm) {
         contactForm.addEventListener('submit', async (e) => {
@@ -343,7 +343,7 @@ const showConfirmationMessage = (message) => {
             const submitButton = contactForm.querySelector('button[type="submit"]');
             setButtonLoadingState(submitButton, true);
 
-            const webhookURL = 'https://muna.auto.hostybee.com/webhook-test/solicitud-contacto';
+            const webhookURL = 'https://muna.auto.hostybee.com/webhook/solicitud-contacto';
             const formData = {
                 name: contactForm.querySelector('#name').value,
                 email: contactForm.querySelector('#email').value,
@@ -410,7 +410,7 @@ if (skipOnboardingBtn) {
             // Lógica de "Grabar": Guardamos la emoción para más tarde
             emotionToSendMessage = selectedEmotion;
     
-            const webhookURL = 'https://muna.auto.hostybee.com/webhook-test/registrar-emocion';
+            const webhookURL = 'https://muna.auto.hostybee.com/webhook/registrar-emocion';
             const emotionData = { email: loggedInUserEmail, emotion: selectedEmotion };
     
             showConfirmationMessage(`Gracias por compartir que te sientes ${feeling}.`);
