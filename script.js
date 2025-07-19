@@ -117,7 +117,10 @@ document.addEventListener('DOMContentLoaded', () => {
      * @returns {boolean} - True si es válido, false si no.
      */
     const isValidEmail = (email) => {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        // --- MEJORA: Expresión regular más robusta para validar emails ---
+        // Esta versión es más estricta y sigue mejor los estándares,
+        // rechazando caracteres inválidos como comas o espacios.
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         return emailRegex.test(email);
     };
 
