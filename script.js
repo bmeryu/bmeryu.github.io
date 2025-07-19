@@ -439,6 +439,12 @@ document.addEventListener('DOMContentLoaded', () => {
             showEphemeralMessage(`Gracias por compartir que te sientes ${feeling}.`);
             openChatbot();
 
+            // --- MEJORA: Ocultar el dashboard y mostrar la vista principal ---
+            // Se añade un pequeño retraso para que el usuario alcance a ver el mensaje.
+            setTimeout(() => {
+                showMainSiteView();
+            }, 500);
+
             const emotionData = {
                 emotion: selectedEmotion,
                 email: loggedInUserEmail 
