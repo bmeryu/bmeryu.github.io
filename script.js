@@ -3,6 +3,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- CONFIGURACIÓN CENTRALIZADA DE WEBHOOKS ---
     // Gestiona todas tus URLs de n8n desde un solo lugar.
+    const N8N_WEBHOOKS = {// El script se ejecuta solo cuando el DOM se ha cargado completamente.
+document.addEventListener('DOMContentLoaded', () => {
+
+    // --- CONFIGURACIÓN CENTRALIZADA DE WEBHOOKS ---
+    // Gestiona todas tus URLs de n8n desde un solo lugar.
     const N8N_WEBHOOKS = {
         login: 'https://muna.auto.hostybee.com/webhook/login',
         register: 'https://muna.auto.hostybee.com/webhook/registro',
@@ -101,6 +106,16 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error(`Error de red al enviar el evento "${eventName}":`, error);
             return { success: false, error: 'Error de red o el servidor no está accesible.' };
         }
+    };
+
+    /**
+     * Valida si un string tiene formato de email.
+     * @param {string} email - El email a validar.
+     * @returns {boolean} - True si es válido, false si no.
+     */
+    const isValidEmail = (email) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
     };
 
     // --- SELECCIÓN DE ELEMENTOS DEL DOM ---
@@ -272,6 +287,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const errorMessage = document.getElementById('login-error-message');
             const submitButton = loginForm.querySelector('button[type="submit"]');
 
+            // Validación del lado del cliente
+            if (!isValidEmail(email)) {
+                errorMessage.textContent = 'Por favor, ingresa un correo electrónico válido.';
+                errorMessage.classList.remove('hidden');
+                return;
+            }
+
             setButtonLoadingState(submitButton, true, "Iniciando sesión...");
             errorMessage.classList.add('hidden');
 
@@ -294,6 +316,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const email = document.getElementById('register-email').value;
             const password = document.getElementById('register-password').value;
             const submitButton = registerForm.querySelector('button[type="submit"]');
+
+            // --- MEJORA: Validación del lado del cliente ---
+            if (!isValidEmail(email)) {
+                showEphemeralMessage('Por favor, ingresa un correo electrónico válido.', true);
+                return; // Detiene la ejecución si el email no es válido
+            }
 
             setButtonLoadingState(submitButton, true, "Creando cuenta...");
 
@@ -408,9 +436,6 @@ document.addEventListener('DOMContentLoaded', () => {
             showEphemeralMessage(`Gracias por compartir que te sientes ${feeling}.`);
             openChatbot();
 
-            // --- CORRECCIÓN ---
-            // Añadimos explícitamente el email al paquete de datos que se envía.
-            // La función trackEvent también lo añade, pero ser explícitos aquí es más seguro.
             const emotionData = {
                 emotion: selectedEmotion,
                 email: loggedInUserEmail 
