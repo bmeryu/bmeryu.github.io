@@ -3,11 +3,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- CONFIGURACIÓN CENTRALIZADA DE WEBHOOKS ---
     // Gestiona todas tus URLs de n8n desde un solo lugar.
-    const N8N_WEBHOOKS = {// El script se ejecuta solo cuando el DOM se ha cargado completamente.
-document.addEventListener('DOMContentLoaded', () => {
-
-    // --- CONFIGURACIÓN CENTRALIZADA DE WEBHOOKS ---
-    // Gestiona todas tus URLs de n8n desde un solo lugar.
     const N8N_WEBHOOKS = {
         login: 'https://muna.auto.hostybee.com/webhook/login',
         register: 'https://muna.auto.hostybee.com/webhook/registro',
@@ -93,7 +88,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify(eventData),
             });
 
-            const result = await response.json();
+            // Intenta leer la respuesta como JSON, pero si falla, maneja el error grácilmente.
+            let result;
+            try {
+                result = await response.json();
+            } catch (jsonError) {
+                // Esto sucede si n8n devuelve un error que no es JSON (ej. un 400 Bad Request con texto plano)
+                console.error('La respuesta del servidor no es un JSON válido:', await response.text());
+                result = { message: 'El servidor respondió con un formato inesperado.' };
+            }
 
             if (!response.ok) {
                 console.error(`Error al enviar el evento "${eventName}" a n8n:`, result);
