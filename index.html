@@ -1,946 +1,693 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Muna IA - Tu Compañera de Crianza</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aula GenIA</title>
+    
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'muna-primary': '#8A7ADF',
-                        'muna-secondary': '#6AB09B',
-                        'muna-bg': '#F8F3EC',
-                        'muna-text': '#3C3C3C',
-                        'muna-accent': '#FF9A8D',
-                    },
-                    fontFamily: {
-                        'inter': ['Inter', 'sans-serif'],
-                    }
-                }
+
+    <link rel="stylesheet" href="https://unpkg.com/swiper@11/swiper-bundle.min.css" />
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent/3.1.1/cookieconsent.min.css" />
+
+    <style>
+        /*
+          Hoja de Estilos Personalizada para Aula Gen IA
+        */
+
+        /* Variables de color de la marca para fácil mantenimiento */
+        :root {
+            --brand-teal: #14b8a6;
+            --brand-blue: #3b82f6;
+            --brand-yellow: #f59e0b;
+        }
+
+        /* Estilo base del cuerpo del documento */
+        body {
+            font-family: 'Poppins', sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+        }
+        
+        /* Estilo específico para el H1 del Hero para mejor adaptabilidad */
+        .hero-h1 {
+            line-height: 1.2; /* Ajuste para mejor legibilidad en tamaños grandes */
+        }
+
+        @media (max-width: 768px) {
+            .hero-h1 {
+                line-height: 1.3; /* Un poco más de espacio en móviles */
             }
         }
-    </script>
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
+
+        /* Clase para crear texto con un gradiente de colores de la marca */
+        .gradient-text {
+            background: linear-gradient(90deg, var(--brand-teal), #b4d734, var(--brand-yellow), var(--brand-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+        }
+
+        /* Estilos base para los botones de llamada a la acción (Call to Action) */
+        .cta-button {
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Efecto hover para los botones CTA */
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(45, 212, 191, 0.3);
+        }
+
+        /* Estilo para resaltar la parte "IA" del logo */
+        .logo-highlight {
+            background-color: var(--brand-teal);
+            color: white;
+            padding: 0.2em 0.5em;
+            border-radius: 0.375rem; /* Equivalente a rounded-md de Tailwind */
+            margin-left: 0.25em;
+            display: inline-block;
+            line-height: 1;
+        }
+
+        /* Estilos para el botón principal con gradiente (MODIFICADO) */
+        .gradient-button {
+            background-image: linear-gradient(90deg, #2DD4BF 0%, #FBBF24 100%);
+            background-size: 100% auto;
+            transition: all 0.4s ease;
+            color: white;
+            border: none;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Efecto hover para el botón con gradiente (MODIFICADO) */
+        .gradient-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Estilos para los dots de Swiper */
+        .swiper-pagination-bullet {
+            background-color: #9ca3af; /* gray-400 */
+            opacity: 1;
+            transition: background-color 0.3s ease;
+        }
+        .swiper-pagination-bullet-active {
+            background-color: var(--brand-teal);
+        }
+        
+        /* Estilo para el botón CTA Fijo en móvil */
+        .sticky-cta {
+            transform: translateY(200%);
+            transition: transform 0.4s ease-in-out;
+        }
+        .sticky-cta.visible {
+            transform: translateY(0);
+        }
+        
+        /* Animación de brillo para la insignia */
+        .shimmer-badge {
+            position: relative;
+            overflow: hidden;
+        }
+        .shimmer-badge::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -150%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, transparent 0%, rgba(255, 255, 255, 0.4) 50%, transparent 100%);
+            transform: skewX(-25deg);
+            animation: shimmer 3.5s infinite;
+        }
+        @keyframes shimmer {
+            0% { left: -150%; }
+            50% { left: 150%; }
+            100% { left: 150%; }
+        }
+    </style>
 </head>
-<body class="bg-muna-bg text-muna-text font-inter">
+<body class="bg-gray-50 text-gray-800">
 
-    <header id="site-header" class="fixed w-full z-50 bg-muna-bg shadow-md">
-        <nav class="container mx-auto px-4 py-3 flex items-center justify-between">
-            <a href="#inicio" class="flex-shrink-0 flex items-center space-x-2" aria-label="Página de inicio de Muna IA">
-                <svg width="48" height="48" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="logoTitle">
-                    <title id="logoTitle">Logo de Muna IA</title>
-                    <path d="M50 0C22.386 0 0 22.386 0 50C0 77.614 22.386 100 50 100C77.614 100 100 77.614 100 50C100 22.386 77.614 0 50 0ZM50 10C72.091 10 90 27.909 90 50C90 72.091 72.091 90 50 90C27.909 90 10 72.091 10 50C10 27.909 27.909 10 50 10Z" fill="#F8F3EC"/>
-                    <path d="M50 25C41.716 25 35 31.716 35 40C35 48.284 41.716 55 50 55C58.284 55 65 48.284 65 40C65 31.716 58.284 25 50 25Z" fill="#FF9A8D"/>
-                    <path d="M50 55C41.716 55 35 61.716 35 70C35 78.284 41.716 85 50 85C58.284 85 65 78.284 65 70C65 61.716 58.284 55 50 55ZM50 60C54.418 60 58 63.582 58 68C58 72.418 54.418 76 50 76C45.582 76 42 72.418 42 68C42 63.582 45.582 60 50 60Z" fill="#6AB09B"/>
-                </svg>
-                <span class="text-2xl font-bold text-muna-primary">Muna IA</span>
-            </a>
-
-            <nav class="hidden lg:flex flex-grow justify-center items-center gap-x-8">
-                 <a href="#inicio" class="text-muna-text hover:text-muna-primary transition-colors">Inicio</a>
-                <a href="#como-funciona" class="text-muna-text hover:text-muna-primary transition-colors">Cómo funciona</a>
-                <a href="#planes" class="text-muna-text hover:text-muna-primary transition-colors">Planes</a>
-                <a href="#instituciones" class="text-muna-text hover:text-muna-primary transition-colors">Instituciones</a>
-                <a href="#blog" class="text-muna-text hover:text-muna-primary transition-colors">Blog</a>
-                <a href="#faq" class="text-muna-text hover:text-muna-primary transition-colors">FAQ</a>
-            </nav>
-
-            <div class="relative">
-                <button id="profile-button" class="bg-muna-primary text-white w-10 h-10 rounded-full flex items-center justify-center shadow-md hover:bg-muna-accent transition-colors" aria-label="Menú de perfil de usuario">
-                    <i class="fas fa-user"></i>
-                </button>
-                <div id="profile-dropdown" class="profile-dropdown">
-                    <div id="logged-out-view">
-                        <div class="p-4 border-b border-gray-100">
-                             <p class="text-center font-semibold text-muna-text">Bienvenido/a a Muna</p>
-                             <p class="text-center text-sm text-gray-500">Tu compañera de crianza</p>
-                        </div>
-                        <div class="p-2">
-                             <button data-modal-target="login-modal" class="w-full text-left open-modal-btn flex items-center gap-3 px-4 py-2 rounded-lg text-muna-text hover:bg-muna-bg hover:text-muna-primary transition-colors">
-                                 <i class="fas fa-sign-in-alt w-5"></i>
-                                 <span>Iniciar Sesión</span>
-                            </button>
-                             <button data-modal-target="register-modal" class="w-full text-left open-modal-btn flex items-center gap-3 px-4 py-2 rounded-lg text-muna-text hover:bg-muna-bg hover:text-muna-primary transition-colors">
-                                 <i class="fas fa-user-plus w-5"></i>
-                                 <span>Registrarse Gratis</span>
-                            </button>
-                        </div>
-                    </div>
-                    <div id="logged-in-view" class="hidden">
-                        <div class="p-4 border-b border-gray-100">
-                             <p class="font-semibold text-muna-text truncate" id="profile-email">bmeryu@gmail.com</p>
-                             <p class="text-xs px-2 py-1 mt-1 rounded-full bg-muna-secondary text-white inline-block">Plan Premium (Prueba)</p>
-                        </div>
-                        <div class="p-2">
-                             <button id="logout-button" class="w-full text-left flex items-center gap-3 px-4 py-2 rounded-lg text-muna-text hover:bg-muna-bg hover:text-muna-primary transition-colors">
-                                <i class="fas fa-sign-out-alt w-5"></i>
-                                <span>Cerrar Sesión</span>
-                            </button>
-                        </div>
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-2">
+                <div class="relative w-12 h-12">
+                    <span class="block w-5 h-5 rounded-full absolute" style="background-color: var(--brand-teal); top: 10px; left: 0;"></span>
+                    <span class="block w-3 h-3 rounded-full absolute" style="background-color: var(--brand-yellow); top: 0; left: 15px;"></span>
+                    <span class="block w-2 h-2 rounded-full absolute" style="background-color: var(--brand-blue); top: 18px; left: 22px;"></span>
+                </div>
+                <div class="text-xl font-bold text-gray-900 leading-tight">
+                    <div>Aula</div>
+                    <div>
+                        <span>Gen</span><span class="logo-highlight">IA</span>
                     </div>
                 </div>
-            </div>
-
-            <button id="mobile-menu-button" class="lg:hidden text-muna-primary focus:outline-none ml-4" aria-label="Abrir menú de navegación móvil">
-                <i class="fas fa-bars text-2xl"></i>
-            </button>
-        </nav>
-        
-        <nav id="mobile-menu" class="hidden lg:hidden bg-muna-bg">
-            <div class="px-4 pt-2 pb-4 space-y-2 text-center">
-                <a href="#inicio" class="block py-2 text-muna-text hover:bg-muna-primary hover:text-white rounded-md transition-colors">Inicio</a>
-                <a href="#como-funciona" class="block py-2 text-muna-text hover:bg-muna-primary hover:text-white rounded-md transition-colors">Cómo funciona</a>
-                <a href="#planes" class="block py-2 text-muna-text hover:bg-muna-primary hover:text-white rounded-md transition-colors">Planes</a>
-                <a href="#instituciones" class="block py-2 text-muna-text hover:bg-muna-primary hover:text-white rounded-md transition-colors">Instituciones</a>
-                <a href="#blog" class="block py-2 text-muna-text hover:bg-muna-primary hover:text-white rounded-md transition-colors">Blog</a>
-                <a href="#faq" class="block py-2 text-muna-text hover:bg-muna-primary hover:text-white rounded-md transition-colors">FAQ</a>
+            </a>
+            <div class="flex items-center gap-6">
+                <a href="cursos.html" class="hidden md:block text-gray-700 hover:text-teal-500 font-semibold transition-colors">Cursos</a>
+                <a href="acceso.html" class="cta-button bg-gray-900 text-white font-bold py-2 px-6 rounded-full hover:bg-gray-700 text-sm md:text-center">
+                    Únete de forma<br>
+                    gratuita
+                </a>
             </div>
         </nav>
     </header>
 
-    <main id="main-content">
-        <section id="inicio" class="section-padding min-h-screen flex flex-col justify-center items-center text-center px-4 bg-muna-bg">
-            <div class="max-w-4xl mx-auto">
-                <h1 class="text-5xl md:text-6xl font-bold text-muna-primary mb-6 leading-tight">
-                    <span class="text-muna-accent">Muna IA:</span> Tu Compañera de Crianza 24/7
-                </h1>
-                <p class="text-xl md:text-2xl text-muna-text mb-8 max-w-2xl mx-auto">
-                    Conversa con empatía, sin juicios y recibe respuestas en tiempo real. Muna IA es el apoyo emocional que madres, padres y cuidadores en Latinoamérica necesitan para una crianza consciente y feliz.
-                </p>
-                <div class="flex flex-col items-center gap-3">
-    
-    <button 
-        data-modal-target="register-modal" 
-        class="
-            open-modal-btn
-            text-white text-xl font-bold         py-4 px-10                           bg-gradient-to-r from-muna-accent to-muna-primary  rounded-full                         shadow-lg                            transform                            transition-all duration-300 ease-in-out  hover:scale-105 hover:shadow-2xl hover:-translate-y-1  ">
-        <i class="fas fa-sparkles mr-3"></i> <span>¡Comenzar Ahora!</span>      </button>
+    <main class="container mx-auto px-6 py-16 md:py-24 text-center">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-4xl md:text-6xl font-black leading-tight mb-4 hero-h1">
+                Domina la IA de principio a fin,<br><span class="gradient-text">ahorra horas y multiplica tu impacto.</span>
+            </h1>
+            <p class="text-lg md:text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+                Aprende a usar la IA para trabajar menos y crear más. Sin códigos, sin jerga técnica, ¡solo pura creatividad y eficiencia!
+            </p>
 
-    <p class="text-sm text-muna-text mt-2">
-        30 días de Premium gratis. ¡Sin compromiso!
-    </p>
-
-</div>
-                <div class="mt-6">
-    <p class="text-sm text-gray-600">
-        <i class="fas fa-shield-alt text-muna-secondary mr-2"></i>Tus conversaciones son 100% privadas y nunca se guardan.
-    </p>
-</div>
+            <div class="my-8">
+                <div class="inline-block bg-gradient-to-r from-teal-500 to-blue-500 text-white text-sm font-bold py-2 px-4 rounded-full mb-3 shadow-lg shimmer-badge">
+                    GenIA Week
+                </div>
+                <div class="flex justify-center items-center gap-4">
+                    <span class="text-3xl text-gray-400 line-through">$49 USD</span>
+                    <span class="text-5xl font-bold text-teal-500">$5 USD</span>
+                </div>
+                <p class="text-gray-500 mt-1">Pago único por acceso de 12 meses</p>
             </div>
-        </section>
 
-        <section id="como-funciona" class="section-padding bg-white">
-            <div class="container mx-auto px-4">
-                <h2 class="text-4xl font-bold text-center text-muna-secondary mb-12">Cómo funciona Muna IA</h2>
-                <p class="text-lg text-center text-muna-text mb-12 max-w-3xl mx-auto">
-                    Muna IA va más allá de un simple chatbot, ofreciéndote herramientas y apoyo emocional personalizado para cada etapa de la crianza.
-                </p>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
-                    <div class="flex flex-col items-center p-6 bg-muna-bg rounded-card shadow-lg hover:shadow-xl transition-all duration-300">
-                        <i class="fas fa-chart-line icon-large mb-4"></i>
-                        <h3 class="text-2xl font-semibold text-muna-primary mb-3">Panel Emocional Diario</h3>
-                        <p class="text-muna-text text-center">Registra y visualiza tu estado emocional, recibiendo apoyo y comprensión para cada día.</p>
-                    </div>
-                    <div class="flex flex-col items-center p-6 bg-muna-bg rounded-card shadow-lg hover:shadow-xl transition-all duration-300">
-                        <i class="fas fa-book-open icon-large mb-4"></i>
-                        <h3 class="text-2xl font-semibold text-muna-primary mb-3">Cuentos Personalizados</h3>
-                        <p class="text-muna-text text-center">Cuentos únicos creados con el nombre de tu niño/a para fomentar la imaginación y el vínculo.</p>
-                    </div>
-                    <div class="flex flex-col items-center p-6 bg-muna-bg rounded-card shadow-lg hover:shadow-xl transition-all duration-300">
-                        <i class="fas fa-brain icon-large mb-4"></i>
-                        <h3 class="text-2xl font-semibold text-muna-primary mb-3">Memoria Emocional Adaptativa</h3>
-                        <p class="text-muna-text text-center">Muna aprende de tus interacciones para ofrecerte un apoyo cada vez más relevante y empático.</p>
-                    </div>
-                    <div class="flex flex-col items-center p-6 bg-muna-bg rounded-card shadow-lg hover:shadow-xl transition-all duration-300">
-                        <i class="fas fa-lightbulb icon-large mb-4"></i>
-                        <h3 class="text-2xl font-semibold text-muna-primary mb-3">Recomendaciones Diarias</h3>
-                        <p class="text-muna-text text-center">Sugerencias prácticas y afectivas para el bienestar familiar, adaptadas a tus necesidades.</p>
-                    </div>
-                    <div class="flex flex-col items-center p-6 bg-muna-bg rounded-card shadow-lg hover:shadow-xl transition-all duration-300">
-                        <i class="fas fa-user-secret icon-large mb-4"></i>
-                        <h3 class="text-2xl font-semibold text-muna-primary mb-3">Privacidad por Diseño</h3>
-                        <p class="text-muna-text text-center">Tu confianza es nuestra prioridad. Ninguna conversación se guarda, asegurando un espacio totalmente seguro para ti.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="planes" class="section-padding bg-muna-bg">
-            <div class="container mx-auto px-4">
-                <div class="max-w-3xl mx-auto text-center">
-                    <h2 class="text-4xl font-bold text-muna-secondary mb-4">Invitación Especial de Lanzamiento</h2>
-                    <p class="text-xl text-muna-text mb-8">
-                        Para celebrar que estamos aquí para ti, te regalamos 30 días de acceso total a nuestra mejor versión.
-                    </p>
-                    <div class="launch-card text-white p-8 md:p-12 rounded-2xl shadow-2xl flex flex-col items-center">
-                        <span class="text-2xl font-semibold">Muna IA Premium</span>
-                        <span class="text-5xl md:text-6xl font-bold my-4">Gratis por 30 Días</span>
-                        <p class="max-w-xl mb-8">Disfruta de todo nuestro potencial sin límites y descubre una nueva forma de vivir la crianza.</p>
-                        
-                        <div class="text-left w-full max-w-md mx-auto space-y-3 mb-8">
-                             <p class="flex items-center"><i class="fas fa-check-circle text-muna-accent mr-3"></i> Interacciones ilimitadas y prioritarias</p>
-                            <p class="flex items-center"><i class="fas fa-check-circle text-muna-accent mr-3"></i> Panel emocional completo y análisis</p>
-                            <p class="flex items-center"><i class="fas fa-check-circle text-muna-accent mr-3"></i> Cuentos personalizados ilimitados</p>
-                            <p class="flex items-center"><i class="fas fa-check-circle text-muna-accent mr-3"></i> Acceso a todas las funciones y talleres</p>
-                        </div>
-
-                        <button data-modal-target="register-modal" class="open-modal-btn bg-white text-muna-primary font-bold py-4 px-10 rounded-full shadow-lg text-lg hover:bg-muna-bg transition-colors">
-                            Activa tus 30 Días Gratis
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="instituciones" class="section-padding bg-muna-secondary text-white">
-            <div class="container mx-auto px-4 text-center">
-                <h2 class="text-4xl font-bold mb-6">Muna IA para Instituciones</h2>
-                <p class="text-xl mb-8 max-w-3xl mx-auto">
-                    Extendemos el apoyo emocional y la orientación en crianza a jardines infantiles, municipios y centros de salud. Ofrece un recurso innovador y escalable a las familias de tu comunidad.
-                </p>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
-                    <div class="bg-muna-primary p-6 rounded-card shadow-lg">
-                        <i class="fas fa-handshake icon-large mb-4 text-white"></i>
-                        <h3 class="text-2xl font-semibold mb-3">Licenciamiento Flexible</h3>
-                        <p class="text-lg">Modelos de licenciamiento adaptados al tamaño y necesidades de tu institución, asegurando la accesibilidad.</p>
-                    </div>
-                    <div class="bg-muna-primary p-6 rounded-card shadow-lg">
-                        <i class="fas fa-users icon-large mb-4 text-white"></i>
-                        <h3 class="text-2xl font-semibold mb-3">Escalabilidad Sencilla</h3>
-                        <p class="text-lg">Diseñado para crecer con tu demanda, Muna IA puede llegar a miles de familias con facilidad.</p>
-                    </div>
-                </div>
-                <button data-modal-target="b2b-modal" class="btn-accent open-modal-btn">
-                    <span>Descargar Kit para Instituciones</span>
-                    <i class="fas fa-download ml-3"></i>
-                </button>
-            </div>
-        </section>
-
-        <!-- SECCIÓN DE TESTIMONIOS MEJORADA -->
-        <section id="testimonios" class="section-padding bg-muna-bg">
-            <div class="container mx-auto px-4">
-                <h2 class="text-4xl font-bold text-center text-muna-secondary mb-12">Lo que Dicen Nuestras Familias</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <!-- Testimonio 1 -->
-                    <div class="bg-white p-8 rounded-2xl shadow-lg flex flex-col items-center text-center transition-transform duration-300 hover:scale-105 hover:shadow-xl">
-                        <img src="https://placehold.co/80x80/FF9A8D/FFFFFF?text=SR" alt="Foto de Sofía R." class="w-20 h-20 rounded-full mb-4 border-4 border-muna-accent">
-                        <div class="text-yellow-400 mb-2 text-lg">
-                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-                        </div>
-                        <p class="text-muna-text italic mb-6 flex-grow">
-                            "Muna IA es mi refugio diario. Sus consejos son tan acertados y me siento realmente escuchada. Los cuentos personalizados son la magia de la noche para mi hijo."
-                        </p>
-                        <div class="mt-auto">
-                            <p class="font-bold text-muna-primary text-lg">- Sofía R.</p>
-                            <p class="text-sm text-gray-500">Madre de Lucas (5 años)</p>
-                            <span class="mt-2 inline-block bg-muna-secondary/10 text-muna-secondary text-xs font-semibold px-2 py-1 rounded-full">Usuario Verificado</span>
-                        </div>
-                    </div>
-                    <!-- Testimonio 2 -->
-                    <div class="bg-white p-8 rounded-2xl shadow-lg flex flex-col items-center text-center transition-transform duration-300 hover:scale-105 hover:shadow-xl">
-                        <img src="https://placehold.co/80x80/8A7ADF/FFFFFF?text=CP" alt="Foto de Carolina P." class="w-20 h-20 rounded-full mb-4 border-4 border-muna-primary">
-                        <div class="text-yellow-400 mb-2 text-lg">
-                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-                        </div>
-                        <p class="text-muna-text italic mb-6 flex-grow">
-                            "Nunca pensé que un chatbot pudiera ser tan empático. Muna me ha ayudado a manejar el estrés de la crianza de una forma muy práctica. ¡Una herramienta indispensable!"
-                        </p>
-                        <div class="mt-auto">
-                            <p class="font-bold text-muna-primary text-lg">- Carolina P.</p>
-                            <p class="text-sm text-gray-500">Madre primeriza de una bebé de 8 meses</p>
-                             <span class="mt-2 inline-block bg-muna-secondary/10 text-muna-secondary text-xs font-semibold px-2 py-1 rounded-full">Usuario Verificado</span>
-                        </div>
-                    </div>
-                    <!-- Testimonio 3 -->
-                    <div class="bg-white p-8 rounded-2xl shadow-lg flex flex-col items-center text-center transition-transform duration-300 hover:scale-105 hover:shadow-xl">
-                        <img src="https://placehold.co/80x80/6AB09B/FFFFFF?text=AM" alt="Foto de Andrea M." class="w-20 h-20 rounded-full mb-4 border-4 border-muna-secondary">
-                        <div class="text-yellow-400 mb-2 text-lg">
-                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
-                        </div>
-                        <p class="text-muna-text italic mb-6 flex-grow">
-                            "La función de panel emocional me ha sorprendido. Muna realmente me ayuda a reflexionar y me da recomendaciones que puedo aplicar al instante. ¡Gracias, Muna!"
-                        </p>
-                        <div class="mt-auto">
-                            <p class="font-bold text-muna-primary text-lg">- Andrea M.</p>
-                            <p class="text-sm text-gray-500">Cuidadora de mellizos</p>
-                             <span class="mt-2 inline-block bg-muna-secondary/10 text-muna-secondary text-xs font-semibold px-2 py-1 rounded-full">Usuario Verificado</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-        
-        <!-- INICIO DE LA NUEVA SECCIÓN DE BLOG POTENCIADA -->
-        <section id="blog" class="section-padding bg-white">
-            <div class="container mx-auto px-4">
-                <div class="text-center mb-16">
-                    <h2 class="text-4xl font-bold text-muna-secondary mb-4">Encuentra respuestas en Nuestro Blog</h2>
-                    <p class="text-lg text-muna-text max-w-3xl mx-auto">
-                        Sabemos que buscas respuestas. Aquí encontrarás guías y consejos sobre los temas que más te importan, desde cómo manejar pataletas hasta rutinas de sueño.
-                    </p>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
-                    <!-- Columna Principal de Artículos -->
-                    <div class="lg:col-span-2">
-                        <!-- Artículo Destacado (versión para esta sección) -->
-                        <article class="mb-12 group">
-                            <a href="#blog" class="block overflow-hidden rounded-2xl shadow-lg">
-                                <img src="https://placehold.co/800x500/8A7ADF/FFFFFF?text=Artículo+Destacado" alt="Artículo destacado" class="w-full h-auto object-cover transition-transform duration-300 group-hover:scale-105">
-                            </a>
-                            <div class="mt-6">
-                                <div class="flex items-center gap-4 text-sm text-gray-500 mb-2">
-                                    <span class="inline-block bg-muna-accent/20 text-muna-accent font-semibold px-3 py-1 rounded-full">Autocuidado</span>
-                                    <span>Equipo Muna &bull; 5 min de lectura</span>
-                                </div>
-                                <h3 class="text-3xl font-bold text-muna-primary mb-3 group-hover:text-muna-accent transition-colors"><a href="#blog">Maternidad y Culpa: 3 Pasos para ser más Compasiva Contigo Misma</a></h3>
-                                <p class="text-muna-text text-lg">La culpa es una compañera frecuente en la maternidad, pero no tiene por qué serlo. Descubre estrategias prácticas para navegar este sentimiento complejo y encontrar más alegría en tu día a día.</p>
-                            </div>
-                        </article>
-
-                        <!-- Grid de Artículos Secundarios -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <article class="blog-article-card flex flex-col bg-white rounded-2xl shadow-md overflow-hidden transition-shadow duration-300 hover:shadow-xl" data-category="pataletas" data-keywords="pataletas,berrinche,rabieta,llanto,gritos,frustración,enojo,crisis,público,calma,conectar">
-                                <a href="#blog" class="block overflow-hidden"><img src="https://placehold.co/600x400/FF9A8D/3C3C3C?text=Empatía" alt="Ilustración sobre la empatía en la crianza" class="w-full h-48 object-cover"></a>
-                                <div class="p-6 flex flex-col flex-grow">
-                                    <div class="mb-2"><span class="inline-block bg-muna-accent text-white text-xs font-semibold px-2 py-1 rounded-full uppercase">Pataletas</span></div>
-                                    <h4 class="text-xl font-bold text-muna-primary mb-2 flex-grow"><a href="#blog" class="hover:text-muna-accent transition-colors">¿Pataletas en público? Claves para la calma</a></h4>
-                                    <div class="mt-auto pt-3 border-t border-gray-100 flex items-center text-xs text-gray-500">
-                                        <img src="https://placehold.co/32x32/8A7ADF/FFFFFF?text=E" alt="Avatar de la Dra. Elena R." class="w-6 h-6 rounded-full mr-2">
-                                        <span>Dr. Elena R. &bull; 6 min</span>
-                                    </div>
-                                </div>
-                            </article>
-                            <article class="blog-article-card flex flex-col bg-white rounded-2xl shadow-md overflow-hidden transition-shadow duration-300 hover:shadow-xl" data-category="sueno" data-keywords="sueño,dormir,siesta,descanso,acostar,noche,despertar,rutina,solo">
-                                <a href="#blog" class="block overflow-hidden"><img src="https://placehold.co/600x400/8A7ADF/FFFFFF?text=Sueño" alt="Ilustración sobre el sueño infantil con luna y estrellas" class="w-full h-48 object-cover"></a>
-                                <div class="p-6 flex flex-col flex-grow">
-                                    <div class="mb-2"><span class="inline-block bg-muna-primary text-white text-xs font-semibold px-2 py-1 rounded-full uppercase">Sueño</span></div>
-                                    <h4 class="text-xl font-bold text-muna-primary mb-2 flex-grow"><a href="#blog" class="hover:text-muna-accent transition-colors">Mi hijo no duerme solo: 5 pasos para una transición suave</a></h4>
-                                     <div class="mt-auto pt-3 border-t border-gray-100 flex items-center text-xs text-gray-500">
-                                        <img src="https://placehold.co/32x32/6AB09B/FFFFFF?text=A" alt="Avatar de Ana B." class="w-6 h-6 rounded-full mr-2">
-                                        <span>Ana B. &bull; 7 min</span>
-                                    </div>
-                                </div>
-                            </article>
-                        </div>
-                    </div>
-
-                    <!-- Barra Lateral (Sidebar) -->
-                    <aside class="lg:col-span-1">
-                        <div class="sticky top-28 bg-muna-bg p-8 rounded-2xl shadow-inner">
-                            <div class="mb-8">
-                                <h4 class="sidebar-title">Buscar</h4>
-                                <div class="relative">
-                                    <input type="search" id="blog-search-input" placeholder="Buscar temas..." class="w-full pl-10 pr-4 py-3 rounded-full border-2 border-gray-200 focus:border-muna-primary transition">
-                                    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                                </div>
-                            </div>
-                            <div class="mb-8">
-                                <h4 class="sidebar-title">Categorías</h4>
-                                <div id="blog-filters" class="flex flex-wrap gap-2">
-                                    <button class="blog-filter-btn active" data-category="todos">Todos</button>
-                                    <button class="blog-filter-btn" data-category="sueno">Sueño</button>
-                                    <button class="blog-filter-btn" data-category="pataletas">Pataletas</button>
-                                    <button class="blog-filter-btn" data-category="alimentacion">Alimentación</button>
-                                    <button class="blog-filter-btn" data-category="autocuidado">Autocuidado</button>
-                                </div>
-                            </div>
-                            <div>
-                                <h4 class="sidebar-title">Más Populares</h4>
-                                <div class="space-y-4">
-                                    <a href="#blog" class="popular-post-link">
-                                        <p class="font-semibold text-muna-primary">Mi hijo no duerme solo: 5 pasos para una transición suave</p>
-                                        <span class="text-sm text-gray-500">7 min de lectura</span>
-                                    </a>
-                                    <a href="#blog" class="popular-post-link">
-                                        <p class="font-semibold text-muna-primary">"No quiero": Estrategias si tu hijo no quiere comer</p>
-                                        <span class="text-sm text-gray-500">5 min de lectura</span>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </aside>
-                </div>
-                <div id="no-results-message" class="hidden text-center py-10">
-                    <p class="text-lg text-muna-text">No se encontraron artículos. Intenta con otra búsqueda.</p>
-                </div>
-            </div>
-        </section>
-        <!-- FIN DE LA NUEVA SECCIÓN DE BLOG -->
-
-
-        <section id="faq" class="section-padding bg-muna-secondary">
-            <div class="container mx-auto px-4">
-                 <div class="max-w-3xl mx-auto bg-white rounded-2xl shadow-lg p-8">
-                    <h2 class="text-4xl font-bold text-center text-muna-secondary mb-8">Resolvemos tus Dudas</h2>
-                    <div class="space-y-4">
-                        <div class="faq-item">
-                            <button class="faq-question" aria-expanded="false" aria-controls="faq-answer-1">
-                                <span>¿En qué teorías se basa Muna IA?</span>
-                                <i class="fas fa-chevron-down faq-icon"></i>
-                            </button>
-                            <div class="faq-answer" id="faq-answer-1">
-                                <p>Muna IA está fundamentada en los principios de la teoría del <strong>Apego Seguro</strong>, la <strong>Parentalidad Respetuosa</strong> y la <strong>Salud Mental Preventiva</strong>, integrando estos enfoques en nuestras recomendaciones y conversaciones.</p>
-                            </div>
-                        </div>
-                        <div class="faq-item">
-                            <button class="faq-question" aria-expanded="false" aria-controls="faq-answer-2">
-                                <span>¿Mis conversaciones son privadas?</span>
-                                <i class="fas fa-chevron-down faq-icon"></i>
-                            </button>
-                            <div class="faq-answer" id="faq-answer-2">
-                                <p>Sí, tu privacidad es nuestra prioridad. Las conversaciones son efímeras y no guardamos historiales vinculados a tu cuenta. Para más detalles, puedes consultar nuestra <button data-modal-target="privacy-policy-modal" class="font-semibold text-muna-secondary hover:underline open-modal-btn">Política de Privacidad</button>.</p>
-                            </div>
-                        </div>
-                        <div class="faq-item">
-                            <button class="faq-question" aria-expanded="false" aria-controls="faq-answer-3">
-                                <span>¿La IA reemplaza a un psicólogo?</span>
-                                <i class="fas fa-chevron-down faq-icon"></i>
-                            </button>
-                            <div class="faq-answer" id="faq-answer-3">
-                                <p>No. Muna IA es una herramienta de apoyo emocional y orientación, diseñada para ofrecer contención y guía en el día a día. No es una herramienta clínica ni reemplaza la terapia o el diagnóstico de un profesional de la salud mental.</p>
-                            </div>
-                        </div>
-                        <div class="faq-item">
-                            <button class="faq-question" aria-expanded="false" aria-controls="faq-answer-4">
-                                <span>¿Cómo funcionan los cuentos personalizados?</span>
-                                <i class="fas fa-chevron-down faq-icon"></i>
-                            </button>
-                            <div class="faq-answer" id="faq-answer-4">
-                                <p>A partir del nombre y la edad de tu hijo/a, y los temas que te interesan, nuestra IA crea historias únicas para fomentar valores, imaginación y el vínculo afectivo. ¡Cada cuento es una nueva aventura!</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="text-center mt-10">
-                        <button id="view-all-faqs-btn" class="btn-primary">Ver todas las preguntas</button>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="equipo" class="section-padding bg-white hidden">
-            <div class="container mx-auto px-4 text-center">
-                <h2 class="text-4xl font-bold text-muna-primary mb-12">Conoce a Nuestro Equipo</h2>
-                <p class="text-lg text-muna-text mb-12 max-w-3xl mx-auto">
-                    Somos un equipo apasionado por la tecnología, la salud mental y la crianza respetuosa, unidos por la visión de apoyar a cada familia.
-                </p>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div class="bg-muna-bg p-6 rounded-card shadow-lg flex flex-col items-center">
-                        <img src="https://placehold.co/120x120/8A7ADF/FFFFFF?text=Equipo+1" alt="Miembro del Equipo" class="w-32 h-32 rounded-full object-cover mb-4 shadow-md">
-                        <h3 class="text-2xl font-semibold text-muna-secondary mb-2">Dr. Elena Rodríguez</h3>
-                        <p class="text-muna-text text-center">CEO & Experta en IA y Salud Mental Infantil.</p>
-                        <p class="text-sm text-gray-500 mt-2">Con años de experiencia en desarrollo de IA aplicada a la psicología infantil.</p>
-                    </div>
-                    <div class="bg-muna-bg p-6 rounded-card shadow-lg flex flex-col items-center">
-                        <img src="https://placehold.co/120x120/6AB09B/FFFFFF?text=Equipo+2" alt="Miembro del Equipo" class="w-32 h-32 rounded-full object-cover mb-4 shadow-md">
-                        <h3 class="text-2xl font-semibold text-muna-secondary mb-2">Ing. Marcos Valdés</h3>
-                        <p class="text-muna-text text-center">CTO & Desarrollador Principal.</p>
-                        <p class="text-sm text-gray-500 mt-2">Visionario de la tecnología con foco en escalabilidad y experiencia de usuario.</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-card shadow-lg flex flex-col items-center">
-                        <img src="https://placehold.co/120x120/FF9A8D/FFFFFF?text=Equipo+3" alt="Miembro del Equipo" class="w-32 h-32 rounded-full object-cover mb-4 shadow-md">
-                        <h3 class="text-2xl font-semibold text-muna-secondary mb-2">Lic. Ana Bustamante</h3>
-                        <p class="text-muna-text text-center">Directora de Contenido y Crianza Respetuosa.</p>
-                        <p class="text-sm text-gray-500 mt-2">Especialista en psicología educativa y crianza consciente.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="contacto" class="section-padding bg-muna-secondary text-white">
-            <div class="container mx-auto px-4 text-center">
-                <h2 class="text-4xl font-bold mb-6">Contáctanos o Descarga Muna IA</h2>
-                <p class="text-xl mb-8 max-w-3xl mx-auto">
-                    ¿Tienes preguntas? ¿Quieres explorar opciones para tu institución? Estamos aquí para ayudarte.
-                </p>
-                <div class="flex flex-col md:flex-row justify-center items-start gap-12">
-                    <div class="w-full md:w-1/2 bg-muna-primary p-8 rounded-card shadow-lg text-left">
-                        <h3 class="text-2xl font-semibold mb-6 text-white">Envíanos un mensaje</h3>
-                        <form id="contact-form" class="space-y-4">
-                            <div>
-                                <label for="name" class="block text-white text-lg font-medium mb-2">Nombre</label>
-                                <input type="text" id="name" name="name" class="w-full p-3 rounded-lg bg-white text-muna-text focus:outline-none focus:ring-2 focus:ring-muna-accent" placeholder="Tu nombre" required>
-                            </div>
-                            <div>
-                                <label for="email" class="block text-white text-lg font-medium mb-2">Email</label>
-                                <input type="email" id="email" name="email" class="w-full p-3 rounded-lg bg-white text-muna-text focus:outline-none focus:ring-2 focus:ring-muna-accent" placeholder="tu@email.com" required>
-                            </div>
-                            <div>
-                                <label for="message" class="block text-white text-lg font-medium mb-2">Mensaje</label>
-                                <textarea id="message" name="message" rows="5" class="w-full p-3 rounded-lg bg-white text-muna-text focus:outline-none focus:ring-2 focus:ring-muna-accent" placeholder="Escribe tu mensaje aquí..." required></textarea>
-                            </div>
-                            <button type="submit" class="btn-accent w-full mt-4">
-                                <span>Enviar Mensaje</span>
-                                <i class="fas fa-paper-plane ml-3"></i>
-                            </button>
-                        </form>
-                    </div>
-
-                    <div class="w-full md:w-1/2 flex flex-col justify-center items-center md:items-start text-center md:text-left">
-                        <h3 class="text-2xl font-semibold mb-6">Prepárate para Muna IA</h3>
-                        <p class="text-lg mb-8">
-                            Empieza hoy mismo tu viaje con Muna IA. Disponible como WebApp para acceder desde cualquier dispositivo.
-                        </p>
-                        <button data-modal-target="login-modal" class="btn-accent mb-8 open-modal-btn">
-                            <span>Acceder a la WebApp</span>
-                            <i class="fas fa-arrow-right ml-3"></i>
-                        </button>
-
-                        <h3 class="text-2xl font-semibold mb-6">Síguenos en Redes Sociales</h3>
-                        <div class="flex space-x-6">
-                            <a href="#" target="_blank" class="text-white hover:text-muna-primary transition-colors text-4xl" aria-label="Visita nuestra página de Facebook">
-                                <i class="fab fa-facebook-square"></i>
-                            </a>
-                            <a href="#" target="_blank" class="text-white hover:text-muna-primary transition-colors text-4xl" aria-label="Visita nuestro perfil de Instagram">
-                                <i class="fab fa-instagram-square"></i>
-                            </a>
-                            <a href="#" target="_blank" class="text-white hover:text-muna-primary transition-colors text-4xl" aria-label="Visita nuestro perfil de Twitter">
-                                <i class="fab fa-twitter-square"></i>
-                            </a>
-                            <a href="#" target="_blank" class="text-white hover:text-muna-primary transition-colors text-4xl" aria-label="Visita nuestro perfil de LinkedIn">
-                                <i class="fab fa-linkedin"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+            <a href="#precios" id="main-cta" class="cta-button inline-block text-white font-bold text-lg py-4 px-10 rounded-full" style="background-color: var(--brand-teal);">
+                Descubre Todo tu Potencial
+            </a>
+        </div>
     </main>
 
-    <div id="faq-page" class="hidden bg-muna-bg min-h-screen">
-        <header class="bg-muna-bg shadow-md py-4">
-            <div class="container mx-auto px-4 flex justify-between items-center">
-                 <a href="#" id="back-to-main-btn" class="flex items-center space-x-2 text-muna-primary hover:text-muna-accent transition-colors">
-                    <i class="fas fa-arrow-left"></i>
-                    <span>Volver al Inicio</span>
-                </a>
-                <span class="text-2xl font-bold text-muna-primary">Preguntas Frecuentes</span>
-            </div>
-        </header>
-        <main class="section-padding">
-            <div class="container mx-auto px-4">
-                <div class="max-w-4xl mx-auto">
-                    <h3 class="text-3xl font-bold text-muna-secondary mb-6 mt-0">Sobre Muna IA</h3>
-                    <div class="faq-item">
-                        <button class="faq-question" aria-expanded="false" aria-controls="faq-answer-full-1">
-                            <span>¿En qué teorías se basa Muna IA?</span>
-                            <i class="fas fa-chevron-down faq-icon"></i>
-                        </button>
-                        <div class="faq-answer" id="faq-answer-full-1">
-                            <p>Muna IA está fundamentada en los principios de la teoría del <strong>Apego Seguro</strong>, la <strong>Parentalidad Respetuosa</strong> y la <strong>Salud Mental Preventiva</strong>, integrando estos enfoques en nuestras recomendaciones y conversaciones.</p>
-                        </div>
-                    </div>
-                    <div class="faq-item">
-                        <button class="faq-question" aria-expanded="false" aria-controls="faq-answer-full-2">
-                            <span>¿La IA reemplaza a un psicólogo?</span>
-                            <i class="fas fa-chevron-down faq-icon"></i>
-                        </button>
-                        <div class="faq-answer" id="faq-answer-full-2">
-                            <p>No. Muna IA es una herramienta de apoyo emocional y orientación, diseñada para ofrecer contención y guía en el día a día. No es una herramienta clínica ni reemplaza la terapia o el diagnóstico de un profesional de la salud mental.</p>
-                        </div>
-                    </div>
-
-                    <h3 class="text-3xl font-bold text-muna-secondary mb-6 mt-10">Uso y Funcionalidades</h3>
-                    <div class="faq-item">
-                        <button class="faq-question" aria-expanded="false" aria-controls="faq-answer-full-3">
-                            <span>¿Cómo funcionan los cuentos personalizados?</span>
-                            <i class="fas fa-chevron-down faq-icon"></i>
-                        </button>
-                        <div class="faq-answer" id="faq-answer-full-3">
-                            <p>A partir del nombre y la edad de tu hijo/a, y los temas que te interesan, nuestra IA crea historias únicas para fomentar valores, imaginación y el vínculo afectivo. ¡Cada cuento es una nueva aventura!</p>
-                        </div>
-                    </div>
-                    <div class="faq-item">
-                        <button class="faq-question" aria-expanded="false" aria-controls="faq-answer-full-4">
-                            <span>¿Para qué edades es recomendada?</span>
-                            <i class="fas fa-chevron-down faq-icon"></i>
-                        </button>
-                        <div class="faq-answer" id="faq-answer-full-4">
-                            <p>Muna IA está diseñada principalmente para la etapa de la primera infancia (0 a 6 años), pero sus principios de crianza respetuosa son aplicables y útiles para familias con niños y niñas de todas las edades.</p>
-                        </div>
-                    </div>
-
-                     <h3 class="text-3xl font-bold text-muna-secondary mb-6 mt-10">Cuentas y Pagos</h3>
-                     <div class="faq-item">
-                        <button class="faq-question" aria-expanded="false" aria-controls="faq-answer-full-5">
-                            <span>¿Puedo cancelar mi plan en cualquier momento?</span>
-                            <i class="fas fa-chevron-down faq-icon"></i>
-                        </button>
-                        <div class="faq-answer" id="faq-answer-full-5">
-                            <p>¡Por supuesto! Puedes gestionar o cancelar tu suscripción en cualquier momento desde tu panel de usuario, sin complicaciones ni penalizaciones.</p>
-                        </div>
-                    </div>
-                    <div class="faq-item">
-                        <button class="faq-question" aria-expanded="false" aria-controls="faq-answer-full-6">
-                            <span>¿Qué métodos de pago aceptan?</span>
-                            <i class="fas fa-chevron-down faq-icon"></i>
-                        </button>
-                        <div class="faq-answer" id="faq-answer-full-6">
-                            <p>Aceptamos las principales tarjetas de crédito y débito a través de nuestra pasarela de pago segura. La seguridad de tu información de pago es fundamental para nosotros.</p>
-                        </div>
-                    </div>
-
-                    <h3 class="text-3xl font-bold text-muna-secondary mb-6 mt-10">Privacidad y Seguridad</h3>
-                    <div class="faq-item">
-                        <button class="faq-question" aria-expanded="false" aria-controls="faq-answer-full-7">
-                            <span>¿Mis conversaciones son privadas?</span>
-                            <i class="fas fa-chevron-down faq-icon"></i>
-                        </button>
-                        <div class="faq-answer" id="faq-answer-full-7">
-                            <p>Sí, tu privacidad es nuestra prioridad. Las conversaciones son efímeras y no guardamos historiales vinculados a tu cuenta. Para más detalles, puedes consultar nuestra <button data-modal-target="privacy-policy-modal" class="font-semibold text-muna-secondary hover:underline open-modal-btn">Política de Privacidad</button>.</p>
-                        </div>
-                    </div>
-                     <div class="faq-item">
-                        <button class="faq-question" aria-expanded="false" aria-controls="faq-answer-full-8">
-                            <span>¿Cómo protegen mis datos?</span>
-                            <i class="fas fa-chevron-down faq-icon"></i>
-                        </button>
-                        <div class="faq-answer" id="faq-answer-full-8">
-                            <p>Utilizamos encriptación de extremo a extremo y seguimos las mejores prácticas de la industria para proteger toda tu información personal. Tus datos de registro y perfil se almacenan de forma segura y nunca se comparten con terceros sin tu consentimiento.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <div id="register-modal" class="modal-overlay">
-        <div class="modal-content" style="max-width: 500px;">
-            <button class="modal-close-btn close-modal-btn" aria-label="Cerrar modal">&times;</button>
-            <h3 class="text-3xl font-bold text-center text-muna-primary mb-6">Crea tu cuenta en Muna IA</h3>
-            <p class="text-lg text-center text-muna-text mb-6">Comienza tu viaje hacia una crianza más consciente.</p>
-            <form id="register-form" class="space-y-5" novalidate>
-                <div>
-                    <label for="register-email" class="block text-muna-text text-lg font-medium mb-2">Email</label>
-                    <input type="email" id="register-email" name="email" class="w-full p-3 rounded-lg bg-muna-bg text-muna-text focus:outline-none focus:ring-2 focus:ring-muna-accent" placeholder="tu@email.com" required>
-                    <span id="register-email-error" class="text-red-500 text-sm mt-1 hidden"></span>
-                </div>
-                <div>
-                    <label for="register-password" class="block text-muna-text text-lg font-medium mb-2">Contraseña</label>
-                    <input type="password" id="register-password" name="password" class="w-full p-3 rounded-lg bg-muna-bg text-muna-text focus:outline-none focus:ring-2 focus:ring-muna-accent" placeholder="Crea tu contraseña" required>
-                </div>
-                <div class="text-center text-xs text-gray-500 my-4">
-                <p><i class="fas fa-lock mr-1"></i>Recordatorio: Nunca guardamos el historial de tus conversaciones. Tu espacio es 100% privado.</p>
-                </div>
-                            <button type="submit" class="btn-accent w-full mt-6">
-                    <span>Crear Cuenta Gratis</span>
-                    <i class="fas fa-user-plus ml-3"></i>
-                </button>
-                <p class="text-center text-sm text-gray-500 pt-2">
-                    ¿Ya tienes una cuenta? <button type="button" data-modal-target="login-modal" class="font-semibold text-muna-secondary hover:underline switch-modal-btn">Inicia Sesión</button>
-                </p>
-            </form>
+   <section class="bg-white py-16 md:py-24">
+      <div class="container mx-auto px-6">
+        <div class="text-center max-w-3xl mx-auto">
+          <h2 class="text-3xl md:text-4xl font-bold mb-4">¿Esta aventura es para ti?</h2>
+          <p class="text-gray-600 text-lg mb-12">
+            Si te identificas con alguna de estas frases, la respuesta es un gran
+            <span class="font-bold" style="color: var(--brand-teal);">¡SÍ!</span>
+          </p>
         </div>
-    </div>
-    
-    <div id="login-modal" class="modal-overlay">
-        <div class="modal-content" style="max-width: 500px;">
-            <button class="modal-close-btn close-modal-btn" aria-label="Cerrar modal">&times;</button>
-            <h3 class="text-3xl font-bold text-center text-muna-primary mb-6">¡Hola de nuevo!</h3>
-            <p class="text-lg text-center text-muna-text mb-6">Inicia sesión para continuar.</p>
-            <form id="login-form" class="space-y-5" novalidate>
-                <div id="login-error-message" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative" role="alert">
-                    <span class="block sm:inline">Correo o contraseña incorrectos.</span>
-                </div>
-                <div>
-                    <label for="login-email" class="block text-muna-text text-lg font-medium mb-2">Email</label>
-                    <input type="email" id="login-email" name="email" class="w-full p-3 rounded-lg bg-muna-bg text-muna-text focus:outline-none focus:ring-2 focus:ring-muna-accent" placeholder="tu@email.com" required>
-                    <span id="login-email-error" class="text-red-500 text-sm mt-1 hidden"></span>
-                </div>
-                <div>
-                    <label for="login-password" class="block text-muna-text text-lg font-medium mb-2">Contraseña</label>
-                    <input type="password" id="login-password" name="password" class="w-full p-3 rounded-lg bg-muna-bg text-muna-text focus:outline-none focus:ring-2 focus:ring-muna-accent" placeholder="Tu contraseña" required>
-                </div>
-                <button type="submit" class="btn-primary w-full mt-6">
-                    <span>Iniciar Sesión</span>
-                </button>
-                 <p class="text-center text-sm text-gray-500 pt-2">
-                    ¿No tienes una cuenta? <button type="button" data-modal-target="register-modal" class="font-semibold text-muna-secondary hover:underline switch-modal-btn">Regístrate Gratis</button>
-                </p>
-            </form>
+
+        <div class="grid md:grid-cols-3 lg:grid-cols-4 gap-8 text-center">
+          <div class="bg-gray-50 p-8 rounded-xl border border-gray-200 hover:shadow-lg hover:border-teal-300 transition-all">
+            <div class="text-4xl mb-4">🎨</div>
+            <h3 class="text-xl font-bold mb-2">Mente Creativa y Curiosa</h3>
+            <p class="text-gray-600">
+              "Quiero crear imágenes, textos e ideas increíbles, pero no sé por dónde empezar."
+            </p>
+          </div>
+          <div class="bg-gray-50 p-8 rounded-xl border border-gray-200 hover:shadow-lg hover:border-teal-300 transition-all">
+            <div class="text-4xl mb-4">🚀</div>
+            <h3 class="text-xl font-bold mb-2">Persona Emprendedora y Ocupada</h3>
+            <p class="text-gray-600">
+              "Tengo mil tareas y necesito automatizar mi trabajo para enfocarme en crecer."
+            </p>
+          </div>
+          <div class="bg-gray-50 p-8 rounded-xl border border-gray-200 hover:shadow-lg hover:border-teal-300 transition-all">
+            <div class="text-4xl mb-4">🤝</div>
+            <h3 class="text-xl font-bold mb-2">Quien Lidera Equipos</h3>
+            <p class="text-gray-600">
+              "Busco que mi equipo sea más innovador y productivo, y sé que la IA es la clave."
+            </p>
+          </div>
+          <div class="bg-gray-50 p-8 rounded-xl border border-gray-200 hover:shadow-lg hover:border-teal-300 transition-all">
+            <div class="text-4xl mb-4">💼</div>
+            <h3 class="text-xl font-bold mb-2">Profesional Independiente</h3>
+            <p class="text-gray-600">
+              "Mis clientes esperan soluciones diferenciales; quiero usar IA para entregar más valor sin trabajar 24/7."
+            </p>
+          </div>
+          <div class="bg-gray-50 p-8 rounded-xl border border-gray-200 hover:shadow-lg hover:border-teal-300 transition-all">
+            <div class="text-4xl mb-4">📊</div>
+            <h3 class="text-xl font-bold mb-2">Amante de los Datos</h3>
+            <p class="text-gray-600">
+              "Tengo datos por todos lados, pero necesito convertirlos en insights claros y accionables."
+            </p>
+          </div>
+          <div class="bg-gray-50 p-8 rounded-xl border border-gray-200 hover:shadow-lg hover:border-teal-300 transition-all">
+            <div class="text-4xl mb-4">🎓</div>
+            <h3 class="text-xl font-bold mb-2">Educador Visionario</h3>
+            <p class="text-gray-600">
+              "Quiero sorprender a mi audiencia con contenidos personalizados usando IA."
+            </p>
+          </div>
+          <div class="bg-gray-50 p-8 rounded-xl border border-gray-200 hover:shadow-lg hover:border-teal-300 transition-all">
+            <div class="text-4xl mb-4">🏢</div>
+            <h3 class="text-xl font-bold mb-2">Intraemprendedor Digital</h3>
+            <p class="text-gray-600">
+              "Deseo lanzar proyectos de IA dentro de mi empresa y ser referente de innovación."
+            </p>
+          </div>
+          <div class="bg-gray-50 p-8 rounded-xl border border-gray-200 hover:shadow-lg hover:border-teal-300 transition-all">
+            <div class="text-4xl mb-4">🌍</div>
+            <h3 class="text-xl font-bold mb-2">Impulsor de Impacto Social</h3>
+            <p class="text-gray-600">
+              "Quiero aplicar IA en causas sociales o medioambientales y maximizar el alcance de mi proyecto."
+            </p>
+          </div>
         </div>
-    </div>
-    
-        <div id="onboarding-modal" class="modal-overlay">
-        <div class="modal-content">
-            <h3 class="text-3xl font-bold text-center text-muna-primary mb-4">¡Bienvenido/a a Muna IA!</h3>
-            <p class="text-lg text-center text-muna-text mb-6">Ayúdanos a conocerte mejor para personalizar tu experiencia.</p>
-            
-            <form id="onboarding-form" class="space-y-5">
-                <div>
-    <label for="caregiver-name" class="block text-muna-text text-lg font-medium mb-2">Tu nombre (mamá, papá, cuidador/a)</label>
-    <input type="text" id="caregiver-name" name="caregiver-name" class="w-full p-3 rounded-lg bg-muna-bg text-muna-text focus:outline-none focus:ring-2 focus:ring-muna-accent" placeholder="Ej: María">
-</div>
-                <div>
-                    <label for="child-name" class="block text-muna-text text-lg font-medium mb-2">Nombre de tu niño/a (opcional)</label>
-                    <input type="text" id="child-name" name="child-name" class="w-full p-3 rounded-lg bg-muna-bg text-muna-text focus:outline-none focus:ring-2 focus:ring-muna-accent" placeholder="Ej: Sofía">
-                </div>
-                <div>
-                    <label for="child-age" class="block text-muna-text text-lg font-medium mb-2">Edad de tu niño/a (años, opcional)</label>
-                    <input type="number" id="child-age" name="child-age" min="0" max="18" class="w-full p-3 rounded-lg bg-muna-bg text-muna-text focus:outline-none focus:ring-2 focus:ring-muna-accent" placeholder="Ej: 3">
-                </div>
+      </div>
+    </section>
 
-                <div class="bg-muna-bg p-6 rounded-lg shadow-inner mt-6">
-                    <h4 class="font-bold text-muna-primary text-xl mb-4 text-center">Temas de Interés</h4>
-                    <p class="text-sm text-muna-text mb-4 text-center">Selecciona los temas que más te resuenan para personalizar tu experiencia:</p>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-base">
-                       <label class="flex items-start p-3 bg-white rounded-lg shadow-sm">
-                            <input type="checkbox" name="interest-topic" value="gestion_emocional_infantil" class="form-checkbox text-muna-accent rounded mt-1">
-                            <span class="ml-3">Gestión Emocional Infantil (pataletas, miedos, celos)</span>
-                        </label>
-                        <label class="flex items-start p-3 bg-white rounded-lg shadow-sm">
-                            <input type="checkbox" name="interest-topic" value="limites_disciplina" class="form-checkbox text-muna-accent rounded mt-1">
-                            <span class="ml-3">Límites y Disciplina Positiva</span>
-                        </label>
-                        <label class="flex items-start p-3 bg-white rounded-lg shadow-sm">
-                            <input type="checkbox" name="interest-topic" value="autocuidado_cuidador" class="form-checkbox text-muna-accent rounded mt-1">
-                            <span class="ml-3">Autocuidado del Cuidador (culpa, estrés)</span>
-                        </label>
-                         <label class="flex items-start p-3 bg-white rounded-lg shadow-sm">
-                            <input type="checkbox" name="interest-topic" value="comunicacion_vinculo" class="form-checkbox text-muna-accent rounded mt-1">
-                            <span class="ml-3">Comunicación y Vínculo Afectivo</span>
-                        </label>
-                    </div>
-                </div>
-
-                <div class="flex justify-end items-center gap-4 mt-6">
-                    <button type="button" id="skip-onboarding-btn" class="text-muna-secondary hover:underline">Omitir por ahora</button>
-                    <button type="submit" class="btn-primary">Guardar y continuar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-    <div id="b2b-modal" class="modal-overlay">
-        <div class="modal-content" style="max-width: 600px;">
-            <button class="modal-close-btn close-modal-btn" aria-label="Cerrar modal">&times;</button>
-            <h3 class="text-3xl font-bold text-center text-muna-primary mb-4">Kit de Información para Instituciones</h3>
-            <p class="text-lg text-center text-muna-text mb-6">Déjanos tus datos y recibe al instante nuestro kit con información detallada, casos de estudio y modelos de licenciamiento para Muna IA.</p>
-            <form id="b2b-form" class="space-y-4">
-                <div>
-                    <label for="b2b-name" class="block text-muna-text font-medium mb-1">Nombre Completo</label>
-                    <input type="text" id="b2b-name" class="w-full p-3 rounded-lg bg-muna-bg text-muna-text focus:outline-none focus:ring-2 focus:ring-muna-accent" required>
-                </div>
-                <div>
-                    <label for="b2b-email" class="block text-muna-text font-medium mb-1">Email Corporativo</label>
-                    <input type="email" id="b2b-email" class="w-full p-3 rounded-lg bg-muna-bg text-muna-text focus:outline-none focus:ring-2 focus:ring-muna-accent" required>
-                </div>
-                 <div>
-                    <label for="b2b-institution" class="block text-muna-text font-medium mb-1">Nombre de la Institución</label>
-                    <input type="text" id="b2b-institution" class="w-full p-3 rounded-lg bg-muna-bg text-muna-text focus:outline-none focus:ring-2 focus:ring-muna-accent" required>
-                </div>
-                 <div>
-                    <label for="b2b-role" class="block text-muna-text font-medium mb-1">Tu Cargo</label>
-                    <input type="text" id="b2b-role" class="w-full p-3 rounded-lg bg-muna-bg text-muna-text focus:outline-none focus:ring-2 focus:ring-muna-accent" required>
-                </div>
-                 <div>
-                    <label for="b2b-families" class="block text-muna-text font-medium mb-1">Número Aproximado de Familias</label>
-                    <input type="number" id="b2b-families" min="1" class="w-full p-3 rounded-lg bg-muna-bg text-muna-text focus:outline-none focus:ring-2 focus:ring-muna-accent" required>
-                </div>
-                <button type="submit" class="btn-accent w-full mt-6">
-                    <span>Descargar Kit Ahora</span>
-                    <i class="fas fa-download ml-3"></i>
-                </button>
-            </form>
-        </div>
-    </div>
-    
-    <div id="payment-modal" class="modal-overlay">
-        <div class="modal-content" style="max-width: 500px;">
-            <button class="modal-close-btn close-modal-btn" aria-label="Cerrar modal">&times;</button>
-            <h3 class="text-3xl font-bold text-center text-muna-primary mb-4">Confirmar Compra</h3>
-            <p class="text-lg text-center text-muna-text mb-6">Estás a un paso de mejorar tu experiencia.</p>
-            <div class="bg-muna-bg p-6 rounded-lg shadow-inner text-center">
-                <p class="text-muna-text">Plan seleccionado:</p>
-                <p class="text-2xl font-bold text-muna-primary" id="payment-plan-name">Plan Premium</p>
-                <p class="text-4xl font-extrabold text-muna-primary mt-2" id="payment-plan-price">$8.990/mes</p>
-            </div>
-             <form id="payment-form" class="mt-6">
-                 <button type="submit" class="w-full flex items-center justify-center gap-3 p-4 rounded-lg bg-blue-500 text-white font-bold hover:bg-blue-600 transition-colors">
-                     <img src="https://logotipoz.com/wp-content/uploads/2021/10/version-vertical-logo-mercado-pago.png" alt="Mercado Pago" class="h-6">
-                     <span>Pagar con Mercado Pago</span>
-                 </button>
-            </form>
-        </div>
-    </div>
-    
-    <div id="privacy-policy-modal" class="modal-overlay">
-        <div class="modal-content">
-            <button class="modal-close-btn close-modal-btn" aria-label="Cerrar modal">&times;</button>
-            <h3 class="text-3xl font-bold text-center mb-6">Política de Privacidad de Muna IA</h3>
-            <p class="mb-4">Última actualización: 8 de Junio de 2025</p>
-            
-            <p class="mb-4">En Muna IA, tu privacidad y la seguridad de tus datos son nuestra máxima prioridad. Esta política de privacidad explica qué información recopilamos, cómo la usamos y protegemos, y tus derechos sobre ella.</p>
-
-            <h4 class="text-2xl font-semibold">1. Información que Recopilamos</h4>
-            <p class="mb-4">Recopilamos la información que nos proporcionas directamente durante el registro:</p>
-            <ul class="list-disc list-inside mb-4 pl-4">
-                <li><strong>Datos de la cuenta:</strong> Dirección de correo electrónico, contraseña.</li>
-                <li><strong>Información de perfil (opcional):</strong> Nombre y edad de tu niño/a, y temas de interés. Esta información nos ayuda a personalizar tu experiencia.</li>
-                <li><strong>Registro de emociones:</strong> Las emociones que registras en el panel emocional diario.</li>
-            </ul>
-
-            <h4 class="text-2xl font-semibold">2. Cómo Usamos tu Información</h4>
-            <p class="mb-4">Utilizamos tu información para:</p>
-            <ul class="list-disc list-inside mb-4 pl-4">
-                <li>Proveer, mantener y mejorar nuestros servicios.</li>
-                <li>Personalizar tu experiencia, como ofrecerte recomendaciones y cuentos relevantes.</li>
-                <li>Comunicarnos contigo sobre tu cuenta y nuestros servicios.</li>
-                <li>Analizar datos de forma agregada y anónima para entender tendencias y mejorar la plataforma.</li>
-            </ul>
-
-            <h4 class="text-2xl font-semibold">3. Módulo de Memoria Conversacional: Tu Privacidad en el Chat</h4>
-            <p class="mb-4">Entendemos que las conversaciones que tienes con Muna pueden ser muy personales. Por eso, hemos diseñado nuestro chat con un enfoque de privacidad primero:</p>
-            <p class="mb-4"><strong>¿Qué es el módulo de memoria conversacional?</strong></p>
-            <p class="mb-4">Para que la conversación sea fluida y útil, Muna necesita recordar el contexto de la sesión de chat actual. Por ejemplo, si mencionas que tu hijo se llama "Leo", Muna lo recordará durante esa conversación para interactuar de forma más natural. </p>
-            <p class="font-bold mb-4">Sin embargo, y esto es muy importante, este módulo funciona <strong>sin almacenar datos personales a largo plazo.</strong></p>
-             <p class="mb-4"><strong>¿Qué significa esto para ti?</strong></p>
-            <ul class="list-disc list-inside mb-4 pl-4">
-                <li><strong>No se guarda historial de chat:</strong> Las conversaciones no se guardan en nuestros servidores una vez que la sesión termina. Cada conversación es efímera.</li>
-                <li><strong>Los datos personales no se vinculan:</strong> La información de tu perfil (como tu email o el nombre de tu hijo) no se almacena junto con los registros de las conversaciones. La IA usa el contexto de la sesión activa, pero no crea un archivo permanente de tus chats vinculado a tu identidad.</li>
-                <li><strong>Seguridad y Confidencialidad:</strong> Puedes hablar con confianza sabiendo que tus desahogos, preocupaciones y momentos personales permanecen privados.</li>
-            </ul>
-
-            <h4 class="text-2xl font-semibold">4. Seguridad de los Datos</h4>
-            <p class="mb-4">Implementamos medidas de seguridad técnicas y organizativas para proteger tus datos contra el acceso no autorizado, la alteración o la destrucción. Toda la información de registro se almacena de forma encriptada.</p>
-
-            <h4 class="text-2xl font-semibold">5. Tus Derechos</h4>
-            <p class="mb-4">Tienes derecho a acceder, rectificar o eliminar tus datos personales en cualquier momento. Puedes gestionar la información de tu perfil desde tu panel de usuario o contactarnos para solicitar la eliminación de tu cuenta.</p>
-
-            <p>Si tienes alguna pregunta sobre esta política, no dudes en <a href="#contacto" class="text-muna-secondary hover:underline">contactarnos</a>.</p>
-        </div>
-    </div>
-    
-    <div id="terms-of-service-modal" class="modal-overlay">
-        <div class="modal-content">
-            <button class="modal-close-btn close-modal-btn" aria-label="Cerrar modal">&times;</button>
-            <h3 class="text-3xl font-bold text-center mb-6">Términos de Servicio de Muna IA</h3>
-             <p class="mb-4">Última actualización: 8 de Junio de 2025</p>
-
-            <p class="mb-4">Bienvenido/a a Muna IA. Al utilizar nuestros servicios, aceptas los siguientes términos y condiciones. Por favor, léelos con atención.</p>
-
-            <h4 class="text-2xl font-semibold">1. Aceptación de los Términos</h4>
-            <p class="mb-4">Al acceder y utilizar Muna IA, confirmas que has leído, entendido y aceptado estar sujeto a estos Términos de Servicio. Si no estás de acuerdo con estos términos, no debes utilizar nuestros servicios.</p>
-
-            <h4 class="text-2xl font-semibold">2. Descripción del Servicio</h4>
-            <p class="mb-4">Muna IA ofrece una plataforma de acompañamiento emocional y orientación en crianza a través de un chatbot de inteligencia artificial y herramientas relacionadas. El servicio se ofrece en diferentes planes (Freemium, Básico, Premium) con distintas características y limitaciones.</p>
-            <p class="font-bold mb-4">Importante: Muna IA no es un sustituto de terapia psicológica, consejo médico profesional o diagnóstico. Es una herramienta de apoyo y orientación. En caso de una emergencia o crisis de salud mental, por favor contacta a un profesional de la salud o a los servicios de emergencia locales.</p>
-
-            <h4 class="text-2xl font-semibold">3. Uso Aceptable</h4>
-            <p class="mb-4">Te comprometes a utilizar nuestros servicios de manera responsable y a no usarlos para fines ilegales o no autorizados. No debes, en el uso del Servicio, violar ninguna ley en tu jurisdicción.</p>
-
-            <h4 class="text-2xl font-semibold">4. Cuentas y Suscripciones</h4>
-            <p class="mb-4">Para acceder a la mayoría de las funciones, debes registrarte y crear una cuenta. Eres responsable de mantener la confidencialidad de tu contraseña y de todas las actividades que ocurran en tu cuenta. Los planes de pago se facturarán de forma recurrente (mensual o anual) y puedes cancelarlos en cualquier momento, de acuerdo con nuestras políticas de cancelación.</p>
-
-            <h4 class="text-2xl font-semibold">5. Propiedad Intelectual</h4>
-            <p class="mb-4">Todo el contenido del servicio, incluyendo el diseño, texto, gráficos, logos, y el software (excluyendo el contenido generado por el usuario), es propiedad de Muna IA o de sus licenciantes y está protegido por las leyes de propiedad intelectual. No puedes copiar, modificar o distribuir nuestro contenido sin nuestro permiso explícito.</p>
-
-            <h4 class="text-2xl font-semibold">6. Limitación de Responsabilidad</h4>
-            <p class="mb-4">Muna IA se proporciona "tal cual" y no garantizamos que el servicio sea ininterrumpido o libre de errores. En la medida máxima permitida por la ley, Muna IA не será responsable de ningún daño directo, indirecto, incidental o consecuente que resulte del uso o la incapacidad de usar nuestro servicio.</p>
-
-            <h4 class="text-2xl font-semibold">7. Modificación de los Términos</h4>
-            <p class="mb-4">Nos reservamos el derecho de modificar estos términos en cualquier momento. Te notificaremos de los cambios importantes. El uso continuado del servicio después de dichos cambios constituirá tu aceptación de los nuevos términos.</p>
-        </div>
-    </div>
-
-    <section id="user-dashboard" class="section-padding min-h-screen flex-col justify-center items-center px-4 bg-muna-bg hidden">
-        <div class="max-w-3xl mx-auto p-8 bg-white rounded-card shadow-lg text-center w-full relative">
-
-            <h2 class="text-4xl font-bold text-muna-primary mb-6">¡Hola, <span id="dashboard-username">usuario!</span></h2>
-
-            <div id="emotion-selector-container">
-                <p class="text-xl text-muna-text mb-8">¿Cómo te sientes hoy?</p>
-                <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
-                    <button class="emotion-btn flex flex-col items-center p-4 rounded-xl shadow-md bg-muna-bg hover:bg-muna-accent hover:text-white transition-all duration-200" data-emotion="Feliz" data-feeling="feliz">
-                        <span class="text-5xl">😊</span>
-                        <span class="mt-2 text-muna-text text-lg font-medium">Feliz</span>
-                    </button>
-                    <button class="emotion-btn flex flex-col items-center p-4 rounded-xl shadow-md bg-muna-bg hover:bg-muna-accent hover:text-white transition-all duration-200" data-emotion="Triste" data-feeling="triste">
-                        <span class="text-5xl">😔</span>
-                        <span class="mt-2 text-muna-text text-lg font-medium">Triste</span>
-                    </button>
-                    <button class="emotion-btn flex flex-col items-center p-4 rounded-xl shadow-md bg-muna-bg hover:bg-muna-accent hover:text-white transition-all duration-200" data-emotion="Enojado/a" data-feeling="enojado/a">
-                        <span class="text-5xl">😠</span>
-                        <span class="mt-2 text-muna-text text-lg font-medium">Enojado/a</span>
-                    </button>
-                    <button class="emotion-btn flex flex-col items-center p-4 rounded-xl shadow-md bg-muna-bg hover:bg-muna-accent hover:text-white transition-all duration-200" data-emotion="Tranquilo/a" data-feeling="tranquilo/a">
-                        <span class="text-5xl">😌</span>
-                        <span class="mt-2 text-muna-text text-lg font-medium">Tranquilo/a</span>
-                    </button>
-                    <button class="emotion-btn flex flex-col items-center p-4 rounded-xl shadow-md bg-muna-bg hover:bg-muna-accent hover:text-white transition-all duration-200" data-emotion="Estresado/a" data-feeling="estresado/a">
-                        <span class="text-5xl">😩</span>
-                        <span class="mt-2 text-muna-text text-lg font-medium">Estresado/a</span>
-                    </button>
-                    <button class="emotion-btn flex flex-col items-center p-4 rounded-xl shadow-md bg-muna-bg hover:bg-muna-accent hover:text-white transition-all duration-200" data-emotion="Agradecido/a" data-feeling="agradecido/a">
-                        <span class="text-5xl">💖</span>
-                        <span class="mt-2 text-muna-text text-lg font-medium">Agradecido/a</span>
-                    </button>
-                </div>
-            </div>
-
-            <div id="post-emotion-view" class="hidden">
-                <p id="emotion-ack-message" class="text-xl text-muna-text mb-8">
-                    </p>
-                <button id="start-chat-btn" class="btn-accent">
-                    <span>Hablar con Muna ahora</span>
-                    <i class="fas fa-comments ml-3"></i>
-                </button>
-                <button id="change-emotion-btn" class="mt-4 text-sm text-muna-secondary hover:underline">
-                    Cambiar mi emoción
-                </button>
-            </div>
-
+    <section class="bg-teal-50 py-16">
+        <div class="container mx-auto px-6 text-center max-w-3xl">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">¿Te sientes identificado?</h2>
+            <p class="text-lg text-gray-600 mb-8">Si asentiste con la cabeza al leer alguno de los perfiles, estás a un solo paso de transformar tu manera de trabajar. La IA no es el futuro, es el ahora.</p>
+            <a href="#precios" class="gradient-button inline-block font-bold text-lg py-4 px-10 rounded-full text-white">
+                Sí, quiero dar el siguiente paso
+            </a>
         </div>
     </section>
 
-<div id="chatbot-floater" class="is-minimized">
-    <button id="chatbot-bubble" class="flex items-center justify-center" aria-label="Abrir chat con Muna IA">
-        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
-    </button>
-
-    <div id="chatbot-window">
-        <div id="chatbot-header">
-            <h3>Muna IA: Disponible para ti aquí</h3>
-            <button id="chatbot-close-btn" aria-label="Minimizar chat">
-                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-            </button>
-        </div>
-        <div id="chatbot-body">
-            <iframe src="https://muna.auto.hostybee.com/webhook/f4e08df9-d32d-4206-a011-48af9d272111/chat" title="Chatbot de Muna IA"></iframe>
-        </div>
-    </div>
-</div>
-
-    <footer id="site-footer-main" class="bg-muna-primary py-8 text-white text-center text-lg">
-        <div class="container mx-auto px-4">
-            <p>&copy; 2024-2025 Muna IA. Todos los derechos reservados.</p>
-            <div class="flex flex-col sm:flex-row justify-center space-x-0 sm:space-x-6 mt-4">
-                <a href="#faq" class="text-white hover:text-muna-accent transition-colors mb-2 sm:mb-0">Preguntas Frecuentes</a>
-                <button data-modal-target="privacy-policy-modal" class="text-white hover:text-muna-accent transition-colors mb-2 sm:mb-0 bg-transparent border-none open-modal-btn">Política de Privacidad</button>
-                <button data-modal-target="terms-of-service-modal" class="text-white hover:text-muna-accent transition-colors bg-transparent border-none open-modal-btn">Términos de Servicio</button>
+    <section class="bg-white py-16 md:py-24">
+        <div class="container mx-auto px-6">
+            <div class="text-center max-w-3xl mx-auto">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Campus GenIA Lab</h2>
+                <p class="text-gray-600 text-lg mb-8">
+                    No lo decimos nosotros; lo dicen quienes ya pasaron por el campus.
+                </p>
             </div>
-            <p class="mt-2">Hecho con <i class="fas fa-heart text-muna-accent"></i> para familias de Latinoamérica.</p>
+            <div class="swiper testimonial-swiper">
+                <div class="swiper-wrapper pb-8">
+                    <div class="swiper-slide h-full">
+                        <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 h-full flex flex-col text-left">
+                            <div class="flex items-center mb-4">
+                                <img class="w-12 h-12 rounded-full mr-4" src="https://placehold.co/100x100/2DD4BF/FFFFFF?text=LJ" alt="Avatar de Lau Jiménez">
+                                <div>
+                                    <p class="font-bold">Lau Jiménez</p>
+                                    <p class="text-sm text-gray-500">hace 2 días</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 flex-grow text-sm">
+                                ¡Esto es una locura! Pasé de tardar horas en una propuesta de logo a generar 3 conceptos brutales en 15 minutos. Mis clientes (y mi bolsillo) están felices. Mil gracias al equipo de Aula GenIA. <span class="text-teal-500 font-semibold">#DiseñoConIA</span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="swiper-slide h-full">
+                        <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 h-full flex flex-col text-left">
+                            <div class="flex items-center mb-4">
+                                <img class="w-12 h-12 rounded-full mr-4" src="https://placehold.co/100x100/3B82F6/FFFFFF?text=CM" alt="Avatar de Carlos Morales G.">
+                                <div>
+                                    <p class="font-bold">Carlos Morales G.</p>
+                                    <p class="text-sm text-gray-500">hace 5 días</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 flex-grow text-sm">
+                                No doy más de la felicidad. Con lo que aprendí, automaticé la creación de todas las descripciones de producto. Me ahorré una fortuna en un copywriter y las ventas subieron un 15%. ¡Posta, recuperé los findes!
+                            </p>
+                        </div>
+                    </div>
+                    <div class="swiper-slide h-full">
+                        <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 h-full flex flex-col text-left">
+                            <div class="flex items-center mb-4">
+                                <img class="w-12 h-12 rounded-full mr-4" src="https://placehold.co/100x100/F59E0B/FFFFFF?text=AG" alt="Avatar de Ana Gómez Soto">
+                                <div>
+                                    <p class="font-bold">Ana Gómez Soto</p>
+                                    <p class="text-sm text-gray-500">hace 1 semana</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 flex-grow text-sm">
+                                El módulo de automatización cambió las reglas del juego para nuestra ONG. Ahora podemos procesar solicitudes de ayuda y responder a donantes al instante. El impacto se siente. Gracias por hacer la IA accesible.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="swiper-slide h-full">
+                        <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 h-full flex flex-col text-left">
+                            <div class="flex items-center mb-4">
+                                <img class="w-12 h-12 rounded-full mr-4" src="https://placehold.co/100x100/8B5CF6/FFFFFF?text=RD" alt="Avatar de Rosita Díaz">
+                                <div>
+                                    <p class="font-bold">Rosita Díaz</p>
+                                    <p class="text-sm text-gray-500">hace 4 días</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 flex-grow text-sm">
+                                Mi jefe me preguntó cómo saqué el reporte trimestral en una tarde en vez de una semana. Mi secreto: ChatGPT + las plantillas del curso. Literalmente un antes y un después en mi pega. 🤫 <span class="text-teal-500 font-semibold">#Productividad</span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="swiper-slide h-full">
+                        <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 h-full flex flex-col text-left">
+                            <div class="flex items-center mb-4">
+                                <img class="w-12 h-12 rounded-full mr-4" src="https://placehold.co/100x100/EF4444/FFFFFF?text=MT" alt="Avatar de M. Torres">
+                                <div>
+                                    <p class="font-bold">M. Torres</p>
+                                    <p class="text-sm text-gray-500">hace 10 días</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 flex-grow text-sm">
+                                Como freelance, el tiempo es oro. Ahora genero wireframes y hasta interfaces con IA en una fracción del tiempo. Mis clientes alucinan con la velocidad y yo puedo tomar más proyectos. ¡100% recomendado!
+                            </p>
+                        </div>
+                    </div>
+                    <div class="swiper-slide h-full">
+                        <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 h-full flex flex-col text-left">
+                            <div class="flex items-center mb-4">
+                                <img class="w-12 h-12 rounded-full mr-4" src="https://placehold.co/100x100/10B981/FFFFFF?text=JV" alt="Avatar de Juan Vallejo">
+                                <div>
+                                    <p class="font-bold">Juan Vallejo</p>
+                                    <p class="text-sm text-gray-500">hace 6 días</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 flex-grow text-sm">
+                                Creé un chatbot que simula ser un personaje histórico para mis clases. ¡Los alumnos están fascinados! Nunca los había visto tan enganchados con la materia. Gracias Aula GenIA por abrirme la cabeza.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-pagination mt-8"></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="roadmap" class="py-16 md:py-24 bg-slate-50 mb-16">
+        <div class="container mx-auto px-6">
+            <div class="text-center max-w-3xl mx-auto mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Tu Hoja de Ruta en el Aula</h2>
+                <p class="text-gray-600 text-lg">Un viaje paso a paso para dominar la IA generativa, ¡divirtiéndote en el proceso!</p>
+            </div>
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="bg-indigo-50 rounded-xl shadow-md p-8 flex flex-col items-center text-center h-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 mb-4 text-indigo-600"><path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0l-2.072-1.036A48.226 48.226 0 0112 4.5a48.226 48.226 0 0110.072 4.611l-2.072 1.036m-1.452 0A50.434 50.434 0 0112 10.5c-2.436 0-4.817-.435-7.07-1.212a50.433 50.433 0 01-1.452 0z" /></svg>
+                    <h3 class="font-semibold text-lg mb-2">Rompiendo el Hielo</h3>
+                    <p class="text-sm text-gray-600 leading-snug">Entiende qué es (y qué no es) la IA con ejemplos que sí vas a entender.</p>
+                    <span class="text-xs font-medium text-indigo-600 mt-auto pt-4">Duración: 30 min</span>
+                </div>
+                <div class="bg-indigo-50 rounded-xl shadow-md p-8 flex flex-col items-center text-center h-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 mb-4 text-indigo-600"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.898 20.543L16.5 21.75l-.398-1.207a3.375 3.375 0 00-2.455-2.456L12.75 18l1.207-.398a3.375 3.375 0 002.455-2.456L16.5 14.25l.398 1.207a3.375 3.375 0 002.456 2.456L20.25 18l-1.207.398a3.375 3.375 0 00-2.456 2.456z" /></svg>
+                    <h3 class="font-semibold text-lg mb-2">Tu Varita Mágica</h3>
+                    <p class="text-sm text-gray-600 leading-snug">Aprende a "hablarle" a la IA (ChatGPT y más) para que te dé exactamente lo que necesitas.</p>
+                    <span class="text-xs font-medium text-indigo-600 mt-auto pt-4">Duración: 1h 15 min</span>
+                </div>
+                <div class="bg-indigo-50 rounded-xl shadow-md p-8 flex flex-col items-center text-center h-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 mb-4 text-indigo-600"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" /></svg>
+                    <h3 class="font-semibold text-lg mb-2">Crea Arte al Instante</h3>
+                    <p class="text-sm text-gray-600 leading-snug">Genera imágenes espectaculares para tus redes, presentaciones o por pura diversión.</p>
+                    <span class="text-xs font-medium text-indigo-600 mt-auto pt-4">Duración: 1h</span>
+                </div>
+                <div class="bg-indigo-50 rounded-xl shadow-md p-8 flex flex-col items-center text-center h-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 mb-4 text-indigo-600"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" /></svg>
+                    <h3 class="font-semibold text-lg mb-2">Automatiza tu Día</h3>
+                    <p class="text-sm text-gray-600 leading-snug">Descubre herramientas que responden emails, resumen documentos y te ahorran horas.</p>
+                    <span class="text-xs font-medium text-indigo-600 mt-auto pt-4">Resultado: +5h/semana</span>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section id="precios" class="pb-16 bg-gray-50">
+        <div class="container mx-auto px-6 text-center">
+            
+            <div class="max-w-3xl mx-auto">
+                
+                <h2 class="text-3xl md:text-5xl font-black mb-4 text-gray-900">¡Oferta Irresistible por Tiempo Limitado!</h2>
+                <p class="text-lg md:text-xl text-gray-600 mb-8">Consigue acceso total a un precio que no volverás a ver.</p>
+                
+                <div class="max-w-md mx-auto mb-12">
+                    <p class="text-gray-700 font-bold mb-2" id="progress-label">¡Date prisa! Plazas limitadas.</p>
+                    <div class="w-full bg-gray-200 rounded-full h-4">
+                        <div id="progress-bar" class="bg-yellow-400 h-4 rounded-full transition-all duration-500 ease-out"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="max-w-3xl mx-auto">
+                
+                <div class="bg-white text-gray-900 p-8 rounded-xl shadow-2xl relative border-2 border-teal-400">
+                    <div class="absolute -top-5 left-1/2 -translate-x-1/2 bg-yellow-400 text-gray-900 font-bold py-2 px-6 rounded-full shadow-lg border-2 border-white">
+                        -90%
+                    </div>
+
+                    <h3 class="text-2xl font-bold text-center">Aula Gen IA: Acceso Total</h3>
+                    
+                    <p class="text-center text-gray-400 line-through mt-2">$49 USD</p>
+                    <p class="text-6xl font-bold text-center my-1 text-teal-500">$5 <span class="text-xl font-normal text-gray-500">USD</span></p>
+                    <p class="text-center text-gray-400 text-sm -mt-1 mb-2">(~$4.700 CLP aprox.)</p>
+                    <p class="text-center text-gray-500 text-xs">Pago único, sin cuotas ni suscripciones.</p>
+                    
+                    <ul class="space-y-3 text-gray-700 border-t border-gray-200 pt-6 mt-6 text-left">
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            <div><strong>Acceso por 12 meses</strong> a todos los módulos.</div>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            <div><strong>Nuevos módulos IA 2025</strong> incluidos sin costo.</div>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            <div>Acceso al <strong>Campus GenIA Lab</strong> (foros, eventos en vivo mensuales).</div>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            <div><strong>+20 plantillas de prompts</strong> y dashboards listos.</div>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            <div>Certificado de AulaGenIA Incluido.</div>
+                        </li>
+                    </ul>
+
+                    <a href="acceso.html" class="gradient-button w-full mt-6 inline-block font-bold text-lg py-4 px-10 rounded-full text-white">¡Lo quiero por solo $5!</a>
+                
+                    <div class="mt-6 text-gray-600">
+                        <p class="text-sm uppercase tracking-wider font-semibold">La oferta termina en:</p>
+                        <div id="countdown" class="text-2xl font-bold tracking-widest mt-1 text-gray-800"></div>
+                    </div>
+
+                    <div class="flex items-center justify-center gap-2 mt-4 text-gray-500 text-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clip-rule="evenodd" /></svg>
+                        <span>Reembolso 7 días · Pago 100% seguro</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="bg-white py-16 px-6 text-center max-w-3xl mx-auto">
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+        Tu Pase Backstage al Campus GenIA
+      </h2>
+      <p class="text-lg text-gray-700 mb-6 leading-relaxed">
+        Suscríbete y recibe <strong>GRATIS</strong> nuestro PDF con los 10 prompts de IA que simplificarán tu vida y dispararán tu creatividad.
+        Pero eso es solo el comienzo. Cada semana recibirás en tu correo los prompts, herramientas y noticias de nuestro Campus.
+        <br class="hidden sm:block" />¡Prepárate para llevar tu juego al siguiente nivel!
+      </p>
+
+      <form id="suscripcion-form" class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <input
+          id="suscripcion-email"
+          type="email"
+          name="email"
+          placeholder="tu.correo@ejemplo.com"
+          class="w-full sm:w-80 px-4 py-3 rounded-full border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-800"
+          required
+        />
+        <button
+          id="suscripcion-btn"
+          type="submit"
+          class="w-full sm:w-auto px-6 py-3 rounded-full bg-gradient-to-r from-green-400 to-yellow-400 text-white font-semibold shadow-md hover:shadow-lg transition duration-200"
+        >
+          Suscribirme ahora
+        </button>
+      </form>
+      
+      <div id="suscripcion-mensaje" class="mt-4 text-md font-semibold"></div>
+
+      <div class="flex items-center justify-center mt-4 text-sm text-gray-600">
+        <input
+          id="suscripcion-optin"
+          type="checkbox"
+          checked
+          class="mr-2 accent-teal-600"
+        />
+        <label for="suscripcion-optin">
+          Acepto recibir comunicaciones por correo. Respetamos tu privacidad.
+        </label>
+      </div>
+    </section>
+
+    <footer class="bg-gray-100 border-t border-gray-200">
+        <div class="container mx-auto px-6 py-8 text-center text-gray-600">
+            <div class="flex justify-center items-center gap-2 mb-2">
+                 <a href="index.html" class="flex items-center gap-2">
+                    <div class="relative w-12 h-12">
+                         <span class="block w-5 h-5 rounded-full absolute" style="background-color: var(--brand-teal); top: 10px; left: 0;"></span>
+                         <span class="block w-3 h-3 rounded-full absolute" style="background-color: var(--brand-yellow); top: 0; left: 15px;"></span>
+                         <span class="block w-2 h-2 rounded-full absolute" style="background-color: var(--brand-blue); top: 18px; left: 22px;"></span>
+                    </div>
+                    <div class="text-xl font-bold text-gray-900 leading-tight">
+                        <div>Aula</div>
+                        <div>
+                           <span>Gen</span><span class="logo-highlight">IA</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <p class="text-sm">&copy; 2024 - Todos los derechos reservados. Creado con 💙 y un poquito de IA.</p>
         </div>
     </footer>
+    
+    <script src="https://unpkg.com/swiper@11/swiper-bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent/3.1.1/cookieconsent.min.js"></script>
+    <script>
+        window.addEventListener('load', () => {
+            // Inicialización de Swiper
+            new Swiper('.testimonial-swiper', {
+                loop: true,
+                autoplay: { delay: 5000, disableOnInteraction: false },
+                pagination: { el: '.swiper-pagination', clickable: true },
+                breakpoints: {
+                    0: { slidesPerView: 1, spaceBetween: 20 },
+                    768: { slidesPerView: 2, spaceBetween: 24 },
+                    1024: { slidesPerView: 3, spaceBetween: 24 },
+                },
+            });
 
-    <script src="script.js"></script>
+            // Inicialización de Cookie Consent
+            window.cookieconsent.initialise({
+                palette: {
+                    popup:  { background: '#1f2937' },
+                    button: { background: '#14b8a6' }
+                },
+                theme: 'classic',
+                position: 'bottom',
+                type: 'opt-in',
+                content: {
+                    message: 'Usamos cookies para mejorar tu experiencia.',
+                    dismiss: 'Aceptar',
+                    deny:    'Rechazar',
+                    link:    'Más info',
+                    href:    'politica-cookies.html'
+                },
+            });
+
+            // Lógica para el contador regresivo
+            const countdownElement = document.getElementById('countdown');
+            if (countdownElement) {
+                const countDownDate = new Date().getTime() + (41 * 60 * 60 * 1000) + (12 * 60 * 1000);
+                const updateCountdown = () => {
+                    const now = new Date().getTime();
+                    const distance = countDownDate - now;
+                    if (distance < 0) {
+                        clearInterval(interval);
+                        const countdownContainer = countdownElement.parentElement;
+                        if(countdownContainer) {
+                           countdownContainer.innerHTML = "<p class='font-bold text-red-500'>¡La oferta ha terminado!</p>";
+                        }
+                        return;
+                    }
+                    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                    countdownElement.innerHTML = `
+                        <span class="tabular-nums">${hours.toString().padStart(2, '0')}</span>h : 
+                        <span class="tabular-nums">${minutes.toString().padStart(2, '0')}</span>m : 
+                        <span class="tabular-nums">${seconds.toString().padStart(2, '0')}</span>s`;
+                };
+                const interval = setInterval(updateCountdown, 1000);
+                updateCountdown();
+            }
+
+            // Lógica para la barra de progreso de plazas
+            const progressBar = document.getElementById('progress-bar');
+            const progressLabel = document.getElementById('progress-label');
+            if (progressBar && progressLabel) {
+                const totalPlazas = 50;
+                const plazasOcupadas = 37; // Esta variable se puede ajustar manualmente
+                const porcentaje = (plazasOcupadas / totalPlazas) * 100;
+                
+                setTimeout(() => {
+                    progressBar.style.width = `${porcentaje}%`;
+                }, 300); // Pequeño delay para la animación
+                
+                progressLabel.textContent = `¡Quedan ${totalPlazas - plazasOcupadas} de ${totalPlazas} plazas early-bird!`;
+            }
+
+            // Lógica para el botón CTA Fijo en móvil
+            const stickyCtaContainer = document.getElementById('sticky-cta-container');
+            const mainCta = document.getElementById('main-cta');
+            const preciosSection = document.getElementById('precios');
+
+            if (stickyCtaContainer && mainCta && preciosSection) {
+                const showStickyCta = () => {
+                    const mainCtaRect = mainCta.getBoundingClientRect();
+                    const preciosRect = preciosSection.getBoundingClientRect();
+                    
+                    if (window.innerWidth < 768 && mainCtaRect.bottom < 0 && preciosRect.bottom > window.innerHeight) {
+                        stickyCtaContainer.classList.add('visible');
+                    } else {
+                        stickyCtaContainer.classList.remove('visible');
+                    }
+                };
+
+                window.addEventListener('scroll', showStickyCta);
+                window.addEventListener('resize', showStickyCta);
+            }
+
+            // --- INICIO: LÓGICA DEL WEBHOOK PARA N8N ---
+            const form = document.getElementById('suscripcion-form');
+            const emailInput = document.getElementById('suscripcion-email');
+            const optinCheckbox = document.getElementById('suscripcion-optin');
+            const messageDiv = document.getElementById('suscripcion-mensaje');
+            const submitButton = document.getElementById('suscripcion-btn');
+
+            if (form) {
+                form.addEventListener('submit', async (event) => {
+                    // Prevenimos que la página se recargue
+                    event.preventDefault();
+
+                    // Deshabilitamos el botón para evitar envíos múltiples
+                    submitButton.disabled = true;
+                    submitButton.textContent = 'Enviando...';
+
+                    // IMPORTANTE: Reemplaza esta URL con la URL de tu webhook de n8n
+                    const webhookUrl = 'https://muna.auto.hostybee.com/webhook-test/7b801ad6-994e-422e-99ef-76da3ef7424a';
+                    const email = emailInput.value;
+                    const optin = optinCheckbox.checked;
+
+                    try {
+                        const response = await fetch(webhookUrl, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ 
+                                email: email,
+                                optin: optin
+                            }),
+                        });
+
+                        if (response.ok) {
+                            // Si n8n responde correctamente (200 OK)
+                            messageDiv.textContent = '¡Gracias por suscribirte! Revisa tu correo.';
+                            messageDiv.className = 'mt-4 text-md font-semibold text-green-600';
+                            form.reset(); // Limpiamos el formulario
+                        } else {
+                            // Si hay un error en la respuesta del servidor
+                            throw new Error('Respuesta del servidor no fue exitosa.');
+                        }
+
+                    } catch (error) {
+                        // Si hay un error en la conexión o en el proceso
+                        console.error('Error al enviar el webhook:', error);
+                        messageDiv.textContent = 'Hubo un error. Por favor, inténtalo de nuevo.';
+                        messageDiv.className = 'mt-4 text-md font-semibold text-red-600';
+                    } finally {
+                        // Volvemos a habilitar el botón
+                        submitButton.disabled = false;
+                        submitButton.textContent = 'Suscribirme ahora';
+                    }
+                });
+            }
+            // --- FIN: LÓGICA DEL WEBHOOK PARA N8N ---
+        });
+    </script>
+
 </body>
 </html>
-" code between  and  in the most up-to-date Canvas "Página Principal (index.html) con Blog Potenciado" document above and am asking a query about/based on this code below.
-Instructions to follow:
-  * Don't output/edit the document if the query is Direct/Simple. For example, if the query asks for a simple explanation, output a direct answer.
-  * Make sure to **edit** the document if the query shows the intent of editing the document, in which case output the entire edited document, **not just that section or the edits**.
-    * Don't output the same document/empty document and say that you have edited it.
-    * Don't change unrelated code in the document.
-  * Don't output  and  in your final response.
-  * Any references like "this" or "selected code" refers to the code between  and  tags.
-  * Just acknowledge my request in the introduction.
-  * Make sure to refer to the document as "Canvas" in your response.
-
-no se entendío, necesito profundidad en el contenido.. cuando hago click en cualquier tema del blog en el home me lleva al iniico del home, no hay profundi
