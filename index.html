@@ -478,9 +478,8 @@
         Pero eso es solo el comienzo. Cada semana recibirás en tu correo los prompts, herramientas y noticias de nuestro Campus.
         <br class="hidden sm:block" />¡Prepárate para llevar tu juego al siguiente nivel!
       </p>
-
-      <!-- INICIO DEL FORMULARIO CORREGIDO -->
-     <form id="suscripcion-form" class="flex flex-col sm:flex-row items-center justify-center gap-4">
+<!-- INICIO DEL FORMULARIO CORREGIDO -->
+<form id="suscripcion-form" class="flex flex-col sm:flex-row items-center justify-center gap-4">
   <input
     id="suscripcion-email"
     name="email"
@@ -498,6 +497,7 @@
     Suscribirme ahora
   </button>
 
+  <!-- Checkbox incluido dentro del formulario -->
   <div class="flex items-center text-sm text-gray-600 mt-2 sm:mt-0 sm:ml-4">
     <input
       id="suscripcion-optin"
@@ -508,11 +508,12 @@
     />
     <label for="suscripcion-optin">Acepto recibir comunicaciones.</label>
   </div>
-</form>
+</form> <!--  ← cerramos el formulario -->
 
+<!-- Contenedor ÚNICO para mensajes de éxito o error -->
 <div id="suscripcion-mensaje" class="mt-4 text-md font-semibold"></div>
 
-    </section>
+</section>
 
     <footer class="bg-gray-100 border-t border-gray-200">
         <div class="container mx-auto px-6 py-8 text-center text-gray-600">
@@ -652,6 +653,7 @@ if (form && btn && msg) {
 
 </body>
 </html>
+
 
 
 
