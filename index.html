@@ -544,15 +544,12 @@
             const messageDiv = document.getElementById('suscripcion-mensaje');
             const submitButton = document.getElementById('suscripcion-btn');
             
-            // !! IMPORTANTE !! REEMPLAZA ESTA URL POR LA DE TU WEBHOOK DE N8N
-            const webhookUrl = 'https://muna.auto.hostybee.com/webhook-test/7b801ad6-994e-422e-99ef-76da3ef7424a';
+            const webhookUrl = 'https://muna.auto.hostybee.com/webhook-test/7b801ad6-994e-422e-99ef-76da3e7f424a';
 
-            if (submitButton) {
-                // CAMBIO: Escuchamos el 'click' en el botón en lugar del 'submit' del formulario.
+            if (submitButton && form && emailInput && optinCheckbox) {
                 submitButton.addEventListener('click', async (event) => {
-                    event.preventDefault(); // Prevenimos el comportamiento por defecto del botón.
+                    event.preventDefault(); 
                     
-                    // Verificamos si el email es válido antes de continuar
                     if (!emailInput.checkValidity()) {
                         emailInput.reportValidity();
                         return;
@@ -560,7 +557,7 @@
 
                     submitButton.disabled = true;
                     submitButton.textContent = 'Enviando...';
-                    messageDiv.textContent = ''; // Limpiar mensaje previo
+                    messageDiv.textContent = '';
 
                     const email = emailInput.value;
                     const optin = optinCheckbox.checked;
@@ -593,7 +590,7 @@
                     }
                 });
             } else {
-                console.error("Error crítico: No se encontró el botón con id 'suscripcion-btn'.");
+                console.error("Error crítico: No se encontró uno o más elementos del formulario (botón, form, email, o checkbox).");
             }
 
             // --- OTRAS INICIALIZACIONES (se ejecutan después) ---
