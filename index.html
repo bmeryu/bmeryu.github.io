@@ -571,7 +571,7 @@ if (form && submitButton && messageDiv) {
     e.preventDefault();
 
     const email = e.target.email.value.trim();
-    const optin = e.target.optin.checked ? "1" : "0";    // "1" o "0" para n8n
+    const optin = document.getElementById('suscripcion-optin').checked ? "1" : "0";   // "1" o "0" para n8n
 
     if (!email) {
       e.target.email.reportValidity();
@@ -677,4 +677,5 @@ if (form && submitButton && messageDiv) {
 
 </body>
 </html>
+
 
