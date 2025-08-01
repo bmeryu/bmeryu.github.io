@@ -512,27 +512,6 @@
 
 <div id="suscripcion-mensaje" class="mt-4 text-md font-semibold"></div>
 
-        
-        <!-- CHECKBOX MOVIDO DENTRO DEL FORMULARIO -->
-        <div class="flex items-center justify-center mt-4 text-sm text-gray-600">
-            <!-- COMENTARIO MOVIDO FUERA DE LA ETIQUETA -->
-            <!-- ATRIBUTO 'name' AÑADIDO POR BUENA PRÁCTICA -->
-            <input
-              id="suscripcion-optin"
-              name="optin"
-              type="checkbox"
-              checked
-              class="mr-2 accent-teal-600"
-            />
-            <label for="suscripcion-optin">
-              Acepto recibir comunicaciones por correo. Respetamos tu privacidad.
-            </label>
-        </div>
-      </form>
-      <!-- FIN DEL FORMULARIO CORREGIDO -->
-      
-      <div id="suscripcion-mensaje" class="mt-4 text-md font-semibold"></div>
-
     </section>
 
     <footer class="bg-gray-100 border-t border-gray-200">
@@ -560,27 +539,22 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent/3.1.1/cookieconsent.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-           / --- LÓGICA DEL WEBHOOK (SE EJECUTA PRIMERO) ---
-const form         = document.getElementById('suscripcion-form');
-const messageDiv   = document.getElementById('suscripcion-mensaje');
-const submitButton = document.getElementById('suscripcion-btn');
-const webhookUrl   = 'https://muna.auto.hostybee.com/webhook-test/7b801ad6-994e-422e-99ef-76da3e7f424a';
+  // --- LÓGICA DEL WEBHOOK (SE EJECUTA PRIMERO) ---
+const form       = document.getElementById('suscripcion-form');
+const msg        = document.getElementById('suscripcion-mensaje');
+const btn        = document.getElementById('suscripcion-btn');
+const webhookUrl = 'https://muna.auto.hostybee.com/webhook-test/7b801ad6-994e-422e-99ef-76da3e7f424a';
 
-if (form && submitButton && messageDiv) {
+if (form && btn && msg) {
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const email = e.target.email.value.trim();
-    const optin = document.getElementById('suscripcion-optin').checked ? "1" : "0";   // "1" o "0" para n8n
+    const email = document.getElementById('suscripcion-email').value.trim();
+    const optin = document.getElementById('suscripcion-optin').checked ? "1" : "0";
 
-    if (!email) {
-      e.target.email.reportValidity();
-      return;
-    }
+    if (!email) return;  // el propio navegador mostrará la validación
 
-    submitButton.disabled = true;
-    submitButton.textContent = 'Enviando…';
-    messageDiv.textContent = '';
+    btn.disabled = true; btn.textContent = 'Enviando…'; msg.textContent = '';
 
     try {
       const r = await fetch(webhookUrl, {
@@ -588,24 +562,25 @@ if (form && submitButton && messageDiv) {
         headers: { 'Content-Type': 'application/json' },
         body   : JSON.stringify({ email, optin })
       });
-
       if (!r.ok) throw new Error(await r.text());
 
-      messageDiv.textContent = '¡Gracias por suscribirte! Revisa tu correo.';
-      messageDiv.className   = 'mt-4 text-md font-semibold text-green-600';
-      form.reset();
-      e.target.optin.checked = true;           // vuelve a marcar el opt-in
+      msg.textContent = '¡Gracias por suscribirte! Revisa tu correo.';
+      msg.className   = 'mt-4 text-md font-semibold text-green-600';
+      form.reset();                         // limpia el email
+      document.getElementById('suscripcion-optin').checked = true;
     } catch (err) {
-      console.error('Error detallado al enviar el webhook:', err);
-      messageDiv.textContent = 'Hubo un error al conectar. Revisa la consola (F12) para más detalles.';
-      messageDiv.className   = 'mt-4 text-md font-semibold text-red-600';
+      console.error(err);
+      msg.textContent = 'Error al conectar. Revisa F12 → Console.';
+      msg.className   = 'mt-4 text-md font-semibold text-red-600';
     } finally {
-      submitButton.disabled = false;
-      submitButton.textContent = 'Suscribirme ahora';
+      btn.disabled = false; btn.textContent = 'Suscribirme ahora';
     }
   });
 } else {
-  console.error('Error crítico: no se encontró el formulario o sus elementos.');
+  console.error('Formulario o elementos no encontrados');
+}
+// --- OTRAS INICIALIZACIONES (se ejecutan después) ---
+
     
             // --- OTRAS INICIALIZACIONES (se ejecutan después) ---
             window.addEventListener('load', () => {
@@ -677,5 +652,6 @@ if (form && submitButton && messageDiv) {
 
 </body>
 </html>
+
 
 
