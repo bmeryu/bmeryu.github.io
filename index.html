@@ -536,159 +536,137 @@
     <script src="https://unpkg.com/swiper@11/swiper-bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent/3.1.1/cookieconsent.min.js"></script>
     <script>
-        window.addEventListener('load', () => {
-            // Inicialización de Swiper
-            new Swiper('.testimonial-swiper', {
-                loop: true,
-                autoplay: { delay: 5000, disableOnInteraction: false },
-                pagination: { el: '.swiper-pagination', clickable: true },
-                breakpoints: {
-                    0: { slidesPerView: 1, spaceBetween: 20 },
-                    768: { slidesPerView: 2, spaceBetween: 24 },
-                    1024: { slidesPerView: 3, spaceBetween: 24 },
-                },
-            });
-
-            // Inicialización de Cookie Consent
-            window.cookieconsent.initialise({
-                palette: {
-                    popup:  { background: '#1f2937' },
-                    button: { background: '#14b8a6' }
-                },
-                theme: 'classic',
-                position: 'bottom',
-                type: 'opt-in',
-                content: {
-                    message: 'Usamos cookies para mejorar tu experiencia.',
-                    dismiss: 'Aceptar',
-                    deny:    'Rechazar',
-                    link:    'Más info',
-                    href:    'politica-cookies.html'
-                },
-            });
-
-            // Lógica para el contador regresivo
-            const countdownElement = document.getElementById('countdown');
-            if (countdownElement) {
-                const countDownDate = new Date().getTime() + (41 * 60 * 60 * 1000) + (12 * 60 * 1000);
-                const updateCountdown = () => {
-                    const now = new Date().getTime();
-                    const distance = countDownDate - now;
-                    if (distance < 0) {
-                        clearInterval(interval);
-                        const countdownContainer = countdownElement.parentElement;
-                        if(countdownContainer) {
-                           countdownContainer.innerHTML = "<p class='font-bold text-red-500'>¡La oferta ha terminado!</p>";
-                        }
-                        return;
-                    }
-                    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-                    countdownElement.innerHTML = `
-                        <span class="tabular-nums">${hours.toString().padStart(2, '0')}</span>h : 
-                        <span class="tabular-nums">${minutes.toString().padStart(2, '0')}</span>m : 
-                        <span class="tabular-nums">${seconds.toString().padStart(2, '0')}</span>s`;
-                };
-                const interval = setInterval(updateCountdown, 1000);
-                updateCountdown();
-            }
-
-            // Lógica para la barra de progreso de plazas
-            const progressBar = document.getElementById('progress-bar');
-            const progressLabel = document.getElementById('progress-label');
-            if (progressBar && progressLabel) {
-                const totalPlazas = 50;
-                const plazasOcupadas = 37; // Esta variable se puede ajustar manualmente
-                const porcentaje = (plazasOcupadas / totalPlazas) * 100;
-                
-                setTimeout(() => {
-                    progressBar.style.width = `${porcentaje}%`;
-                }, 300); // Pequeño delay para la animación
-                
-                progressLabel.textContent = `¡Quedan ${totalPlazas - plazasOcupadas} de ${totalPlazas} plazas early-bird!`;
-            }
-
-            // Lógica para el botón CTA Fijo en móvil
-            const stickyCtaContainer = document.getElementById('sticky-cta-container');
-            const mainCta = document.getElementById('main-cta');
-            const preciosSection = document.getElementById('precios');
-
-            if (stickyCtaContainer && mainCta && preciosSection) {
-                const showStickyCta = () => {
-                    const mainCtaRect = mainCta.getBoundingClientRect();
-                    const preciosRect = preciosSection.getBoundingClientRect();
-                    
-                    if (window.innerWidth < 768 && mainCtaRect.bottom < 0 && preciosRect.bottom > window.innerHeight) {
-                        stickyCtaContainer.classList.add('visible');
-                    } else {
-                        stickyCtaContainer.classList.remove('visible');
-                    }
-                };
-
-                window.addEventListener('scroll', showStickyCta);
-                window.addEventListener('resize', showStickyCta);
-            }
-
-            // --- INICIO: LÓGICA DEL WEBHOOK PARA N8N ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- LÓGICA DEL WEBHOOK (SE EJECUTA PRIMERO) ---
             const form = document.getElementById('suscripcion-form');
             const emailInput = document.getElementById('suscripcion-email');
             const optinCheckbox = document.getElementById('suscripcion-optin');
             const messageDiv = document.getElementById('suscripcion-mensaje');
             const submitButton = document.getElementById('suscripcion-btn');
+            
+            // !! IMPORTANTE !! REEMPLAZA ESTA URL POR LA DE TU WEBHOOK DE N8N
+            const webhookUrl = 'https://muna.auto.hostybee.com/webhook/7b801ad6-994e-422e-99ef-76da3ef7424a';
 
             if (form) {
                 form.addEventListener('submit', async (event) => {
-                    // Prevenimos que la página se recargue
                     event.preventDefault();
-
-                    // Deshabilitamos el botón para evitar envíos múltiples
+                    
                     submitButton.disabled = true;
                     submitButton.textContent = 'Enviando...';
+                    messageDiv.textContent = ''; // Limpiar mensaje previo
 
-                    // IMPORTANTE: Reemplaza esta URL con la URL de tu webhook de n8n
-                    const webhookUrl = 'https://muna.auto.hostybee.com/webhook/7b801ad6-994e-422e-99ef-76da3ef7424a';
                     const email = emailInput.value;
                     const optin = optinCheckbox.checked;
+
+                    // PRUEBA DEFINITIVA: Mostramos en la consola QUÉ se va a enviar.
+                    const dataToSend = { 
+                        email: email,
+                        optin: optin
+                    };
+                    console.log("Datos que se enviarán al webhook:", dataToSend);
+
 
                     try {
                         const response = await fetch(webhookUrl, {
                             method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({ 
-                                email: email,
-                                optin: optin
-                            }),
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(dataToSend), // Enviamos el objeto que creamos
                         });
 
                         if (response.ok) {
-                            // Si n8n responde correctamente (200 OK)
                             messageDiv.textContent = '¡Gracias por suscribirte! Revisa tu correo.';
                             messageDiv.className = 'mt-4 text-md font-semibold text-green-600';
-                            form.reset(); // Limpiamos el formulario
+                            form.reset();
                         } else {
-                            // Si hay un error en la respuesta del servidor
-                            throw new Error('Respuesta del servidor no fue exitosa.');
+                            // Captura el error del servidor para dar más detalles
+                            const errorText = await response.text();
+                            throw new Error(`El servidor respondió con un error: ${response.status}. Detalles: ${errorText}`);
                         }
-
                     } catch (error) {
-                        // Si hay un error en la conexión o en el proceso
-                        console.error('Error al enviar el webhook:', error);
-                        messageDiv.textContent = 'Hubo un error. Por favor, inténtalo de nuevo.';
+                        console.error('Error detallado al enviar el webhook:', error);
+                        messageDiv.textContent = 'Hubo un error al conectar. Revisa la consola (F12) para más detalles.';
                         messageDiv.className = 'mt-4 text-md font-semibold text-red-600';
                     } finally {
-                        // Volvemos a habilitar el botón
                         submitButton.disabled = false;
                         submitButton.textContent = 'Suscribirme ahora';
                     }
                 });
+            } else {
+                console.error("Error crítico: No se encontró el formulario con id 'suscripcion-form'.");
             }
-            // --- FIN: LÓGICA DEL WEBHOOK PARA N8N ---
+
+            // --- OTRAS INICIALIZACIONES (se ejecutan después) ---
+            window.addEventListener('load', () => {
+                // Inicialización de Swiper (carrusel de testimonios)
+                if (typeof Swiper !== 'undefined') {
+                    new Swiper('.testimonial-swiper', {
+                        loop: true,
+                        autoplay: { delay: 5000, disableOnInteraction: false },
+                        pagination: { el: '.swiper-pagination', clickable: true },
+                        breakpoints: {
+                            0: { slidesPerView: 1, spaceBetween: 20 },
+                            768: { slidesPerView: 2, spaceBetween: 24 },
+                            1024: { slidesPerView: 3, spaceBetween: 24 },
+                        },
+                    });
+                }
+
+                // Inicialización de Cookie Consent
+                if (window.cookieconsent) {
+                    window.cookieconsent.initialise({
+                        palette: { popup: { background: '#1f2937' }, button: { background: '#14b8a6' } },
+                        theme: 'classic',
+                        position: 'bottom',
+                        type: 'opt-in',
+                        content: {
+                            message: 'Usamos cookies para mejorar tu experiencia.',
+                            dismiss: 'Aceptar',
+                            deny: 'Rechazar',
+                            link: 'Más info',
+                            href: 'politica-cookies.html'
+                        },
+                    });
+                }
+
+                // Lógica para el contador regresivo
+                const countdownElement = document.getElementById('countdown');
+                if (countdownElement) {
+                    const countDownDate = new Date().getTime() + (41 * 60 * 60 * 1000) + (12 * 60 * 1000);
+                    const interval = setInterval(() => {
+                        const now = new Date().getTime();
+                        const distance = countDownDate - now;
+                        if (distance < 0) {
+                            clearInterval(interval);
+                            const countdownContainer = countdownElement.parentElement;
+                            if (countdownContainer) {
+                                countdownContainer.innerHTML = "<p class='font-bold text-red-500'>¡La oferta ha terminado!</p>";
+                            }
+                            return;
+                        }
+                        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                        countdownElement.innerHTML = `
+                            <span class="tabular-nums">${hours.toString().padStart(2, '0')}</span>h : 
+                            <span class="tabular-nums">${minutes.toString().padStart(2, '0')}</span>m : 
+                            <span class="tabular-nums">${seconds.toString().padStart(2, '0')}</span>s`;
+                    }, 1000);
+                }
+
+                // Lógica para la barra de progreso de plazas
+                const progressBar = document.getElementById('progress-bar');
+                const progressLabel = document.getElementById('progress-label');
+                if (progressBar && progressLabel) {
+                    const totalPlazas = 50;
+                    const plazasOcupadas = 37;
+                    const porcentaje = (plazasOcupadas / totalPlazas) * 100;
+                    setTimeout(() => { progressBar.style.width = `${porcentaje}%`; }, 300);
+                    progressLabel.textContent = `¡Quedan ${totalPlazas - plazasOcupadas} de ${totalPlazas} plazas early-bird!`;
+                }
+            });
         });
     </script>
 
 </body>
 </html>
-
+" from the most up-to-date Canvas "index.html (con envío de Opt-in)" document abo
