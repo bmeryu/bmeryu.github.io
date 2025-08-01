@@ -423,7 +423,7 @@
                         -90%
                     </div>
 
-                    <h3 class="text-2xl font-bold text-center">Aula Gen IA: Acceso Total</h3>
+                    <h3 class="text-2xl font-bold text-center">Aula GenIA: Acceso Total</h3>
                     
                     <p class="text-center text-gray-400 line-through mt-2">$49 USD</p>
                     <p class="text-6xl font-bold text-center my-1 text-teal-500">$5 <span class="text-xl font-normal text-gray-500">USD</span></p>
@@ -547,10 +547,17 @@
             // !! IMPORTANTE !! REEMPLAZA ESTA URL POR LA DE TU WEBHOOK DE N8N
             const webhookUrl = 'https://muna.auto.hostybee.com/webhook-test/7b801ad6-994e-422e-99ef-76da3ef7424a';
 
-            if (form) {
-                form.addEventListener('submit', async (event) => {
-                    event.preventDefault();
+            if (submitButton) {
+                // CAMBIO: Escuchamos el 'click' en el botón en lugar del 'submit' del formulario.
+                submitButton.addEventListener('click', async (event) => {
+                    event.preventDefault(); // Prevenimos el comportamiento por defecto del botón.
                     
+                    // Verificamos si el email es válido antes de continuar
+                    if (!emailInput.checkValidity()) {
+                        emailInput.reportValidity();
+                        return;
+                    }
+
                     submitButton.disabled = true;
                     submitButton.textContent = 'Enviando...';
                     messageDiv.textContent = ''; // Limpiar mensaje previo
@@ -558,19 +565,14 @@
                     const email = emailInput.value;
                     const optin = optinCheckbox.checked;
 
-                    // PRUEBA DEFINITIVA: Mostramos en la consola QUÉ se va a enviar.
-                    const dataToSend = { 
-                        email: email,
-                        optin: optin
-                    };
+                    const dataToSend = { email, optin };
                     console.log("Datos que se enviarán al webhook:", dataToSend);
-
 
                     try {
                         const response = await fetch(webhookUrl, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(dataToSend), // Enviamos el objeto que creamos
+                            body: JSON.stringify(dataToSend),
                         });
 
                         if (response.ok) {
@@ -578,7 +580,6 @@
                             messageDiv.className = 'mt-4 text-md font-semibold text-green-600';
                             form.reset();
                         } else {
-                            // Captura el error del servidor para dar más detalles
                             const errorText = await response.text();
                             throw new Error(`El servidor respondió con un error: ${response.status}. Detalles: ${errorText}`);
                         }
@@ -592,12 +593,11 @@
                     }
                 });
             } else {
-                console.error("Error crítico: No se encontró el formulario con id 'suscripcion-form'.");
+                console.error("Error crítico: No se encontró el botón con id 'suscripcion-btn'.");
             }
 
             // --- OTRAS INICIALIZACIONES (se ejecutan después) ---
             window.addEventListener('load', () => {
-                // Inicialización de Swiper (carrusel de testimonios)
                 if (typeof Swiper !== 'undefined') {
                     new Swiper('.testimonial-swiper', {
                         loop: true,
@@ -611,7 +611,6 @@
                     });
                 }
 
-                // Inicialización de Cookie Consent
                 if (window.cookieconsent) {
                     window.cookieconsent.initialise({
                         palette: { popup: { background: '#1f2937' }, button: { background: '#14b8a6' } },
@@ -628,7 +627,6 @@
                     });
                 }
 
-                // Lógica para el contador regresivo
                 const countdownElement = document.getElementById('countdown');
                 if (countdownElement) {
                     const countDownDate = new Date().getTime() + (41 * 60 * 60 * 1000) + (12 * 60 * 1000);
@@ -653,7 +651,6 @@
                     }, 1000);
                 }
 
-                // Lógica para la barra de progreso de plazas
                 const progressBar = document.getElementById('progress-bar');
                 const progressLabel = document.getElementById('progress-label');
                 if (progressBar && progressLabel) {
@@ -669,5 +666,3 @@
 
 </body>
 </html>
-" from the most up-to-date Canvas "index.html (con envío de Opt-in)" document abo
-
